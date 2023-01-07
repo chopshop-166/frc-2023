@@ -10,9 +10,10 @@ import frc.robot.maps.RobotMap;
 public class Robot extends CommandRobot {
 
     private RobotMap map = new RobotMap();
-    private Auto auto = new Auto();
 
     // $Subsystems$
+
+    private Auto auto = new Auto();
 
     @Autonomous(defaultAuto = true)
     public CommandBase exampleAuto = auto.exampleAuto();

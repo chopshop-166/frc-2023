@@ -1,6 +1,6 @@
 {
     "java.configuration.updateBuildConfiguration": "automatic",
-    "java.server.launchMode": "Standard",
+    "java.server.launchMode": "Hybrid",
     "editor.formatOnSave": true,
     "editor.formatOnPaste": true,
     "[java]": {
@@ -23,6 +23,12 @@
         "**/.factorypath": true,
         "**/*~": true
     },
+    "java.cleanup.actionsOnSave": [
+        "addDeprecated",
+        "addOverride",
+        "invertEquals",
+        "stringConcatToTextBlock"
+    ],
     "java.completion.favoriteStaticMembers": [
         "org.junit.Assert.*",
         "org.junit.Assume.*",
