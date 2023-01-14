@@ -8,7 +8,7 @@ public class Auto {
     // Declare references to subsystems
 
     // Pass in all subsystems
-    Auto() {
+    public Auto() {
         // Assign all subsystems to local storage
     }
 
