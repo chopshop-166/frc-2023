@@ -10,6 +10,7 @@ import com.chopshop166.chopshoplib.motors.Modifier;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -19,6 +20,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Field;
 import frc.robot.Vision;
+import frc.robot.util.DrivePID;
 
 public class Drive extends SmartSubsystemBase {
 
@@ -36,7 +38,10 @@ public class Drive extends SmartSubsystemBase {
     private final SwerveModule rearLeft;
     private final SwerveModule rearRight;
 
-    public Drive(SwerveDriveMap map) {
+    private final DrivePID drivePID = new DrivePID(0, 0, 0, 0, 0, 0);
+
+    public Drive(
+            SwerveDriveMap map) {
         this.map = map;
         vision = new Vision(
                 "gloworm", Field.getApriltagLayout(),
@@ -58,6 +63,13 @@ public class Drive extends SmartSubsystemBase {
         rearRight = map.rearRight();
         kinematics = new SwerveDriveKinematics(frontLeft.getLocation(), frontRight.getLocation(),
                 rearLeft.getLocation(), rearRight.getLocation());
+    }
+
+    public CommandBase driveTo(Pose2d targetPose) {
+        return cmd().onExecute(() -> {
+            Transform2d fb = drivePID.calculate(pose, targetPose);
+            updateSwerveSpeedAngle(fb::getX, fb::getY, fb.getRotation()::getDegrees);
+        }).runsUntil(() -> drivePID.isFinished(pose, targetPose, 0.01));
     }
 
     public CommandBase fieldCentricDrive(final DoubleSupplier translateX, final DoubleSupplier translateY,
