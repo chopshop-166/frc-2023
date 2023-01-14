@@ -10,8 +10,10 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.maps.RobotMap;
 import frc.robot.subsystems.Drive;
 // $Imports$
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Led;
+
 
 public class Robot extends CommandRobot {
 
@@ -20,6 +22,7 @@ public class Robot extends CommandRobot {
     // private RobotMap map = new RobotMap();
     private ButtonXboxController driveController = new ButtonXboxController(0);
     // $Subsystems$
+    Arm arm = new Arm(map.getArmMap());
     Intake intake = new Intake(map.getIntakeMap());
 
     private Drive drive = new Drive(map.getDriveMap());

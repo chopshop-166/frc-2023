@@ -8,6 +8,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import com.chopshop166.chopshoplib.maps.RobotMapFor;
 
 // $Imports$
+import frc.robot.maps.subsystems.ArmMap;
 import frc.robot.maps.subsystems.IntakeData;
 import frc.robot.maps.subsystems.LedMap;
 import frc.robot.maps.subsystems.SwerveDriveMap;
@@ -16,7 +17,14 @@ import frc.robot.maps.subsystems.SwerveDriveMap;
 public class RobotMap {
     // $Maps$
 
+    private ArmMap armMap = new ArmMap();
+    SwerveDriveMap drive = new SwerveDriveMap();
+
+
     // $Getters$
+    public ArmMap getArmMap() {
+        return armMap;
+    }
     public IntakeData.Map getIntakeMap() {
         return new IntakeData.Map();
     }
