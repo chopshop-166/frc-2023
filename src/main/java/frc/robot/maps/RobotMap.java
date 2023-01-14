@@ -5,6 +5,7 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
+import com.chopshop166.chopshoplib.drive.SwerveDriveMap;
 import com.chopshop166.chopshoplib.maps.RobotMapFor;
 // $Imports$
 import frc.robot.maps.subsystems.IntakeData;
@@ -17,7 +18,6 @@ import frc.robot.maps.subsystems.LedMap;
 @RobotMapFor("Default")
 public class RobotMap {
     // $Maps$
-    private DriveMap driveMap = new DriveMap();
 
     SwerveDriveMap drive = new SwerveDriveMap();
 
@@ -27,6 +27,8 @@ public class RobotMap {
     }
     public DriveMap getDriveMap() {
         return driveMap;
+    public SwerveDriveMap getDriveMap() {
+        return new SwerveDriveMap();
     }
 
     public SwerveDriveMap getDriveMap() {

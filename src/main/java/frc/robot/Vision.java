@@ -1,31 +1,72 @@
 package frc.robot;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.xml.crypto.dsig.Transform;
 
 import org.photonvision.PhotonCamera;
 import org.photonvision.RobotPoseEstimator;
-import org.photonvision.RobotPoseEstimator.PoseStrategy;
+import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
+
+import com.chopshop166.chopshoplib.drive.SwerveDriveMap;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class Vision {
 
     RobotPoseEstimator estimator;
+    SwerveDriveMap driveMap;
+    SwerveDriveOdometry odometry;
+    PhotonCamera camera;
+    Transform3d cameraToRobot;
+    AprilTagFieldLayout aprilTags;
 
-    public Vision(String cameraName, AprilTagFieldLayout aprilTags, Transform3d cameraToRobot) {
-        PhotonCamera camera = new PhotonCamera(NetworkTableInstance.getDefault(), cameraName);
-        List<Pair<PhotonCamera, Transform3d>> cameras = new ArrayList<>();
-        cameras.add(new Pair<>(camera, cameraToRobot));
-        estimator = new RobotPoseEstimator(
-                aprilTags, PoseStrategy.AVERAGE_BEST_TARGETS, cameras);
+    private SwerveModulePosition[] getModulePositions() {
+        return new SwerveModulePosition[] {
+                new SwerveModulePosition(0, driveMap.frontLeft().getAngle()),
+                new SwerveModulePosition(0, driveMap.frontRight().getAngle()),
+                new SwerveModulePosition(0, driveMap.rearLeft().getAngle()),
+                new SwerveModulePosition(0, driveMap.rearRight().getAngle()),
+        };
+    }
+
+    public Vision(String cameraName, AprilTagFieldLayout aprilTags, Transform3d cameraToRobot,
+            SwerveDriveMap driveMap) {
+        camera = new PhotonCamera(NetworkTableInstance.getDefault(), cameraName);
+        this.driveMap = driveMap;
+        this.cameraToRobot = cameraToRobot;
+        this.aprilTags = aprilTags;
+
+        SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
+                driveMap.frontLeft().getLocation(),
+                driveMap.frontRight().getLocation(),
+                driveMap.rearLeft().getLocation(),
+                driveMap.rearRight().getLocation());
+
+        odometry = new SwerveDriveOdometry(kinematics, driveMap.gyro().getRotation2d(),
+                getModulePositions());
+
     }
 
     public Pose2d update() {
-        return estimator.update().get().getFirst().toPose2d();
+        PhotonPipelineResult result = camera.getLatestResult();
+        if (result.hasTargets()) {
+            PhotonTrackedTarget target = result.getBestTarget();
+            Transform3d cameraToTarget = target.getBestCameraToTarget();
+            int tagId = target.getFiducialId();
+            Pose2d pose = aprilTags.getTagPose(tagId).get().plus(cameraToTarget.inverse())
+                    .plus(cameraToRobot.inverse()).toPose2d();
+
+            driveMap.gyro().setAngle(pose.getRotation().getDegrees());
+            odometry.resetPosition(driveMap.gyro().getRotation2d(),
+                    getModulePositions(), pose);
+        }
+
+        return odometry.update(driveMap.gyro().getRotation2d(), getModulePositions());
     }
 }
