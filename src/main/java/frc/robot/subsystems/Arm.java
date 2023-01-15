@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import java.time.Instant;
+import java.util.function.DoubleSupplier;
 
 import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
 import com.chopshop166.chopshoplib.motors.SmartMotorController;
@@ -11,22 +12,10 @@ import frc.robot.maps.subsystems.ArmMap;
 public class Arm extends SmartSubsystemBase {
 
     private ArmMap map;
-    private SmartMotorController base = new SmartMotorController();
+    private SmartMotorController motor = new SmartMotorController();
 
     public Arm(ArmMap map) {
         this.map = map;
-    }
-
-    public CommandBase rotate() {
-        return instant("Rotate Arm", () -> {
-
-        });
-    }
-
-    public CommandBase extend() {
-        return instant("Extend Arm", () -> {
-
-        });
     }
 
     enum Level {
@@ -52,6 +41,52 @@ public class Arm extends SmartSubsystemBase {
         public double getAgain() {
             return angle;
         }
+    }
+
+    public CommandBase rotate() {
+        return instant("Rotate Arm", () -> {
+
+        });
+    }
+
+    // This stuff is important (assigned this part) \/
+    //
+    public final double SPEED = 1;;
+
+    public CommandBase extend(DoubleSupplier motorSpeed) {
+        return instant("Extend Arm", () -> {
+            motor.set(SPEED);
+        });
+    }
+
+    public CommandBase extendDistance(double distance, double speed) {
+        return cmd("Extend Distance").onInitialize(() -> {
+            motor.set(distance);
+        });
+    }
+
+    public CommandBase retract(DoubleSupplier motorSpeed) {
+        return instant("Extend Arm", () -> {
+            motor.set(SPEED);
+        });
+    }
+
+    public CommandBase retractDistance(double distance, double speed) {
+        return cmd("Extend Distance").onInitialize(() -> {
+            motor.set(distance);
+        });
+    }
+
+    // End of important stuff
+    //
+    public CommandBase extendLow() {
+
+    }
+
+    public CommandBase retract() {
+        return instant("Retract Arm", () -> {
+
+        });
     }
 
     @Override
