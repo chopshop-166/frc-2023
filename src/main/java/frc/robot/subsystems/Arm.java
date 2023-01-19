@@ -57,10 +57,6 @@ public class Arm extends SmartSubsystemBase {
     }
 
     public CommandBase moveToDistance(double distance, double speed) {
-        // extend at some speed until expected distance is reached
-        // if statement: if it is not where it is (if encoder distance does not equal
-        // inputted distance), move it there.
-        // If it is where it is, keep it there (turn off the motor)
         return cmd("Move Distance").onInitialize(() -> {
             if (distance >= motor.getEncoder().getDistance()) {
                 // extend
