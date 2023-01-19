@@ -10,12 +10,16 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.maps.RobotMap;
 // $Imports$
 import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Led;
 
 public class Robot extends CommandRobot {
 
     private RobotMap map = getMapForName("OffAxis", RobotMap.class, "frc.robot.maps");
     private ButtonXboxController driveController = new ButtonXboxController(0);
+    private RobotMap map = new RobotMap();
+    private Led led = new Led(map.getLedMap());
 
+    private ButtonXboxController controller = new ButtonXboxController(0);
     // $Subsystems$
     private Drive drive = new Drive(map.getDriveMap());
 
@@ -45,7 +49,10 @@ public class Robot extends CommandRobot {
 
     @Override
     public void configureButtonBindings() {
-
+        controller.a().onTrue(led.setYellow());
+        controller.b().onTrue(led.setPurple());
+        controller.x().onTrue(led.resetColor());
+        controller.y().onTrue(led.printColor());
     }
 
     @Override
