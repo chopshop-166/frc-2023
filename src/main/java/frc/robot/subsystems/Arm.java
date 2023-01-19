@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
+
 import java.time.Instant;
 import java.util.function.DoubleSupplier;
 
@@ -7,6 +9,7 @@ import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
 import com.chopshop166.chopshoplib.motors.SmartMotorController;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.maps.subsystems.ArmMap;
 
 public class Arm extends SmartSubsystemBase {
@@ -43,48 +46,58 @@ public class Arm extends SmartSubsystemBase {
         }
     }
 
-    public CommandBase rotate() {
-        return instant("Rotate Arm", () -> {
-
-        });
-    }
-
     // This stuff is important (assigned this part) \/
     //
-    public final double SPEED = 1;;
+    public final double SPEED = 1;
 
     public CommandBase extend(DoubleSupplier motorSpeed) {
-        return instant("Extend Arm", () -> {
-            motor.set(SPEED);
+        return run(() -> {
+            motor.set(motorSpeed.getAsDouble());
         });
     }
 
-    public CommandBase extendDistance(double distance, double speed) {
-        return cmd("Extend Distance").onInitialize(() -> {
-            motor.set(distance);
+    public CommandBase moveToDistance(double distance, double speed) {
+        // extend at some speed until expected distance is reached
+        // if statement: if it is not where it is (if encoder distance does not equal
+        // inputted distance), move it there.
+        // If it is where it is, keep it there (turn off the motor)
+        return cmd("Move Distance").onInitialize(() -> {
+            if (distance >= motor.getEncoder().getDistance()) {
+                // extend
+                motor.set(speed);
+            } else {
+                // retract
+                motor.set(-speed);
+            }
+        }).runsUntil(() -> Math.abs(distance - motor.getEncoder().getDistance()) < 0.5).onEnd(() -> {
+            motor.stopMotor();
         });
     }
 
     public CommandBase retract(DoubleSupplier motorSpeed) {
-        return instant("Extend Arm", () -> {
-            motor.set(SPEED);
+        return run(() -> {
+            motor.set(motorSpeed.getAsDouble());
         });
     }
 
     public CommandBase retractDistance(double distance, double speed) {
-        return cmd("Extend Distance").onInitialize(() -> {
-            motor.set(distance);
+        return cmd("Retract Distance").onInitialize(() -> {
+            motor.set(speed);
+        }).runsUntil(() -> {
+            if (distance == motor.getEncoder().getDistance()) {
+                motor.stopMotor();
+                return true;
+            } else {
+                return false;
+            }
         });
     }
 
     // End of important stuff
     //
-    public CommandBase extendLow() {
 
-    }
-
-    public CommandBase retract() {
-        return instant("Retract Arm", () -> {
+    public CommandBase rotate() {
+        return runOnce(() -> {
 
         });
     }
