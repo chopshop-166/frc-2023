@@ -81,7 +81,6 @@ public class Arm extends SmartSubsystemBase {
 
     public CommandBase movetoLow() {
         return moveToDistance(Level.LOW.get(), 2);
-
     }
 
     public CommandBase movetoMedium() {

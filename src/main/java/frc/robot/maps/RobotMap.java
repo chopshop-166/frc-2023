@@ -20,10 +20,9 @@ public class RobotMap {
     private ArmMap armMap = new ArmMap();
     SwerveDriveMap drive = new SwerveDriveMap();
 
-
     // $Getters$
     public ArmMap getArmMap() {
-        return armMap;
+        return new ArmMap();
     }
     public IntakeData.Map getIntakeMap() {
         return new IntakeData.Map();
