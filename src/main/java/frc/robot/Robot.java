@@ -20,7 +20,6 @@ public class Robot extends CommandRobot {
 
     private RobotMap map = getMapForName("OffAxis", RobotMap.class, "frc.robot.maps");
     private ButtonXboxController driveController = new ButtonXboxController(0);
-    private RobotMap map = new RobotMap();
     private Led led = new Led(map.getLedMap());
 
     private ButtonXboxController controller = new ButtonXboxController(0);
@@ -56,7 +55,6 @@ public class Robot extends CommandRobot {
         controller.a().onTrue(led.setYellow());
         controller.b().onTrue(led.setPurple());
         controller.x().onTrue(led.resetColor());
-        controller.y().onTrue(led.printColor());
     }
 
     @Override
@@ -68,7 +66,6 @@ public class Robot extends CommandRobot {
     public void setDefaultCommands() {
         drive.setDefaultCommand(
                 drive.drive(driveController::getLeftX, driveController::getLeftY, driveController::getRightX));
-    }
 
         led.setDefaultCommand(led.colorAlliance());
     }
