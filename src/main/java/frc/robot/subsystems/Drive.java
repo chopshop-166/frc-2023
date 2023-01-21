@@ -2,9 +2,9 @@ package frc.robot.subsystems;
 
 import java.util.function.DoubleSupplier;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
-import com.chopshop166.chopshoplib.drive.SwerveDriveMap;
-import com.chopshop166.chopshoplib.drive.SwerveModule;
 import com.chopshop166.chopshoplib.motors.Modifier;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -20,29 +20,30 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Field;
 import frc.robot.Vision;
+import frc.robot.maps.subsystems.SwerveDriveMap;
+import frc.robot.maps.subsystems.SwerveDriveMap.Data;
 import frc.robot.util.DrivePID;
 
 public class Drive extends SmartSubsystemBase {
 
-    private SwerveDriveMap map;
+    SwerveDriveMap map;
+    Data io;
+    private final SwerveDriveKinematics kinematics;
+    double maxDriveSpeedMetersPerSecond;
+    double maxRotationRadiansPerSecond;
 
     private Vision vision;
     private Pose2d pose = new Pose2d();
-
-    private final double maxDriveSpeedMetersPerSecond;
-    private final double maxRotationRadiansPerSecond;
-
-    private final SwerveDriveKinematics kinematics;
-    private final SwerveModule frontLeft;
-    private final SwerveModule frontRight;
-    private final SwerveModule rearLeft;
-    private final SwerveModule rearRight;
-
     private final DrivePID drivePID = new DrivePID(0, 0, 0, 0, 0, 0);
 
-    public Drive(
-            SwerveDriveMap map) {
+    public Drive(SwerveDriveMap map) {
         this.map = map;
+        io = new Data();
+        kinematics = new SwerveDriveKinematics(map.frontLeft().getLocation(), map.frontRight().getLocation(),
+                map.rearLeft().getLocation(), map.rearRight().getLocation());
+        maxDriveSpeedMetersPerSecond = map.maxDriveSpeedMetersPerSecond();
+        maxRotationRadiansPerSecond = map.maxRotationRadianPerSecond();
+
         vision = new Vision(
                 "photonvision", Field.getApriltagLayout(),
                 new Transform3d(
@@ -55,54 +56,47 @@ public class Drive extends SmartSubsystemBase {
                                 Units.degreesToRadians(0),
                                 Units.degreesToRadians(0))),
                 this.map);
-        maxDriveSpeedMetersPerSecond = map.maxDriveSpeedMetersPerSecond();
-        maxRotationRadiansPerSecond = map.maxRotationRadianPerSecond();
-        frontLeft = map.frontLeft();
-        frontRight = map.frontRight();
-        rearLeft = map.rearLeft();
-        rearRight = map.rearRight();
-        kinematics = new SwerveDriveKinematics(frontLeft.getLocation(), frontRight.getLocation(),
-                rearLeft.getLocation(), rearRight.getLocation());
     }
 
-    public CommandBase driveTo(Pose2d targetPose) {
-        return cmd().onExecute(() -> {
-            Transform2d fb = drivePID.calculate(pose, targetPose);
-            updateSwerveSpeedAngle(fb::getX, fb::getY, fb.getRotation()::getDegrees);
-        }).runsUntil(() -> drivePID.isFinished(pose, targetPose, 0.01));
-    }
-
-    public CommandBase fieldCentricDrive(final DoubleSupplier translateX, final DoubleSupplier translateY,
-            final DoubleSupplier rotation) {
-        return run(() -> updateSwerveSpeedAngle(translateX, translateY, rotation));
-
-    }
-
-    private void updateSwerveSpeedAngle(final DoubleSupplier translateX, final DoubleSupplier translateY,
-            final DoubleSupplier rotation) {
+    private void move(final double xSpeed, final double ySpeed,
+            final double rotation) {
         final Modifier deadband = Modifier.deadband(0.15);
-        final double translateXSpeed = deadband.applyAsDouble(translateX.getAsDouble()) * maxDriveSpeedMetersPerSecond;
-        final double translateYSpeed = deadband.applyAsDouble(translateY.getAsDouble()) * maxDriveSpeedMetersPerSecond;
-        final double rotationSpeed = deadband.applyAsDouble(rotation.getAsDouble()) * maxRotationRadiansPerSecond;
+        final double translateXSpeed = deadband.applyAsDouble(xSpeed)
+                * maxDriveSpeedMetersPerSecond;
+        final double translateYSpeed = deadband.applyAsDouble(ySpeed)
+                * maxDriveSpeedMetersPerSecond;
+        final double rotationSpeed = deadband.applyAsDouble(rotation) * maxRotationRadiansPerSecond;
 
         // rotationOffset is temporary and startingRotation is set at the start
         final ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(translateYSpeed, translateXSpeed,
-                rotationSpeed, Rotation2d.fromDegrees(map.gyro().getAngle()));
+                rotationSpeed,
+                Rotation2d.fromDegrees(io.gyroYawPositionDegrees));
 
         // Now use this in our kinematics
         final SwerveModuleState[] moduleStates = kinematics.toSwerveModuleStates(speeds);
 
         // Front left module state
-        frontLeft.setDesiredState(moduleStates[0]);
+        io.frontLeft.desiredState = moduleStates[0];
 
         // Front right module state
-        frontRight.setDesiredState(moduleStates[1]);
+        io.frontRight.desiredState = moduleStates[1];
 
         // Back left module state
-        rearLeft.setDesiredState(moduleStates[2]);
+        io.rearLeft.desiredState = moduleStates[2];
 
         // Back right module state
-        rearRight.setDesiredState(moduleStates[3]);
+        io.rearRight.desiredState = moduleStates[3];
+    }
+
+    public CommandBase drive(DoubleSupplier xSpeed, DoubleSupplier ySpeed, DoubleSupplier rotation) {
+        return run(() -> move(xSpeed.getAsDouble(), ySpeed.getAsDouble(), rotation.getAsDouble()));
+    }
+
+    public CommandBase driveTo(Pose2d targetPose) {
+        return cmd().onExecute(() -> {
+            Transform2d fb = drivePID.calculate(pose, targetPose);
+            move(fb.getX(), fb.getY(), fb.getRotation().getDegrees());
+        }).runsUntil(() -> drivePID.isFinished(pose, targetPose, 0.01));
     }
 
     @Override
@@ -117,6 +111,11 @@ public class Drive extends SmartSubsystemBase {
 
     @Override
     public void periodic() {
+        // This method will be called once per scheduler run
+        // Use this for any background processing
+        map.updateInputs(io);
+        Logger.getInstance().processInputs(getName(), io);
+
         pose = vision.update();
     }
 }

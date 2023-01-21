@@ -1,13 +1,9 @@
 package frc.robot;
 
-import javax.xml.crypto.dsig.Transform;
-
 import org.photonvision.PhotonCamera;
 import org.photonvision.RobotPoseEstimator;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
-
-import com.chopshop166.chopshoplib.drive.SwerveDriveMap;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -16,6 +12,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import frc.robot.maps.subsystems.SwerveDriveMap;
 
 public class Vision {
 
