@@ -44,7 +44,7 @@ public class Drive extends SmartSubsystemBase {
             SwerveDriveMap map) {
         this.map = map;
         vision = new Vision(
-                "gloworm", Field.getApriltagLayout(),
+                "photonvision", Field.getApriltagLayout(),
                 new Transform3d(
                         new Translation3d(
                                 Units.inchesToMeters(0),
