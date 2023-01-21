@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.maps.subsystems.LedMap;
 
@@ -22,7 +23,6 @@ public class Led extends SmartSubsystemBase {
     // Default to a length of 60, start empty output
     // Length is expensive to set, so only set it once, then just update data
     AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(60);
-    Alliance alliance = DriverStation.getAlliance();
 
     public Led(LedMap map) {
 
@@ -52,7 +52,8 @@ public class Led extends SmartSubsystemBase {
     }
 
     public CommandBase colorAlliance() {
-        return cmd("Set to Alliance Color").onInitialize(() -> {
+        return cmd("Set to Alliance Color").onExecute(() -> {
+            Alliance alliance = DriverStation.getAlliance();
             if (alliance == Alliance.Blue) {
                 setColor(2, 15, 250);
             } else {
@@ -104,5 +105,6 @@ public class Led extends SmartSubsystemBase {
     public void periodic() {
         // This method will be called once per scheduler run
         // Use this for any background processing
+
     }
 }
