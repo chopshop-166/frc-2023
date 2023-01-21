@@ -32,6 +32,21 @@ public class Drive extends SmartSubsystemBase {
     double maxDriveSpeedMetersPerSecond;
     double maxRotationRadiansPerSecond;
 
+    public enum GridPosition {
+
+        TEST(new Pose2d());
+
+        private Pose2d pose;
+
+        private GridPosition(Pose2d pose) {
+            this.pose = pose;
+        }
+
+        public Pose2d getPose() {
+            return pose;
+        }
+    }
+
     private Vision vision;
     private Pose2d pose = new Pose2d();
     private final DrivePID drivePID = new DrivePID(0, 0, 0, 0, 0, 0);
@@ -97,6 +112,29 @@ public class Drive extends SmartSubsystemBase {
             Transform2d fb = drivePID.calculate(pose, targetPose);
             move(fb.getX(), fb.getY(), fb.getRotation().getDegrees());
         }).runsUntil(() -> drivePID.isFinished(pose, targetPose, 0.01));
+    }
+
+    public CommandBase driveTo(GridPosition gridPose) {
+        return driveTo(gridPose.getPose());
+    }
+
+    private Pose2d closestPose = GridPosition.values()[0].getPose();
+
+    public CommandBase driveToNearest() {
+
+        return cmd().onInitialize(() -> {
+            closestPose = GridPosition.values()[0].getPose();
+            for (GridPosition position : GridPosition.values()) {
+                if (position.getPose().getTranslation().getDistance(pose.getTranslation()) < closestPose
+                        .getTranslation().getDistance(pose.getTranslation())) {
+                    closestPose = position.getPose();
+                }
+            }
+        }).onExecute(() -> {
+            Transform2d fb = drivePID.calculate(pose, closestPose);
+            move(fb.getX(), fb.getY(), fb.getRotation().getDegrees());
+        }).runsUntil(() -> drivePID.isFinished(pose, closestPose, 0.01));
+
     }
 
     @Override
