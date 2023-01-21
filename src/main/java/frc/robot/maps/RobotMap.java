@@ -22,7 +22,7 @@ public class RobotMap {
         return drive;
     }
     public LedMap getLedMap() {
-        return led;
+        return new LedMap();
     }
 
     public void SetupLogging() {
