@@ -4,23 +4,32 @@ import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.maps.subsystems.LedMap;
 
 public class Led extends SmartSubsystemBase {
 
     private LedMap map;
-    AddressableLED led = new AddressableLED(9);
-   AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(60);
+    private Led defaultColor;
+    private int R;
+    private int G;
+    private int B;
+    AddressableLED led = new AddressableLED(0);
+
+    // Reuse buffer
+    // Default to a length of 60, start empty output
+    // Length is expensive to set, so only set it once, then just update data
+    AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(60);
+    Alliance alliance = DriverStation.getAlliance();
+
     public Led(LedMap map) {
+
         this.map = map;
         // PWM port 9
         // Must be a PWM header, not MXP or DIO
-       
 
-        // Reuse buffer
-        // Default to a length of 60, start empty output
-        // Length is expensive to set, so only set it once, then just update data
-        
         led.setLength(ledBuffer.getLength());
 
         // Set the data
@@ -33,14 +42,28 @@ public class Led extends SmartSubsystemBase {
 
     }
 
+    public void setColor(int R, int G, int B) {
+        led.setData(ledBuffer);
+        led.start();
+        for (var i = 0; i < ledBuffer.getLength(); i++) {
+            // Sets the specified LED to the RGB values for red
+            ledBuffer.setRGB(i, R, G, B);
+        }
+    }
+
+    public CommandBase colorAlliance() {
+        return cmd("Set to Alliance Color").onInitialize(() -> {
+            if (alliance == Alliance.Blue) {
+                setColor(2, 15, 250);
+            } else {
+                setColor(250, 2, 2);
+            }
+        });
+    }
+
     public CommandBase resetColor() {
         return runOnce(() -> {
-            led.setData(ledBuffer);
-            led.start();
-            for (var i = 0; i < ledBuffer.getLength(); i++) {
-                // Sets the specified LED to the RGB values for red
-                ledBuffer.setRGB(i, 252, 250, 250);
-            }
+            setColor(201, 198, 204);
             System.out.println(ledBuffer.getLED(0));
 
         });
@@ -48,12 +71,7 @@ public class Led extends SmartSubsystemBase {
 
     public CommandBase setYellow() {
         return runOnce(() -> {
-            led.setData(ledBuffer);
-            led.start();
-            for (var i = 0; i < ledBuffer.getLength(); i++) {
-                ledBuffer.setRGB(i, 247, 237, 35);
-
-            }
+            setColor(222, 218, 11);
             System.out.println(ledBuffer.getLED(0));
 
         });
@@ -61,11 +79,7 @@ public class Led extends SmartSubsystemBase {
 
     public CommandBase setPurple() {
         return runOnce(() -> {
-            led.setData(ledBuffer);
-            led.start();
-            for (var i = 0; i < ledBuffer.getLength(); i++) {
-                ledBuffer.setRGB(i, 138, 71, 245);
-            }
+            setColor(133, 7, 168);
             System.out.println(ledBuffer.getLED(0));
         });
     }

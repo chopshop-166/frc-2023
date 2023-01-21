@@ -2,6 +2,10 @@ package frc.robot;
 
 import org.littletonrobotics.junction.Logger;
 
+import java.util.PrimitiveIterator.OfInt;
+
+import javax.annotation.meta.When;
+
 import com.chopshop166.chopshoplib.Autonomous;
 import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
@@ -66,4 +70,6 @@ public class Robot extends CommandRobot {
                 drive.drive(driveController::getLeftX, driveController::getLeftY, driveController::getRightX));
     }
 
+        led.setDefaultCommand(led.colorAlliance());
+    }
 }
