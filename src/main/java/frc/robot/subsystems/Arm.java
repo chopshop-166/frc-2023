@@ -18,6 +18,8 @@ public class Arm extends SmartSubsystemBase {
 
     private ArmMap map;
     private SmartMotorController motor = new SmartMotorController();
+    private final double SOFT_MAX_DISTANCE = 20;
+    private final double SOFT_MIN_DISTANCE = 1;
     PIDController pid = new PIDController(0, 0, 0);
 
     public Arm(ArmMap map) {
@@ -61,18 +63,25 @@ public class Arm extends SmartSubsystemBase {
         return cmd("Move Distance").onInitialize(() -> {
             if (distance >= motor.getEncoder().getDistance()) {
                 // extend
-                motor.set(speed);
-            } else {
-                // retract
-                motor.set(-speed);
+                motor.set(pid.calculate(distance - motor.getEncoder().getDistance()));
             }
         }).runsUntil(() -> Math.abs(distance - motor.getEncoder().getDistance()) < 0.5).onEnd(() -> {
             motor.stopMotor();
         });
     }
 
+    private double softLimit(double speed) {
+        if (motor.getEncoder().getDistance() > SOFT_MAX_DISTANCE && speed > 0) {
+            motor.set(speed * 0.1);
+        } else if (motor.getEncoder().getDistance() < SOFT_MIN_DISTANCE && speed < 0) {
+            motor.set(speed * 0.1);
+        }
+        return speed;
+    }
+
     public CommandBase movetoLow() {
         return moveToDistance(Level.LOW.get(), 2);
+
     }
 
     public CommandBase movetoMedium() {
@@ -122,6 +131,20 @@ public class Arm extends SmartSubsystemBase {
             } else {
                 return false;
             }
+        });
+    }
+
+    public CommandBase moveToDistanceTwo(double distance, double speed) {
+        return cmd("Move Distance").onInitialize(() -> {
+            if (distance >= motor.getEncoder().getDistance()) {
+                // extend
+                motor.set(speed);
+            } else {
+                // retract
+                motor.set(-speed);
+            }
+        }).runsUntil(() -> Math.abs(distance - motor.getEncoder().getDistance()) < 0.5).onEnd(() -> {
+            motor.stopMotor();
         });
     }
 }
