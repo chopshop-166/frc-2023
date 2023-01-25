@@ -5,25 +5,31 @@ import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import java.time.Instant;
 import java.util.function.DoubleSupplier;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
 import com.chopshop166.chopshoplib.motors.SmartMotorController;
+import com.fasterxml.jackson.annotation.JacksonInject.Value;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.maps.subsystems.ArmMap;
+import frc.robot.maps.subsystems.ArmMap.Data;
 
 public class Arm extends SmartSubsystemBase {
 
-    private ArmMap map;
-    private SmartMotorController motor = new SmartMotorController();
-    private final double SOFT_MAX_DISTANCE = 20;
-    private final double SOFT_MIN_DISTANCE = 1;
-    PIDController pid = new PIDController(0, 0, 0);
+    Data data;
+    ArmMap map;
+    private SmartMotorController extendMotor = new SmartMotorController();
+    private final double SOFT_MAX_DISTANCE = 400.0;
+    private final double SOFT_MIN_DISTANCE = 20.0;
+    PIDController pid = new PIDController(0.03, 0, 0);
 
     public Arm(ArmMap map) {
         this.map = map;
+        this.data = new Data();
     }
 
     enum Level {
@@ -51,50 +57,50 @@ public class Arm extends SmartSubsystemBase {
         }
     }
 
-    public final double SPEED = 1;
+    public final double SPEED = 0.3;
+
+    public CommandBase open() {
+        return runOnce(() -> {
+            data.setPoint = 2;
+        });
+    }
 
     public CommandBase extend(DoubleSupplier motorSpeed) {
         return run(() -> {
-            motor.set(motorSpeed.getAsDouble());
+            data.setPoint = softLimit(motorSpeed.getAsDouble());
         });
     }
 
     public CommandBase moveToDistance(double distance, double speed) {
         return cmd("Move Distance").onInitialize(() -> {
-            if (distance >= motor.getEncoder().getDistance()) {
+            if (distance >= data.distanceInches) {
                 // extend
-                motor.set(pid.calculate(distance - motor.getEncoder().getDistance()));
+                data.setPoint = softLimit(pid.calculate(distance - data.distanceInches));
             }
-        }).runsUntil(() -> Math.abs(distance - motor.getEncoder().getDistance()) < 0.5).onEnd(() -> {
-            motor.stopMotor();
+        }).runsUntil(() -> Math.abs(distance - data.distanceInches) < 0.5).onEnd(() -> {
+            data.setPoint = 0;
         });
     }
 
     private double softLimit(double speed) {
-        if (motor.getEncoder().getDistance() > SOFT_MAX_DISTANCE && speed > 0) {
-            motor.set(speed * 0.1);
-        } else if (motor.getEncoder().getDistance() < SOFT_MIN_DISTANCE && speed < 0) {
-            motor.set(speed * 0.1);
+        if (data.distanceInches > SOFT_MAX_DISTANCE && speed > 0) {
+            data.setPoint = (speed * 0.1);
+        } else if (data.distanceInches < SOFT_MIN_DISTANCE && speed < 0) {
+            data.setPoint = (speed * 0.1);
         }
         return speed;
     }
 
     public CommandBase movetoLow() {
-        return moveToDistance(Level.LOW.get(), 2);
+        return moveToDistance(Level.LOW.get(), SPEED);
     }
 
     public CommandBase movetoMedium() {
-        return moveToDistance(Level.MEDIUM.get(), 2);
+        return moveToDistance(Level.MEDIUM.get(), SPEED);
     }
 
     public CommandBase movetoHigh() {
-        return moveToDistance(Level.HIGH.get(), 2);
-    }
-
-    public CommandBase rotate() {
-        return runOnce(() -> {
-
-        });
+        return moveToDistance(Level.HIGH.get(), SPEED);
     }
 
     @Override
@@ -111,21 +117,25 @@ public class Arm extends SmartSubsystemBase {
     public void periodic() {
         // This method will be called once per scheduler run
         // Use this for any background processing
+        this.map.updateData(data);
+        Logger.getInstance().processInputs(getName(), data);
     }
 
+    //
+    //
     // Will I need this? I don't think so but I'm not deleting it
     public CommandBase retract(DoubleSupplier motorSpeed) {
         return run(() -> {
-            motor.set(motorSpeed.getAsDouble());
+            data.setPoint = (motorSpeed.getAsDouble());
         });
     }
 
     public CommandBase retractDistance(double distance, double speed) {
         return cmd("Retract Distance").onInitialize(() -> {
-            motor.set(speed);
+            data.setPoint = (speed);
         }).runsUntil(() -> {
-            if (distance == motor.getEncoder().getDistance()) {
-                motor.stopMotor();
+            if (distance == data.distanceInches) {
+                extendMotor.stopMotor();
                 return true;
             } else {
                 return false;
@@ -135,15 +145,15 @@ public class Arm extends SmartSubsystemBase {
 
     public CommandBase moveToDistanceTwo(double distance, double speed) {
         return cmd("Move Distance").onInitialize(() -> {
-            if (distance >= motor.getEncoder().getDistance()) {
+            if (distance >= data.distanceInches) {
                 // extend
-                motor.set(speed);
+                data.setPoint = (speed);
             } else {
                 // retract
-                motor.set(-speed);
+                data.setPoint = (-speed);
             }
-        }).runsUntil(() -> Math.abs(distance - motor.getEncoder().getDistance()) < 0.5).onEnd(() -> {
-            motor.stopMotor();
+        }).runsUntil(() -> Math.abs(distance - data.distanceInches) < 0.5).onEnd(() -> {
+            extendMotor.stopMotor();
         });
     }
 }

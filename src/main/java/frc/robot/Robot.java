@@ -8,6 +8,7 @@ import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.maps.RobotMap;
+import frc.robot.maps.Valkyrie;
 import frc.robot.subsystems.Drive;
 // $Imports$
 import frc.robot.subsystems.Arm;
