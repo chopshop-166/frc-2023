@@ -19,6 +19,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import frc.robot.maps.subsystems.SwerveDriveMap;
+import frc.robot.util.DrivePID;
 
 @RobotMapFor("OffAxis")
 public class OffAxis extends RobotMap {
@@ -80,9 +81,11 @@ public class OffAxis extends RobotMap {
         final double maxDriveSpeedMetersPerSecond = Units.feetToMeters(10);
 
         final double maxRotationRadianPerSecond = Math.PI;
+
+        final DrivePID pid = new DrivePID();
         return new SwerveDriveMap(frontLeft, frontRight, rearLeft, rearRight,
                 maxDriveSpeedMetersPerSecond,
-                maxRotationRadianPerSecond, pigeonGyro);
+                maxRotationRadianPerSecond, pigeonGyro, pid);
     }
 
     @Override

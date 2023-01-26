@@ -2,13 +2,16 @@ package frc.robot.maps.subsystems;
 
 import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.inputs.LoggableInputs;
+
 import com.chopshop166.chopshoplib.drive.MockSwerveModule;
 import com.chopshop166.chopshoplib.drive.SwerveModule;
 import com.chopshop166.chopshoplib.sensors.gyro.MockGyro;
 import com.chopshop166.chopshoplib.sensors.gyro.SmartGyro;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import frc.robot.util.DrivePID;
 
 /**
  * A hardware map suitable for a swerve drive.
@@ -17,7 +20,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
  */
 public record SwerveDriveMap(SwerveModule frontLeft, SwerveModule frontRight, SwerveModule rearLeft,
         SwerveModule rearRight, double maxDriveSpeedMetersPerSecond,
-        double maxRotationRadianPerSecond, SmartGyro gyro) {
+        double maxRotationRadianPerSecond, SmartGyro gyro, DrivePID pid) {
 
     /** A distance to use for default values. */
     private static final double DEFAULT_DISTANCE_FROM_CENTER = 0.381;
@@ -42,7 +45,7 @@ public record SwerveDriveMap(SwerveModule frontLeft, SwerveModule frontRight, Sw
                 // Max rotation (rad/s)
                 Math.PI,
                 // Gyro
-                new MockGyro());
+                new MockGyro(), new DrivePID());
     }
 
     public void updateInputs(Data io) {

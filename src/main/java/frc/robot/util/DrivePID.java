@@ -11,6 +11,10 @@ public class DrivePID {
     private PIDController yPid;
     private PIDController anglePid;
 
+    public DrivePID() {
+        this(0, 0, 0, 0, 0, 0);
+    }
+
     public DrivePID(double positionP, double positionI, double positionD, double angleP, double angleI, double angleD) {
         xPid = new PIDController(positionP, positionI, positionD);
         yPid = new PIDController(positionP, positionI, positionD);

@@ -49,7 +49,7 @@ public class Drive extends SmartSubsystemBase {
 
     private Vision vision;
     private Pose2d pose = new Pose2d();
-    private final DrivePID drivePID = new DrivePID(0, 0, 0, 0, 0, 0);
+    private final DrivePID drivePID;
 
     public Drive(SwerveDriveMap map) {
         this.map = map;
@@ -58,7 +58,7 @@ public class Drive extends SmartSubsystemBase {
                 map.rearLeft().getLocation(), map.rearRight().getLocation());
         maxDriveSpeedMetersPerSecond = map.maxDriveSpeedMetersPerSecond();
         maxRotationRadiansPerSecond = map.maxRotationRadianPerSecond();
-
+        drivePID = map.pid();
         vision = new Vision(
                 "photonvision", Field.getApriltagLayout(),
                 new Transform3d(
