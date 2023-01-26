@@ -23,15 +23,6 @@ public class Vision {
     Transform3d cameraToRobot;
     AprilTagFieldLayout aprilTags;
 
-    private SwerveModulePosition[] getModulePositions() {
-        return new SwerveModulePosition[] {
-                new SwerveModulePosition(0, driveMap.frontLeft().getAngle()),
-                new SwerveModulePosition(0, driveMap.frontRight().getAngle()),
-                new SwerveModulePosition(0, driveMap.rearLeft().getAngle()),
-                new SwerveModulePosition(0, driveMap.rearRight().getAngle()),
-        };
-    }
-
     public Vision(String cameraName, AprilTagFieldLayout aprilTags, Transform3d cameraToRobot,
             SwerveDriveMap driveMap) {
         camera = new PhotonCamera(NetworkTableInstance.getDefault(), cameraName);
@@ -65,5 +56,14 @@ public class Vision {
         }
 
         return odometry.update(driveMap.gyro().getRotation2d(), getModulePositions());
+    }
+
+    private SwerveModulePosition[] getModulePositions() {
+        return new SwerveModulePosition[] {
+                new SwerveModulePosition(0, driveMap.frontLeft().getAngle()),
+                new SwerveModulePosition(0, driveMap.frontRight().getAngle()),
+                new SwerveModulePosition(0, driveMap.rearLeft().getAngle()),
+                new SwerveModulePosition(0, driveMap.rearRight().getAngle()),
+        };
     }
 }
