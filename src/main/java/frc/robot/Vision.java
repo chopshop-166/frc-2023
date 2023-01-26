@@ -1,7 +1,6 @@
 package frc.robot;
 
 import org.photonvision.PhotonCamera;
-import org.photonvision.RobotPoseEstimator;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
@@ -16,7 +15,6 @@ import frc.robot.maps.subsystems.SwerveDriveMap;
 
 public class Vision {
 
-    RobotPoseEstimator estimator;
     SwerveDriveMap driveMap;
     SwerveDriveOdometry odometry;
     PhotonCamera camera;
@@ -41,16 +39,22 @@ public class Vision {
 
     }
 
+    // Estimated pose from a combination of vision and odometry
     public Pose2d update() {
         PhotonPipelineResult result = camera.getLatestResult();
+
+        // Sees an apriltag
         if (result.hasTargets()) {
             PhotonTrackedTarget target = result.getBestTarget();
             Transform3d cameraToTarget = target.getBestCameraToTarget();
             int tagId = target.getFiducialId();
+
+            // Reverse the pose to determine the position on the field
             Pose2d pose = aprilTags.getTagPose(tagId).get().plus(cameraToTarget.inverse())
                     .plus(cameraToRobot.inverse()).toPose2d();
 
             driveMap.gyro().setAngle(pose.getRotation().getDegrees());
+
             odometry.resetPosition(driveMap.gyro().getRotation2d(),
                     getModulePositions(), pose);
         }
@@ -58,6 +62,7 @@ public class Vision {
         return odometry.update(driveMap.gyro().getRotation2d(), getModulePositions());
     }
 
+    // Create blank swerve module positions needed to reset the odometry object
     private SwerveModulePosition[] getModulePositions() {
         return new SwerveModulePosition[] {
                 new SwerveModulePosition(0, driveMap.frontLeft().getAngle()),

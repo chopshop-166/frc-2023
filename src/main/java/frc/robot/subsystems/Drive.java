@@ -107,6 +107,7 @@ public class Drive extends SmartSubsystemBase {
         return run(() -> move(xSpeed.getAsDouble(), ySpeed.getAsDouble(), rotation.getAsDouble()));
     }
 
+    // Use DrivePID to drive to a target pose on the field
     public CommandBase driveTo(Pose2d targetPose) {
         return cmd().onExecute(() -> {
             Transform2d fb = drivePID.calculate(pose, targetPose);
@@ -114,12 +115,14 @@ public class Drive extends SmartSubsystemBase {
         }).runsUntil(() -> drivePID.isFinished(pose, targetPose, 0.01));
     }
 
+    // Drive to a pre-determined grid position
     public CommandBase driveTo(GridPosition gridPose) {
         return driveTo(gridPose.getPose());
     }
 
     private Pose2d closestPose = GridPosition.values()[0].getPose();
 
+    // Find the nearest grid position and line up with it
     public CommandBase driveToNearest() {
 
         return cmd().onInitialize(() -> {

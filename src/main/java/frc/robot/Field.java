@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.Filesystem;
 
 public class Field {
 
+    // Wrapper for loading an AprilTagFieldLayout from a JSON file
     public static AprilTagFieldLayout getApriltagLayout() {
         String absolutePath = Filesystem.getDeployDirectory().getAbsolutePath();
 

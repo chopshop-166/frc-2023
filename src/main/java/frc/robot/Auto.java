@@ -27,6 +27,7 @@ public class Auto {
             this.poses = poses;
         }
 
+        // Create a sequence command to drive to each pose
         public CommandBase getPath(Drive drive) {
             return sequence(
                     Arrays.stream(poses).map(drive::driveTo).toArray(CommandBase[]::new)).withName(this.name());
@@ -35,7 +36,7 @@ public class Auto {
 
     public CommandBase exampleAuto() {
         return sequence(Path.TEST.getPath(drive))
-                .withName("Empty Auto");
+                .withName("Test Auto");
     }
 
 }
