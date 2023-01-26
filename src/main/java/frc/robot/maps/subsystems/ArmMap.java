@@ -11,20 +11,20 @@ public class ArmMap {
     public ArmMap() {
     }
 
-    private SmartMotorController motor = new SmartMotorController();
+    private SmartMotorController extendMotor = new SmartMotorController();
     private final double SOFT_MAX_DISTANCE = 20;
     private final double SOFT_MIN_DISTANCE = 1;
 
     public ArmMap(SmartMotorController motor) {
-        this.motor = motor;
+        this.extendMotor = motor;
     }
 
     public void updateData(Data data) {
-        motor.set(data.setPoint);
-        data.distanceInches = motor.getEncoder().getDistance();
-        data.velocityInchesPerSec = motor.getEncoder().getRate();
-        data.currentAmps = motor.getCurrentAmps();
-        data.tempCelcius = motor.getTemperatureC();
+        extendMotor.set(data.setPoint);
+        data.distanceInches = extendMotor.getEncoder().getDistance();
+        data.velocityInchesPerSec = extendMotor.getEncoder().getRate();
+        data.currentAmps = extendMotor.getCurrentAmps();
+        data.tempCelcius = extendMotor.getTemperatureC();
     }
 
     public static class Data implements LoggableInputs {

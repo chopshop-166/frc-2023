@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
-
 import java.time.Instant;
 import java.util.function.DoubleSupplier;
 
@@ -20,16 +18,14 @@ import frc.robot.maps.subsystems.ArmMap.Data;
 
 public class Arm extends SmartSubsystemBase {
 
-    Data data;
-    ArmMap map;
-    private SmartMotorController extendMotor = new SmartMotorController();
-    private final double SOFT_MAX_DISTANCE = 400.0;
-    private final double SOFT_MIN_DISTANCE = 20.0;
-    PIDController pid = new PIDController(0.03, 0, 0);
+    public double SOFT_MAX_DISTANCE = 400.0;
+    public double SOFT_MIN_DISTANCE = 20.0;
+    public Data data;
+    public ArmMap map;
+    private final PIDController pid = new PIDController(0.03, 0, 0);
 
     public Arm(ArmMap map) {
         this.map = map;
-        this.data = new Data();
     }
 
     enum Level {
@@ -61,7 +57,7 @@ public class Arm extends SmartSubsystemBase {
 
     public CommandBase open() {
         return runOnce(() -> {
-            data.setPoint = 2;
+            data.setPoint = 0.5;
         });
     }
 
@@ -80,15 +76,6 @@ public class Arm extends SmartSubsystemBase {
         }).runsUntil(() -> Math.abs(distance - data.distanceInches) < 0.5).onEnd(() -> {
             data.setPoint = 0;
         });
-    }
-
-    private double softLimit(double speed) {
-        if (data.distanceInches > SOFT_MAX_DISTANCE && speed > 0) {
-            data.setPoint = (speed * 0.1);
-        } else if (data.distanceInches < SOFT_MIN_DISTANCE && speed < 0) {
-            data.setPoint = (speed * 0.1);
-        }
-        return speed;
     }
 
     public CommandBase movetoLow() {
@@ -135,7 +122,7 @@ public class Arm extends SmartSubsystemBase {
             data.setPoint = (speed);
         }).runsUntil(() -> {
             if (distance == data.distanceInches) {
-                extendMotor.stopMotor();
+                data.setPoint = 0;
                 return true;
             } else {
                 return false;
@@ -153,7 +140,16 @@ public class Arm extends SmartSubsystemBase {
                 data.setPoint = (-speed);
             }
         }).runsUntil(() -> Math.abs(distance - data.distanceInches) < 0.5).onEnd(() -> {
-            extendMotor.stopMotor();
+            data.setPoint = 0;
         });
+    }
+
+    private double softLimit(double speed) {
+        if (data.distanceInches > SOFT_MAX_DISTANCE && speed > 0) {
+            data.setPoint = (speed * 0.1);
+        } else if (data.distanceInches < SOFT_MIN_DISTANCE && speed < 0) {
+            data.setPoint = (speed * 0.1);
+        }
+        return speed;
     }
 }

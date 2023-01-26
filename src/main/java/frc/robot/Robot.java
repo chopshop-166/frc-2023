@@ -9,6 +9,7 @@ import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.maps.RobotMap;
 import frc.robot.maps.Valkyrie;
+import frc.robot.maps.subsystems.ArmMap;
 import frc.robot.subsystems.Drive;
 // $Imports$
 import frc.robot.subsystems.Arm;
@@ -23,6 +24,7 @@ public class Robot extends CommandRobot {
     private ButtonXboxController driveController = new ButtonXboxController(0);
     // $Subsystems$
     Arm arm = new Arm(map.getArmMap());
+
     Intake intake = new Intake(map.getIntakeMap());
 
     private Drive drive = new Drive(map.getDriveMap());
