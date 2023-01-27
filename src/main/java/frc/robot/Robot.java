@@ -2,10 +2,6 @@ package frc.robot;
 
 import org.littletonrobotics.junction.Logger;
 
-import java.util.PrimitiveIterator.OfInt;
-
-import javax.annotation.meta.When;
-
 import com.chopshop166.chopshoplib.Autonomous;
 import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
@@ -20,11 +16,11 @@ public class Robot extends CommandRobot {
 
     private RobotMap map = getMapForName("OffAxis", RobotMap.class, "frc.robot.maps");
     private ButtonXboxController driveController = new ButtonXboxController(0);
-    private Led led = new Led(map.getLedMap());
 
     private ButtonXboxController controller = new ButtonXboxController(0);
     // $Subsystems$
     private Drive drive = new Drive(map.getDriveMap());
+    private Led led = new Led(map.getLedMap());
 
     private Auto auto = new Auto();
 
@@ -53,8 +49,8 @@ public class Robot extends CommandRobot {
     @Override
     public void configureButtonBindings() {
         controller.a().onTrue(led.setYellow());
-        controller.b().onTrue(led.setPurple());
-        controller.x().onTrue(led.resetColor());
+        controller.b().onTrue(led.lightUpPurple());
+        controller.y().onTrue(led.colorAlliance());
     }
 
     @Override

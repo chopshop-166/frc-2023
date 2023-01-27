@@ -13,11 +13,7 @@ import frc.robot.maps.subsystems.LedMap;
 
 public class Led extends SmartSubsystemBase {
 
-    private LedMap map;
-    private Led defaultColor;
-    private int R;
-    private int G;
-    private int B;
+    LedMap map;
     AddressableLED led;
     // Reuse buffer
     // Default to a length of 60, start empty output
@@ -35,22 +31,22 @@ public class Led extends SmartSubsystemBase {
         led.setLength(ledBuffer.getLength());
 
         // Set the data
-        led.setData(ledBuffer);
-        led.start();
         for (var i = 0; i < ledBuffer.getLength(); i++) {
             // Sets the specified LED to the RGB values for red
             ledBuffer.setRGB(i, 252, 250, 250);
         }
+        led.setData(ledBuffer);
+        led.start();
 
     }
 
-    public void setColor(int R, int G, int B) {
-        led.setData(ledBuffer);
-        led.start();
+    public void setColor(int r, int g, int b) {
         for (var i = 0; i < ledBuffer.getLength(); i++) {
             // Sets the specified LED to the RGB values for red
-            ledBuffer.setRGB(i, R, G, B);
+            ledBuffer.setRGB(i, r, g, b);
         }
+        led.setData(ledBuffer);
+        led.start();
     }
 
     public CommandBase colorAlliance() {
@@ -82,7 +78,7 @@ public class Led extends SmartSubsystemBase {
         });
     }
 
-    public CommandBase setPurple() {
+    public CommandBase lightUpPurple() {
         return runOnce(() -> {
             setColor(133, 7, 168);
             Logger.getInstance().recordOutput("IndicateLEDs", "Purple");
