@@ -29,6 +29,7 @@ public class Led extends SmartSubsystemBase {
         // Must be a PWM header, not MXP or DIO
 
         led.setLength(ledBuffer.getLength());
+        led.start();
 
     }
 
@@ -38,7 +39,6 @@ public class Led extends SmartSubsystemBase {
             ledBuffer.setRGB(i, r, g, b);
         }
         led.setData(ledBuffer);
-        led.start();
     }
 
     public CommandBase colorAlliance() {
