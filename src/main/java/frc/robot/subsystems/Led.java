@@ -30,14 +30,6 @@ public class Led extends SmartSubsystemBase {
 
         led.setLength(ledBuffer.getLength());
 
-        // Set the data
-        for (var i = 0; i < ledBuffer.getLength(); i++) {
-            // Sets the specified LED to the RGB values for red
-            ledBuffer.setRGB(i, 252, 250, 250);
-        }
-        led.setData(ledBuffer);
-        led.start();
-
     }
 
     public void setColor(int r, int g, int b) {
