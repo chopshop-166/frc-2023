@@ -24,6 +24,7 @@ public class RobotMap {
     public ArmMap getArmMap() {
         return new ArmMap();
     }
+
     public IntakeData.Map getIntakeMap() {
         return new IntakeData.Map();
     }

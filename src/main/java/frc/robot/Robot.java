@@ -23,7 +23,7 @@ public class Robot extends CommandRobot {
     // private RobotMap map = new RobotMap();
     private ButtonXboxController driveController = new ButtonXboxController(0);
     // $Subsystems$
-    Arm arm = new Arm(map.getArmMap());
+    private Arm arm = new Arm(map.getArmMap());
 
     Intake intake = new Intake(map.getIntakeMap());
 

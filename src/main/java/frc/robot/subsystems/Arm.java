@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import java.time.Instant;
 import java.util.function.DoubleSupplier;
 
 import org.littletonrobotics.junction.Logger;
@@ -18,14 +17,16 @@ import frc.robot.maps.subsystems.ArmMap.Data;
 
 public class Arm extends SmartSubsystemBase {
 
-    public double SOFT_MAX_DISTANCE = 400.0;
-    public double SOFT_MIN_DISTANCE = 20.0;
+    public double SOFT_MAX_DISTANCE;
+    public double SOFT_MIN_DISTANCE;
     public Data data;
     public ArmMap map;
     private final PIDController pid = new PIDController(0.03, 0, 0);
 
     public Arm(ArmMap map) {
         this.map = map;
+        this.SOFT_MAX_DISTANCE = map.SOFT_MAX_DISTANCE;
+        this.SOFT_MIN_DISTANCE = map.SOFT_MIN_DISTANCE;
     }
 
     enum Level {
@@ -78,16 +79,16 @@ public class Arm extends SmartSubsystemBase {
         });
     }
 
-    public CommandBase movetoLow() {
-        return moveToDistance(Level.LOW.get(), SPEED);
+    public CommandBase moveToLow(Level LOW) {
+        return moveToDistance(Level.get(), SPEED);
     }
 
-    public CommandBase movetoMedium() {
-        return moveToDistance(Level.MEDIUM.get(), SPEED);
+    public CommandBase moveToMedium(Level MEDIUM) {
+        return moveToDistance(Level.get(), SPEED);
     }
 
-    public CommandBase movetoHigh() {
-        return moveToDistance(Level.HIGH.get(), SPEED);
+    public CommandBase movetoHigh(Level HIGH) {
+        return moveToDistance(Level.get(), SPEED);
     }
 
     @Override
@@ -97,7 +98,7 @@ public class Arm extends SmartSubsystemBase {
 
     @Override
     public void safeState() {
-
+        data.setPoint = 0;
     }
 
     @Override
@@ -106,6 +107,15 @@ public class Arm extends SmartSubsystemBase {
         // Use this for any background processing
         this.map.updateData(data);
         Logger.getInstance().processInputs(getName(), data);
+    }
+
+    private double softLimit(double speed) {
+        if (data.distanceInches > SOFT_MAX_DISTANCE && speed > 0) {
+            data.setPoint = (speed * 0.1);
+        } else if (data.distanceInches < SOFT_MIN_DISTANCE && speed < 0) {
+            data.setPoint = (speed * 0.1);
+        }
+        return speed;
     }
 
     //
@@ -117,6 +127,7 @@ public class Arm extends SmartSubsystemBase {
         });
     }
 
+    // Do I need this? Matt, Ben, or Joe, help
     public CommandBase retractDistance(double distance, double speed) {
         return cmd("Retract Distance").onInitialize(() -> {
             data.setPoint = (speed);
@@ -144,12 +155,4 @@ public class Arm extends SmartSubsystemBase {
         });
     }
 
-    private double softLimit(double speed) {
-        if (data.distanceInches > SOFT_MAX_DISTANCE && speed > 0) {
-            data.setPoint = (speed * 0.1);
-        } else if (data.distanceInches < SOFT_MIN_DISTANCE && speed < 0) {
-            data.setPoint = (speed * 0.1);
-        }
-        return speed;
-    }
 }

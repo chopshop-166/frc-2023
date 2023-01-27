@@ -12,8 +12,8 @@ public class ArmMap {
     }
 
     private SmartMotorController extendMotor = new SmartMotorController();
-    private final double SOFT_MAX_DISTANCE = 20;
-    private final double SOFT_MIN_DISTANCE = 1;
+    public final double SOFT_MAX_DISTANCE = 20;
+    public final double SOFT_MIN_DISTANCE = 1;
 
     public ArmMap(SmartMotorController motor) {
         this.extendMotor = motor;
@@ -35,8 +35,8 @@ public class ArmMap {
         public double[] tempCelcius;
 
         @Override
+        @Override
         public void toLog(LogTable table) {
-            // TODO Auto-generated method stub
             table.put("MotorSetpoint", setPoint);
             table.put("MotorDistanceInches", distanceInches);
             table.put("MotorVelocityInchesPerSec", velocityInchesPerSec);
@@ -46,7 +46,6 @@ public class ArmMap {
 
         @Override
         public void fromLog(LogTable table) {
-            // TODO Auto-generated method stub
             setPoint = table.getDouble("MotorSetpoint", setPoint);
             distanceInches = table.getDouble("MotorDistanceInches", distanceInches);
             velocityInchesPerSec = table.getDouble("MotorVelocityInchesPerSec", velocityInchesPerSec);
