@@ -14,7 +14,10 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -82,10 +85,15 @@ public class OffAxis extends RobotMap {
 
         final double maxRotationRadianPerSecond = Math.PI;
 
-        final DrivePID pid = new DrivePID();
+        final DrivePID pid = new DrivePID(0.3, 0, 0, 0, 0, 0);
+
+        final Transform3d cameraPosition = new Transform3d(
+                new Translation3d(0, 0, 16),
+                new Rotation3d());
+
         return new SwerveDriveMap(frontLeft, frontRight, rearLeft, rearRight,
                 maxDriveSpeedMetersPerSecond,
-                maxRotationRadianPerSecond, pigeonGyro, pid);
+                maxRotationRadianPerSecond, pigeonGyro, pid, cameraPosition, "eyes");
     }
 
     @Override

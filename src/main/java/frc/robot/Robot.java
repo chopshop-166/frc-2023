@@ -6,6 +6,8 @@ import com.chopshop166.chopshoplib.Autonomous;
 import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.maps.RobotMap;
 // $Imports$
@@ -26,6 +28,11 @@ public class Robot extends CommandRobot {
 
     @Autonomous(defaultAuto = true)
     public CommandBase exampleAuto = auto.exampleAuto();
+
+    // @Autonomous(defaultAuto = true)
+    // public CommandBase exampleAuto = drive.driveTo(new Pose2d(1.29805263547889,
+    // 2.709488526850264, new Rotation2d()))
+    // .withName("Test");
 
     @Override
     public void teleopInit() {

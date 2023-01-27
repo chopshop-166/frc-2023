@@ -9,14 +9,12 @@ import com.chopshop166.chopshoplib.motors.Modifier;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Field;
 import frc.robot.Vision;
@@ -60,16 +58,8 @@ public class Drive extends SmartSubsystemBase {
         maxRotationRadiansPerSecond = map.maxRotationRadianPerSecond();
         drivePID = map.pid();
         vision = new Vision(
-                "photonvision", Field.getApriltagLayout(),
-                new Transform3d(
-                        new Translation3d(
-                                Units.inchesToMeters(0),
-                                Units.inchesToMeters(0),
-                                Units.inchesToMeters(0)),
-                        new Rotation3d(
-                                Units.degreesToRadians(0),
-                                Units.degreesToRadians(0),
-                                Units.degreesToRadians(0))),
+                map.cameraName(), Field.getApriltagLayout(),
+                map.cameraPosition(),
                 this.map);
     }
 
@@ -111,6 +101,8 @@ public class Drive extends SmartSubsystemBase {
     public CommandBase driveTo(Pose2d targetPose) {
         return cmd().onExecute(() -> {
             Transform2d fb = drivePID.calculate(pose, targetPose);
+            System.out.println(
+                    fb.getX() + ", " + fb.getY());
             move(fb.getX(), fb.getY(), fb.getRotation().getDegrees());
         }).runsUntil(() -> drivePID.isFinished(pose, targetPose, 0.01));
     }
@@ -158,5 +150,9 @@ public class Drive extends SmartSubsystemBase {
         Logger.getInstance().processInputs(getName(), io);
 
         pose = vision.update();
+
+        SmartDashboard.putNumber("robotX", pose.getX());
+        SmartDashboard.putNumber("robotY", pose.getY());
+        SmartDashboard.putNumber("robotAngle", pose.getRotation().getRadians());
     }
 }

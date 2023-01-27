@@ -1,16 +1,20 @@
 package frc.robot;
 
+import java.util.Optional;
+
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.maps.subsystems.SwerveDriveMap;
 
 public class Vision {
@@ -48,15 +52,18 @@ public class Vision {
             PhotonTrackedTarget target = result.getBestTarget();
             Transform3d cameraToTarget = target.getBestCameraToTarget();
             int tagId = target.getFiducialId();
+            SmartDashboard.putNumber("Tag ID", tagId);
+            Optional<Pose3d> opt = aprilTags.getTagPose(tagId);
+            if (opt.isPresent()) {
+                // Reverse the pose to determine the position on the field
+                Pose2d pose = aprilTags.getTagPose(tagId).get().plus(cameraToTarget.inverse())
+                        .plus(cameraToRobot.inverse()).toPose2d();
 
-            // Reverse the pose to determine the position on the field
-            Pose2d pose = aprilTags.getTagPose(tagId).get().plus(cameraToTarget.inverse())
-                    .plus(cameraToRobot.inverse()).toPose2d();
+                driveMap.gyro().setAngle(pose.getRotation().getDegrees());
 
-            driveMap.gyro().setAngle(pose.getRotation().getDegrees());
-
-            odometry.resetPosition(driveMap.gyro().getRotation2d(),
-                    getModulePositions(), pose);
+                odometry.resetPosition(driveMap.gyro().getRotation2d(),
+                        getModulePositions(), pose);
+            }
         }
 
         return odometry.update(driveMap.gyro().getRotation2d(), getModulePositions());

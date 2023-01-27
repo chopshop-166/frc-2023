@@ -9,6 +9,7 @@ import com.chopshop166.chopshoplib.sensors.gyro.MockGyro;
 import com.chopshop166.chopshoplib.sensors.gyro.SmartGyro;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.util.DrivePID;
@@ -20,7 +21,8 @@ import frc.robot.util.DrivePID;
  */
 public record SwerveDriveMap(SwerveModule frontLeft, SwerveModule frontRight, SwerveModule rearLeft,
         SwerveModule rearRight, double maxDriveSpeedMetersPerSecond,
-        double maxRotationRadianPerSecond, SmartGyro gyro, DrivePID pid) {
+        double maxRotationRadianPerSecond, SmartGyro gyro, DrivePID pid, Transform3d cameraPosition,
+        String cameraName) {
 
     /** A distance to use for default values. */
     private static final double DEFAULT_DISTANCE_FROM_CENTER = 0.381;
@@ -45,7 +47,7 @@ public record SwerveDriveMap(SwerveModule frontLeft, SwerveModule frontRight, Sw
                 // Max rotation (rad/s)
                 Math.PI,
                 // Gyro
-                new MockGyro(), new DrivePID());
+                new MockGyro(), new DrivePID(), new Transform3d(), "");
     }
 
     public void updateInputs(Data io) {

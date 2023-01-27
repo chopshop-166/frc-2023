@@ -5,6 +5,7 @@ import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 import java.util.Arrays;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drive;
 
@@ -19,7 +20,7 @@ public class Auto {
 
     public enum Path {
 
-        TEST(new Pose2d());
+        TEST(new Pose2d(1.29805263547889, 2.709488526850264, new Rotation2d()));
 
         Pose2d poses[];
 
