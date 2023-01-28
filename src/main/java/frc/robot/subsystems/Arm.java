@@ -23,8 +23,6 @@ public class Arm extends SmartSubsystemBase {
 
     public Arm(ArmMap map) {
         this.map = map;
-        this.SOFT_MAX_DISTANCE = map.SOFT_MAX_DISTANCE;
-        this.SOFT_MIN_DISTANCE = map.SOFT_MIN_DISTANCE;
     }
 
     enum Level {
@@ -61,15 +59,15 @@ public class Arm extends SmartSubsystemBase {
     }
 
     public CommandBase moveToDistanceBangBang(double distance, double speed) {
-         return cmd("Move Distance").onInitialize(() -> {
-             if (distance >= data.distanceInches) {
-                 // extend
-                 data.setPoint = softLimit(speed);
-             } else {
-                 // retract
-                 data.setPoint = softLimit(-speed);
+        return cmd("Move Distance").onInitialize(() -> {
+            if (distance >= data.distanceInches) {
+                // extend
+                data.setPoint = softLimit(speed);
+            } else {
+                // retract
+                data.setPoint = softLimit(-speed);
             }
-       }).runsUntil(() -> Math.abs(distance - data.distanceInches) < 0.5).onEnd(() -> {
+        }).runsUntil(() -> Math.abs(distance - data.distanceInches) < 0.5).onEnd(() -> {
             data.setPoint = 0;
         });
     }
@@ -85,16 +83,8 @@ public class Arm extends SmartSubsystemBase {
         });
     }
 
-    public CommandBase moveToLow(Level LOW) {
-        return moveToDistance(Level.get(), SPEED);
-    }
-
-    public CommandBase moveToMedium(Level MEDIUM) {
-        return moveToDistance(Level.get(), SPEED);
-    }
-
-    public CommandBase movetoHigh(Level HIGH) {
-        return moveToDistance(Level.get(), SPEED);
+    public CommandBase moveTo(Level level) {
+        return moveToDistanceBangBang(level.get(), SPEED);
     }
 
     @Override
@@ -116,9 +106,8 @@ public class Arm extends SmartSubsystemBase {
     }
 
     private double softLimit(double speed) {
-        if (data.distanceInches > map.SOFT_MAX_DISTANCE && speed > 0) {
-            return speed * 0.1;
-        } else if (data.distanceInches < map.SOFT_MIN_DISTANCE && speed < 0) {
+        if ((data.distanceInches > map.softMaxDistance && speed > 0) || (data.distanceInches < map.softMinDistance
+                && speed < 0)) {
             return speed * 0.1;
         }
         return speed;

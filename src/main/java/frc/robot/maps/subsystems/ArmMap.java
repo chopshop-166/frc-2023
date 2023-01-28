@@ -12,11 +12,13 @@ public class ArmMap {
     }
 
     private SmartMotorController extendMotor = new SmartMotorController();
-    public final double SOFT_MAX_DISTANCE = 20;
-    public final double SOFT_MIN_DISTANCE = 1;
+    public double softMaxDistance = 20;
+    public double softMinDistance = 1;
 
-    public ArmMap(SmartMotorController motor) {
+    public ArmMap(SmartMotorController motor, double softMaxDistance, double softMinDistance) {
         this.extendMotor = motor;
+        this.softMaxDistance = softMaxDistance;
+        this.softMinDistance = softMaxDistance;
     }
 
     public void updateData(Data data) {
@@ -34,7 +36,6 @@ public class ArmMap {
         public double[] currentAmps;
         public double[] tempCelcius;
 
-        @Override
         @Override
         public void toLog(LogTable table) {
             table.put("MotorSetpoint", setPoint);
