@@ -1,9 +1,7 @@
 package frc.robot.subsystems;
 
+import com.chopshop166.chopshoplib.ColorMath;
 import com.chopshop166.chopshoplib.logging.LoggedSubsystem;
-import com.chopshop166.chopshoplib.pneumatics.IDSolenoid;
-import com.chopshop166.chopshoplib.pneumatics.MockDSolenoid;
-import com.chopshop166.chopshoplib.sensors.IColorSensor;
 
 import frc.robot.maps.subsystems.IntakeData;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -12,10 +10,9 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
 
-    private IDSolenoid solenoid = new MockDSolenoid();
+    private Color sensorColor = new Color(0, 0, 0);
     private final double GRAB_SPEED = 1;
     private final double RELEASE_SPEED = -1;
-    private IColorSensor colorSensor;
 
     public Intake(IntakeData.Map map) {
         super(new IntakeData(), map);
@@ -23,45 +20,44 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
 
     public CommandBase ConeGrab() {
         return runOnce(() -> {
-            solenoid.set(Value.kForward);
+            getData().solenoidSetPoint = Value.kForward;
         });
     }
 
     public CommandBase ConeRelease() {
         return runOnce(() -> {
-            solenoid.set(Value.kReverse);
+            getData().solenoidSetPoint = Value.kReverse;
         });
     }
 
     public CommandBase CubeGrab() {
         return runOnce(() -> {
-            getData().setPoint = GRAB_SPEED;
+            getData().motorSetPoint = GRAB_SPEED;
         });
     }
 
     public CommandBase CubeRelease() {
         return runOnce(() -> {
-            getData().setPoint = RELEASE_SPEED;
+            getData().motorSetPoint = RELEASE_SPEED;
         });
     }
 
     public CommandBase sensorControl() {
         return run(() -> {
-            Color DetectedColor = colorSensor.getColor();
 
-            if (DetectedColor == Color.kBlue) {
+            if (ColorMath.equals(sensorColor, Color.kBlue, .2)) {
                 cmd().onInitialize(() -> {
-                    getData().setPoint = GRAB_SPEED;
-                }).runsUntil(() -> DetectedColor != Color.kBlue).onEnd(() -> {
-                    getData().setPoint = RELEASE_SPEED;
+                    getData().motorSetPoint = GRAB_SPEED;
+                }).runsUntil(() -> !ColorMath.equals(sensorColor, Color.kBlue, .2)).onEnd(() -> {
+                    getData().motorSetPoint = RELEASE_SPEED;
                 });
             }
 
-            if (DetectedColor == Color.kYellow) {
+            if (ColorMath.equals(sensorColor, Color.kYellow, .2)) {
                 cmd().onInitialize(() -> {
-                    solenoid.set(Value.kForward);
-                }).runsUntil(() -> DetectedColor != Color.kYellow).onEnd(() -> {
-                    solenoid.set(Value.kReverse);
+                    getData().solenoidSetPoint = Value.kForward;
+                }).runsUntil(() -> !ColorMath.equals(sensorColor, Color.kYellow, .2)).onEnd(() -> {
+                    getData().solenoidSetPoint = Value.kReverse;
                 });
             }
 
@@ -76,7 +72,13 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
 
     @Override
     public void safeState() {
-        getData().setPoint = 0;
-        solenoid.set(Value.kOff);
+        getData().motorSetPoint = 0;
+        getData().solenoidSetPoint = Value.kOff;
+    }
+
+    @Override
+    public void periodic() {
+        super.periodic();
+        sensorColor = new Color(getData().detectedColor[0], getData().detectedColor[1], getData().detectedColor[2]);
     }
 }
