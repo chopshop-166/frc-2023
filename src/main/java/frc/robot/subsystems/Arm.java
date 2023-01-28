@@ -17,8 +17,8 @@ import frc.robot.maps.subsystems.ArmMap.Data;
 
 public class Arm extends SmartSubsystemBase {
 
-    public double SOFT_MAX_DISTANCE;
-    public double SOFT_MIN_DISTANCE;
+    private final double SOFT_MAX_DISTANCE;
+    private final double SOFT_MIN_DISTANCE;
     public Data data;
     public ArmMap map;
     private final PIDController pid = new PIDController(0.03, 0, 0);
@@ -68,7 +68,21 @@ public class Arm extends SmartSubsystemBase {
         });
     }
 
-    public CommandBase moveToDistance(double distance, double speed) {
+    public CommandBase moveToDistanceBangBang(double distance, double speed) {
+         return cmd("Move Distance").onInitialize(() -> {
+             if (distance >= data.distanceInches) {
+                 // extend
+                 data.setPoint = (speed);
+             } else {
+                 // retract
+                 data.setPoint = (-speed);
+            }
+       }).runsUntil(() -> Math.abs(distance - data.distanceInches) < 0.5).onEnd(() -> {
+            data.setPoint = 0;
+        });
+    }
+
+    public CommandBase moveToDistancePID(double distance, double speed) {
         return cmd("Move Distance").onInitialize(() -> {
             if (distance >= data.distanceInches) {
                 // extend
@@ -116,43 +130,6 @@ public class Arm extends SmartSubsystemBase {
             data.setPoint = (speed * 0.1);
         }
         return speed;
-    }
-
-    //
-    //
-    // Will I need this? I don't think so but I'm not deleting it
-    public CommandBase retract(DoubleSupplier motorSpeed) {
-        return run(() -> {
-            data.setPoint = (motorSpeed.getAsDouble());
-        });
-    }
-
-    // Do I need this? Matt, Ben, or Joe, help
-    public CommandBase retractDistance(double distance, double speed) {
-        return cmd("Retract Distance").onInitialize(() -> {
-            data.setPoint = (speed);
-        }).runsUntil(() -> {
-            if (distance == data.distanceInches) {
-                data.setPoint = 0;
-                return true;
-            } else {
-                return false;
-            }
-        });
-    }
-
-    public CommandBase moveToDistanceTwo(double distance, double speed) {
-        return cmd("Move Distance").onInitialize(() -> {
-            if (distance >= data.distanceInches) {
-                // extend
-                data.setPoint = (speed);
-            } else {
-                // retract
-                data.setPoint = (-speed);
-            }
-        }).runsUntil(() -> Math.abs(distance - data.distanceInches) < 0.5).onEnd(() -> {
-            data.setPoint = 0;
-        });
     }
 
 }
