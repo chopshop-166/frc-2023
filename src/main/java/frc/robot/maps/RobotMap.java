@@ -16,13 +16,12 @@ import frc.robot.maps.subsystems.LedMap;
 @RobotMapFor("Default")
 public class RobotMap {
     // $Maps$
-    private IntakeData.Map intakeMap = new IntakeData.Map();
 
     SwerveDriveMap drive = new SwerveDriveMap();
 
     // $Getters$
     public IntakeData.Map getIntakeMap() {
-        return intakeMap;
+        return new IntakeData.Map();
     }
 
     public SwerveDriveMap getDriveMap() {

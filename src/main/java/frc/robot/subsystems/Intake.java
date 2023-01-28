@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
 
-    private Color sensorColor = new Color(0, 0, 0);
     private final double GRAB_SPEED = 1;
     private final double RELEASE_SPEED = -1;
 
@@ -45,19 +44,23 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
     public CommandBase sensorControl() {
         return run(() -> {
 
-            if (ColorMath.equals(sensorColor, Color.kBlue, .2)) {
+            if (ColorMath.equals(getData().sensorColor, Color.kBlue, .2)
+                    && getData().gamePieceDistance <= getData().maxGamePieceDistance
+                    && getData().gamePieceDistance >= getData().minGamePieceDistance) {
                 cmd().onInitialize(() -> {
                     getData().motorSetPoint = GRAB_SPEED;
-                }).runsUntil(() -> !ColorMath.equals(sensorColor, Color.kBlue, .2)).onEnd(() -> {
-                    getData().motorSetPoint = RELEASE_SPEED;
+                }).runsUntil(() -> getData().gamePieceDistance <= getData().minGamePieceDistance).onEnd(() -> {
+                    safeState();
                 });
             }
 
-            if (ColorMath.equals(sensorColor, Color.kYellow, .2)) {
+            if (ColorMath.equals(getData().sensorColor, Color.kYellow, .2)
+                    && getData().gamePieceDistance <= getData().maxGamePieceDistance
+                    && getData().gamePieceDistance >= getData().minGamePieceDistance) {
                 cmd().onInitialize(() -> {
                     getData().solenoidSetPoint = Value.kForward;
-                }).runsUntil(() -> !ColorMath.equals(sensorColor, Color.kYellow, .2)).onEnd(() -> {
-                    getData().solenoidSetPoint = Value.kReverse;
+                }).runsUntil(() -> getData().gamePieceDistance <= getData().minGamePieceDistance).onEnd(() -> {
+                    safeState();
                 });
             }
 
@@ -74,11 +77,5 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
     public void safeState() {
         getData().motorSetPoint = 0;
         getData().solenoidSetPoint = Value.kOff;
-    }
-
-    @Override
-    public void periodic() {
-        super.periodic();
-        sensorColor = new Color(getData().detectedColor[0], getData().detectedColor[1], getData().detectedColor[2]);
     }
 }

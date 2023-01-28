@@ -34,14 +34,6 @@ public class IntakeData implements LoggableInputs {
             this.motor = motor;
         }
 
-        public Map(IDSolenoid solenoid) {
-            this.solenoid = solenoid;
-        }
-
-        public Map(IColorSensor colorSensor) {
-            this.colorSensor = colorSensor;
-        }
-
         @Override
         public void updateData(IntakeData data) {
             motor.set(data.motorSetPoint);
