@@ -40,17 +40,12 @@ public class DrivePID {
      * @return The transformation needed to move in the direction of the target pose
      */
     public Transform2d calculate(Pose2d currentPose, Pose2d targetPose) {
-        Pose2d error = new Pose2d(
-                targetPose.getX() - currentPose.getX(),
-                targetPose.getY() - currentPose.getY(),
-                Rotation2d.fromDegrees(targetPose.getRotation().getDegrees() - currentPose.getRotation().getDegrees())
-
-        );
         return new Transform2d(
                 new Translation2d(
-                        xPid.calculate(error.getX()),
-                        yPid.calculate(error.getY())),
-                Rotation2d.fromDegrees(anglePid.calculate(error.getRotation().getDegrees())));
+                        xPid.calculate(currentPose.getX(), targetPose.getX()),
+                        yPid.calculate(currentPose.getY(), targetPose.getY())),
+                Rotation2d.fromDegrees(anglePid.calculate(currentPose.getRotation().getDegrees(),
+                        targetPose.getRotation().getDegrees())));
     }
 
     /**
