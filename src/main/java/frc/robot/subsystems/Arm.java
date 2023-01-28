@@ -17,8 +17,6 @@ import frc.robot.maps.subsystems.ArmMap.Data;
 
 public class Arm extends SmartSubsystemBase {
 
-    private final double SOFT_MAX_DISTANCE;
-    private final double SOFT_MIN_DISTANCE;
     public Data data;
     public ArmMap map;
     private final PIDController pid = new PIDController(0.03, 0, 0);
@@ -56,13 +54,7 @@ public class Arm extends SmartSubsystemBase {
 
     public final double SPEED = 0.3;
 
-    public CommandBase open() {
-        return runOnce(() -> {
-            data.setPoint = 0.5;
-        });
-    }
-
-    public CommandBase extend(DoubleSupplier motorSpeed) {
+    public CommandBase manual(DoubleSupplier motorSpeed) {
         return run(() -> {
             data.setPoint = softLimit(motorSpeed.getAsDouble());
         });
@@ -72,10 +64,10 @@ public class Arm extends SmartSubsystemBase {
          return cmd("Move Distance").onInitialize(() -> {
              if (distance >= data.distanceInches) {
                  // extend
-                 data.setPoint = (speed);
+                 data.setPoint = softLimit(speed);
              } else {
                  // retract
-                 data.setPoint = (-speed);
+                 data.setPoint = softLimit(-speed);
             }
        }).runsUntil(() -> Math.abs(distance - data.distanceInches) < 0.5).onEnd(() -> {
             data.setPoint = 0;
@@ -86,7 +78,7 @@ public class Arm extends SmartSubsystemBase {
         return cmd("Move Distance").onInitialize(() -> {
             if (distance >= data.distanceInches) {
                 // extend
-                data.setPoint = softLimit(pid.calculate(distance - data.distanceInches));
+                data.setPoint = softLimit(pid.calculate(data.distanceInches, distance));
             }
         }).runsUntil(() -> Math.abs(distance - data.distanceInches) < 0.5).onEnd(() -> {
             data.setPoint = 0;
@@ -124,10 +116,10 @@ public class Arm extends SmartSubsystemBase {
     }
 
     private double softLimit(double speed) {
-        if (data.distanceInches > SOFT_MAX_DISTANCE && speed > 0) {
-            data.setPoint = (speed * 0.1);
-        } else if (data.distanceInches < SOFT_MIN_DISTANCE && speed < 0) {
-            data.setPoint = (speed * 0.1);
+        if (data.distanceInches > map.SOFT_MAX_DISTANCE && speed > 0) {
+            return speed * 0.1;
+        } else if (data.distanceInches < map.SOFT_MIN_DISTANCE && speed < 0) {
+            return speed * 0.1;
         }
         return speed;
     }

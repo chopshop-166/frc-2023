@@ -22,6 +22,8 @@ public class Robot extends CommandRobot {
             "frc.robot.maps");
     // private RobotMap map = new RobotMap();
     private ButtonXboxController driveController = new ButtonXboxController(0);
+    private ButtonXboxController copilotController = new ButtonXboxController(1);
+
     // $Subsystems$
     private Arm arm = new Arm(map.getArmMap());
 
@@ -70,5 +72,7 @@ public class Robot extends CommandRobot {
                 drive.drive(driveController::getLeftX, driveController::getLeftY, driveController::getRightX));
 
         led.setDefaultCommand(led.colorAlliance());
-    }
+        arm.setDefaultCommand(
+            arm.manual(copilotController::getLeftX));
+            }
 }
