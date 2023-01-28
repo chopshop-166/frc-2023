@@ -17,7 +17,7 @@ import frc.robot.maps.subsystems.ArmMap.Data;
 
 public class Arm extends SmartSubsystemBase {
 
-    public Data data;
+    public Data data = new Data();
     public ArmMap map;
     private final PIDController pid = new PIDController(0.03, 0, 0);
 

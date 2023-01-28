@@ -18,7 +18,7 @@ public class ArmMap {
     public ArmMap(SmartMotorController motor, double softMaxDistance, double softMinDistance) {
         this.extendMotor = motor;
         this.softMaxDistance = softMaxDistance;
-        this.softMinDistance = softMaxDistance;
+        this.softMinDistance = softMinDistance;
     }
 
     public void updateData(Data data) {
