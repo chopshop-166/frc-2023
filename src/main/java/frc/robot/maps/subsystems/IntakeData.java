@@ -18,6 +18,10 @@ public class IntakeData implements LoggableInputs {
     public double motorSetPoint;
     public Value solenoidSetPoint;
     public double[] detectedColor;
+    public Color sensorColor;
+    public double gamePieceDistance;
+    public double maxGamePieceDistance;
+    public double minGamePieceDistance;
 
     public static class Map implements LoggableMap<IntakeData> {
         public SmartMotorController motor;
