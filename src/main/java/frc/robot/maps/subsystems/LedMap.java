@@ -12,8 +12,8 @@ public class LedMap {
         this.ledBuffer = new AddressableLEDBuffer(0);
     }
 
-    public LedMap(AddressableLED led, AddressableLEDBuffer ledBuffer) {
-        this.led = led;
-        this.ledBuffer = ledBuffer;
+    public LedMap(int ledPort, int ledBufferLength) {
+        this.led = new AddressableLED(ledPort);
+        this.ledBuffer = new AddressableLEDBuffer(ledBufferLength);
     }
 }

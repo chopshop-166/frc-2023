@@ -15,12 +15,12 @@ import frc.robot.maps.subsystems.LedMap;
 public class RobotMap {
     // $Maps$
     SwerveDriveMap drive = new SwerveDriveMap();
-    LedMap led;
 
     // $Getters$
     public SwerveDriveMap getDriveMap() {
         return drive;
     }
+
     public LedMap getLedMap() {
         return new LedMap();
     }

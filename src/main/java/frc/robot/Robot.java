@@ -48,9 +48,6 @@ public class Robot extends CommandRobot {
 
     @Override
     public void configureButtonBindings() {
-        controller.a().onTrue(led.setYellow());
-        controller.b().onTrue(led.lightUpPurple());
-        controller.y().onTrue(led.colorAlliance());
     }
 
     @Override
