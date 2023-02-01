@@ -16,8 +16,6 @@ public class Robot extends CommandRobot {
 
     private RobotMap map = getMapForName("OffAxis", RobotMap.class, "frc.robot.maps");
     private ButtonXboxController driveController = new ButtonXboxController(0);
-
-    private ButtonXboxController controller = new ButtonXboxController(0);
     // $Subsystems$
     private Drive drive = new Drive(map.getDriveMap());
     private Led led = new Led(map.getLedMap());

@@ -9,7 +9,7 @@ public class LedMap {
 
     public LedMap() {
         this.led = new AddressableLED(0);
-        this.ledBuffer = new AddressableLEDBuffer(0);
+        this.ledBuffer = new AddressableLEDBuffer(30);
     }
 
     public LedMap(int ledPort, int ledBufferLength) {
