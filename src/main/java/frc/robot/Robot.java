@@ -10,14 +10,15 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.maps.RobotMap;
 // $Imports$
 import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Led;
 
 public class Robot extends CommandRobot {
 
     private RobotMap map = getMapForName("OffAxis", RobotMap.class, "frc.robot.maps");
     private ButtonXboxController driveController = new ButtonXboxController(0);
-
     // $Subsystems$
     private Drive drive = new Drive(map.getDriveMap());
+    private Led led = new Led(map.getLedMap());
 
     private Auto auto = new Auto();
 
@@ -45,7 +46,6 @@ public class Robot extends CommandRobot {
 
     @Override
     public void configureButtonBindings() {
-
     }
 
     @Override
@@ -57,6 +57,7 @@ public class Robot extends CommandRobot {
     public void setDefaultCommands() {
         drive.setDefaultCommand(
                 drive.drive(driveController::getLeftX, driveController::getLeftY, driveController::getRightX));
-    }
 
+        led.setDefaultCommand(led.colorAlliance());
+    }
 }

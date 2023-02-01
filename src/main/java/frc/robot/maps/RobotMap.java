@@ -9,6 +9,8 @@ import com.chopshop166.chopshoplib.maps.RobotMapFor;
 // $Imports$
 import frc.robot.maps.subsystems.SwerveDriveMap;
 
+import frc.robot.maps.subsystems.LedMap;
+
 @RobotMapFor("Default")
 public class RobotMap {
     // $Maps$
@@ -17,6 +19,10 @@ public class RobotMap {
     // $Getters$
     public SwerveDriveMap getDriveMap() {
         return drive;
+    }
+
+    public LedMap getLedMap() {
+        return new LedMap();
     }
 
     public void SetupLogging() {
