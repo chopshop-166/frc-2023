@@ -17,11 +17,10 @@ public class IntakeData implements LoggableInputs {
 
     public double motorSetPoint;
     public Value solenoidSetPoint;
-    public double[] detectedColor;
     public Color sensorColor;
-    public double gamePieceDistance;
-    public double maxGamePieceDistance;
-    public double minGamePieceDistance;
+    public int gamePieceDistance;
+    public int maxGamePieceDistance;
+    public int minGamePieceDistance;
 
     public static class Map implements LoggableMap<IntakeData> {
         public SmartMotorController motor;
@@ -34,16 +33,18 @@ public class IntakeData implements LoggableInputs {
             this.colorSensor = new MockColorSensor();
         }
 
-        public Map(SmartMotorController motor) {
+        public Map(SmartMotorController motor, IDSolenoid solenoid, IColorSensor colorSensor) {
             this.motor = motor;
+            this.solenoid = solenoid;
+            this.colorSensor = colorSensor;
         }
 
         @Override
         public void updateData(IntakeData data) {
             motor.set(data.motorSetPoint);
             solenoid.set(data.solenoidSetPoint);
-            Color sensorColor = colorSensor.getColor();
-            data.detectedColor = new double[] { sensorColor.red, sensorColor.green, sensorColor.blue };
+            data.sensorColor = colorSensor.getColor();
+            data.gamePieceDistance = colorSensor.getProximity();
         }
 
     }
@@ -52,13 +53,19 @@ public class IntakeData implements LoggableInputs {
     public void toLog(LogTable table) {
         table.put("MotorSetPoint", motorSetPoint);
         table.put("SolenoidSetPoint", solenoidSetPoint.toString());
+        double[] detectedColor = new double[] { sensorColor.red, sensorColor.green, sensorColor.blue };
         table.put("DetetectedColor", detectedColor);
+        table.put("GamePieceDistance", gamePieceDistance);
     }
 
     @Override
     public void fromLog(LogTable table) {
+        double[] colorDoubleArray = { 0, 0, 0 };
+
         motorSetPoint = table.getDouble("MotorSetPoint", motorSetPoint);
         solenoidSetPoint = Value.valueOf(table.getString("SolenoidSetPoint", solenoidSetPoint.toString()));
-        detectedColor = table.getDoubleArray("DetectedColor", detectedColor);
+        double[] detectedColor = table.getDoubleArray("DetectedColor", colorDoubleArray);
+        sensorColor = new Color(detectedColor[0], detectedColor[1], detectedColor[2]);
+        gamePieceDistance = (int) table.getInteger("GamePieceDistance", gamePieceDistance);
     }
 }
