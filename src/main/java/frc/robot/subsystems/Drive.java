@@ -63,6 +63,27 @@ public class Drive extends SmartSubsystemBase {
         });
     }
 
+    public CommandBase crossWheels() {
+        return cmd("Cross Wheels").onInitialize(() -> {
+            // speed really low to work around speed == 0 which prevents the swerve moduals
+            // turning
+            SwerveModuleState crossingMotorA = new SwerveModuleState(.01, Rotation2d.fromDegrees(45));
+            SwerveModuleState crossingMotorB = new SwerveModuleState(.01, Rotation2d.fromDegrees(-45));
+            // Front left module state
+            io.frontLeft.desiredState = crossingMotorB;
+
+            // Front right module state
+            io.frontRight.desiredState = crossingMotorA;
+
+            // Back left module state
+            io.rearLeft.desiredState = crossingMotorA;
+
+            // Back right module state
+            io.rearRight.desiredState = crossingMotorB;
+        }).runsUntil(() -> Math.abs(-45 - io.frontLeft.podAngle) < 1 && Math.abs(45 - io.rearRight.podAngle) < 1 && Math
+                .abs(-45 - io.rearLeft.podAngle) < 1 && Math.abs(45 - io.frontRight.podAngle) < 1);
+    }
+
     @Override
     public void reset() {
         // Nothing to reset here
