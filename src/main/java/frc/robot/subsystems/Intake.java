@@ -42,28 +42,23 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
     }
 
     public CommandBase sensorControl() {
-        return run(() -> {
+        /*
+         * 1: check color and game piece distance
+         * 2: respond based on game piece detected
+         * 3: safe state w/ mingamepiece distance is hit
+         */
 
-            if (ColorMath.equals(getData().sensorColor, Color.kBlue, .2)
-                    && getData().gamePieceDistance <= getData().maxGamePieceDistance
-                    && getData().gamePieceDistance >= getData().minGamePieceDistance) {
-                cmd().onInitialize(() -> {
+        return cmd().onExecute(() -> {
+            if (getData().gamePieceDistance <= getData().maxGamePieceDistance &&
+                    getData().gamePieceDistance >= getData().minGamePieceDistance) {
+                if (ColorMath.equals(getData().sensorColor, Color.kPurple, .2)) {
                     getData().motorSetPoint = GRAB_SPEED;
-                }).runsUntil(() -> getData().gamePieceDistance <= getData().minGamePieceDistance).onEnd(() -> {
-                    safeState();
-                });
-            }
-
-            if (ColorMath.equals(getData().sensorColor, Color.kYellow, .2)
-                    && getData().gamePieceDistance <= getData().maxGamePieceDistance
-                    && getData().gamePieceDistance >= getData().minGamePieceDistance) {
-                cmd().onInitialize(() -> {
+                } else if (ColorMath.equals(getData().sensorColor, Color.kYellow, .2)) {
                     getData().solenoidSetPoint = Value.kForward;
-                }).runsUntil(() -> getData().gamePieceDistance <= getData().minGamePieceDistance).onEnd(() -> {
-                    safeState();
-                });
+                }
             }
-
+        }).runsUntil(() -> getData().gamePieceDistance <= getData().minGamePieceDistance).onEnd(() -> {
+            safeState();
         });
 
     }
