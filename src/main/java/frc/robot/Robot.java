@@ -9,6 +9,8 @@ import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.maps.RobotMap;
 // $Imports$
+import frc.robot.subsystems.Intake;
+
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Led;
 
@@ -17,6 +19,8 @@ public class Robot extends CommandRobot {
     private RobotMap map = getMapForName("OffAxis", RobotMap.class, "frc.robot.maps");
     private ButtonXboxController driveController = new ButtonXboxController(0);
     // $Subsystems$
+    Intake intake = new Intake(map.getIntakeMap());
+
     private Drive drive = new Drive(map.getDriveMap());
     private Led led = new Led(map.getLedMap());
 
