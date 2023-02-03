@@ -16,6 +16,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.maps.subsystems.SwerveDriveMap;
+import frc.robot.util.PoseFilter;
 
 public class Vision {
 
@@ -24,8 +25,11 @@ public class Vision {
     PhotonCamera camera;
     Transform3d cameraToRobot;
     AprilTagFieldLayout aprilTags;
+    PoseFilter filter = new PoseFilter(1, 0.1);
 
-    public Vision(String cameraName, AprilTagFieldLayout aprilTags, Transform3d cameraToRobot,
+    public Vision(
+            String cameraName, AprilTagFieldLayout aprilTags,
+            Transform3d cameraToRobot,
             SwerveDriveMap driveMap) {
         camera = new PhotonCamera(NetworkTableInstance.getDefault(), cameraName);
         this.driveMap = driveMap;
@@ -54,7 +58,7 @@ public class Vision {
             int tagId = target.getFiducialId();
             SmartDashboard.putNumber("Tag ID", tagId);
             Optional<Pose3d> opt = aprilTags.getTagPose(tagId);
-            if (opt.isPresent()) {
+            if (opt.isPresent() && target.getPoseAmbiguity() < 1.0) {
                 // Reverse the pose to determine the position on the field
                 Pose2d pose = aprilTags.getTagPose(tagId).get().plus(cameraToTarget.inverse())
                         .plus(cameraToRobot.inverse()).toPose2d();
@@ -66,16 +70,16 @@ public class Vision {
             }
         }
 
-        return odometry.update(driveMap.gyro().getRotation2d(), getModulePositions());
+        return filter.calculate(odometry.update(driveMap.gyro().getRotation2d(), getModulePositions()));
     }
 
     // Create blank swerve module positions needed to reset the odometry object
     private SwerveModulePosition[] getModulePositions() {
         return new SwerveModulePosition[] {
-                new SwerveModulePosition(0, driveMap.frontLeft().getAngle()),
-                new SwerveModulePosition(0, driveMap.frontRight().getAngle()),
-                new SwerveModulePosition(0, driveMap.rearLeft().getAngle()),
-                new SwerveModulePosition(0, driveMap.rearRight().getAngle()),
+                new SwerveModulePosition(driveMap.frontLeft().getDistance(), driveMap.frontLeft().getAngle()),
+                new SwerveModulePosition(driveMap.frontRight().getDistance(), driveMap.frontRight().getAngle()),
+                new SwerveModulePosition(driveMap.rearLeft().getDistance(), driveMap.rearLeft().getAngle()),
+                new SwerveModulePosition(driveMap.rearRight().getDistance(), driveMap.rearRight().getAngle()),
         };
     }
 }
