@@ -11,14 +11,16 @@ public class ArmMap {
     public ArmMap() {
     }
 
+    public PIDController pid = new PIDController(0, 0, 0);
     private SmartMotorController extendMotor = new SmartMotorController();
     public double softMaxDistance = 20;
     public double softMinDistance = 1;
 
-    public ArmMap(SmartMotorController motor, double softMaxDistance, double softMinDistance) {
+    public ArmMap(SmartMotorController motor, double softMaxDistance, double softMinDistance, PIDController pid) {
         this.extendMotor = motor;
         this.softMaxDistance = softMaxDistance;
         this.softMinDistance = softMinDistance;
+        this.pid = pid;
     }
 
     public void updateData(Data data) {

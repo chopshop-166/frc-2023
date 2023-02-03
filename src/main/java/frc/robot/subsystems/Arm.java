@@ -19,7 +19,6 @@ public class Arm extends SmartSubsystemBase {
 
     public Data data = new Data();
     public ArmMap map;
-    private final PIDController pid = new PIDController(0.03, 0, 0);
 
     public Arm(ArmMap map) {
         this.map = map;
@@ -72,13 +71,12 @@ public class Arm extends SmartSubsystemBase {
         });
     }
 
-    public CommandBase moveToDistancePID(double distance, double speed) {
-        return cmd("Move Distance").onInitialize(() -> {
-            if (distance >= data.distanceInches) {
-                // extend
-                data.setPoint = softLimit(pid.calculate(data.distanceInches, distance));
-            }
-        }).runsUntil(() -> Math.abs(distance - data.distanceInches) < 0.5).onEnd(() -> {
+    public CommandBase moveToDistancePID(double distance) {
+        return cmd("Move Distance").onExecute(() -> {
+            // extend
+            data.setPoint = softLimit(map.pid.calculate(data.distanceInches, distance));
+
+        }).runsUntil(() -> Math.abs(distance - data.distanceInches) < 4).onEnd(() -> {
             data.setPoint = 0;
         });
     }
