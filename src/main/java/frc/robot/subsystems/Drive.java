@@ -112,8 +112,6 @@ public class Drive extends SmartSubsystemBase {
     public CommandBase driveTo(Pose2d targetPose) {
         return cmd().onExecute(() -> {
             Transform2d fb = drivePID.calculate(pose, targetPose);
-            System.out.println(
-                    fb.getX() + ", " + fb.getY());
             move(fb.getX(), fb.getY(), fb.getRotation().getDegrees());
         }).runsUntil(() -> drivePID.isFinished(pose, targetPose, 0.01)).onEnd(() -> move(0, 0, 0));
     }
