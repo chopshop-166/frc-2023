@@ -6,13 +6,8 @@ import org.littletonrobotics.junction.Logger;
 
 import com.chopshop166.chopshoplib.PersistenceCheck;
 import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
-import com.chopshop166.chopshoplib.motors.SmartMotorController;
-import com.fasterxml.jackson.annotation.JacksonInject.Value;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.maps.subsystems.ArmMap;
 import frc.robot.maps.subsystems.ArmMap.Data;
 

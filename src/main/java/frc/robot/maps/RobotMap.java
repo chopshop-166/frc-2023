@@ -17,7 +17,6 @@ import frc.robot.maps.subsystems.SwerveDriveMap;
 public class RobotMap {
     // $Maps$
 
-    private ArmMap armMap = new ArmMap();
     SwerveDriveMap drive = new SwerveDriveMap();
 
     // $Getters$
@@ -37,7 +36,7 @@ public class RobotMap {
         return new LedMap();
     }
 
-    public void SetupLogging() {
+    public void setupLogging() {
         // Pull the replay log from AdvantageScope (or prompt the user)
         String logPath = LogFileUtil.findReplayLog();
         // Read replay log

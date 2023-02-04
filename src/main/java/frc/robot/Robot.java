@@ -47,7 +47,7 @@ public class Robot extends CommandRobot {
         super.robotInit();
 
         Logger.getInstance().recordMetadata("ProjectName", "FRC-2023"); // Set a metadata value
-        map.SetupLogging();
+        map.setupLogging();
         if (!isReal()) {
             setUseTiming(false); // Run as fast as possible
         }

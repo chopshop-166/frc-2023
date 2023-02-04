@@ -31,7 +31,7 @@ public class Valkyrie extends RobotMap {
     }
 
     @Override
-    public void SetupLogging() {
+    public void setupLogging() {
         Logger.getInstance().addDataReceiver(new WPILOGWriter("/media/sda1/")); // Log to a USB stick
         Logger.getInstance().addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
         Logger.getInstance().recordMetadata("RobotMap", this.getClass().getSimpleName());
