@@ -26,7 +26,7 @@ public class Vision {
     PhotonCamera camera;
     Transform3d cameraToRobot;
     AprilTagFieldLayout aprilTags;
-    PoseFilter filter = new PoseFilter(1, 0.1);
+    PoseFilter filter = new PoseFilter(0.1);
 
     public Vision(
             String cameraName, AprilTagFieldLayout aprilTags,
@@ -71,6 +71,7 @@ public class Vision {
             }
         }
 
+        // Subtract 180 degrees from the gyro angle for some reason
         return filter.calculate(odometry.update(
                 Rotation2d.fromDegrees(driveMap.gyro().getAngle() - 180), getModulePositions()));
     }

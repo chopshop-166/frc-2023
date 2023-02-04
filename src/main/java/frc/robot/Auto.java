@@ -20,7 +20,7 @@ public class Auto {
 
     public enum Path {
 
-        TEST(new Pose2d(1.29805263547889, 2.709488526850264, new Rotation2d()));
+        TEST(new Pose2d(13.52606, 2.3906, new Rotation2d()));
 
         Pose2d poses[];
 

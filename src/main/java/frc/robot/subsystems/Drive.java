@@ -127,7 +127,7 @@ public class Drive extends SmartSubsystemBase {
         return cmd().onExecute(() -> {
             Transform2d fb = drivePID.calculate(pose, targetPose);
             move(fb.getX(), fb.getY(), fb.getRotation().getDegrees());
-        }).runsUntil(() -> drivePID.isFinished(pose, targetPose, 0.01)).onEnd(() -> move(0, 0, 0));
+        }).runsUntil(() -> drivePID.isFinished(pose, targetPose, 0.005)).onEnd(() -> move(0, 0, 0));
     }
 
     // Drive to a pre-determined grid position
@@ -151,7 +151,7 @@ public class Drive extends SmartSubsystemBase {
         }).onExecute(() -> {
             Transform2d fb = drivePID.calculate(pose, closestPose);
             move(fb.getX(), fb.getY(), fb.getRotation().getDegrees());
-        }).runsUntil(() -> drivePID.isFinished(pose, closestPose, 0.01)).onEnd(() -> move(0, 0, 0));
+        }).runsUntil(() -> drivePID.isFinished(pose, closestPose, 0.005)).onEnd(() -> move(0, 0, 0));
 
     }
 

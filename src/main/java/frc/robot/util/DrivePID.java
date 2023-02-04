@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class DrivePID {
     private PIDController xPid;
@@ -42,8 +43,8 @@ public class DrivePID {
     public Transform2d calculate(Pose2d currentPose, Pose2d targetPose) {
         return new Transform2d(
                 new Translation2d(
-                        xPid.calculate(currentPose.getX(), targetPose.getX()),
-                        yPid.calculate(currentPose.getY(), targetPose.getY())),
+                        yPid.calculate(targetPose.getY(), currentPose.getY()),
+                        xPid.calculate(targetPose.getX(), currentPose.getX())),
                 Rotation2d.fromDegrees(anglePid.calculate(currentPose.getRotation().getDegrees(),
                         targetPose.getRotation().getDegrees())));
     }
@@ -53,13 +54,17 @@ public class DrivePID {
      * 
      * @param currentPose The current pose
      * @param targetPose  The target pose
-     * @param delta       The acceptable difference between the current and target
+     * @param deadband    The acceptable difference between the current and target
      *                    poses
      * @return if current pose and target pose match
      */
-    public boolean isFinished(Pose2d currentPose, Pose2d targetPose, double delta) {
+    public boolean isFinished(Pose2d currentPose, Pose2d targetPose, double deadband) {
         Transform2d error = targetPose.minus(currentPose);
-        return error.getX() < delta && error.getY() < delta && error.getRotation().getDegrees() < delta;
+
+        SmartDashboard.putNumberArray("PID Error",
+                new double[] { error.getX(), error.getY(), error.getRotation().getRadians() });
+
+        return (error.getX() < deadband) && (error.getY() < deadband) && error.getRotation().getRadians() < deadband;
     }
 
     /**
