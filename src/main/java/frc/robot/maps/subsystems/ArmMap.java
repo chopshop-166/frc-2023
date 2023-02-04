@@ -31,6 +31,10 @@ public class ArmMap {
         data.tempCelcius = extendMotor.getTemperatureC();
     }
 
+    public SmartMotorController getMotor() {
+        return extendMotor;
+    }
+
     public static class Data implements LoggableInputs {
         public double setPoint;
         public double distanceInches;

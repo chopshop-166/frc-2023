@@ -4,6 +4,7 @@ import java.util.function.DoubleSupplier;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.chopshop166.chopshoplib.PersistenceCheck;
 import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
 import com.chopshop166.chopshoplib.motors.SmartMotorController;
 import com.fasterxml.jackson.annotation.JacksonInject.Value;
@@ -19,6 +20,8 @@ public class Arm extends SmartSubsystemBase {
 
     public Data data = new Data();
     public ArmMap map;
+    public final double SPEED = 0.3;
+    private final double retractSpeed = -0.1;
 
     public Arm(ArmMap map) {
         this.map = map;
@@ -40,7 +43,7 @@ public class Arm extends SmartSubsystemBase {
             this.angle = angle;
         }
 
-        public double get() {
+        public double getLength() {
             return length;
         }
 
@@ -48,8 +51,6 @@ public class Arm extends SmartSubsystemBase {
             return angle;
         }
     }
-
-    public final double SPEED = 0.3;
 
     public CommandBase manual(DoubleSupplier motorSpeed) {
         return run(() -> {
@@ -82,7 +83,20 @@ public class Arm extends SmartSubsystemBase {
     }
 
     public CommandBase moveTo(Level level) {
-        return moveToDistanceBangBang(level.get(), SPEED);
+        return moveToDistanceBangBang(level.getLength(), SPEED);
+    }
+
+    public CommandBase zeroVelocityCheck() {
+        // this ensures that the arm is fully retracted (likely for the start or end of
+        // a match)
+        PersistenceCheck velocityPersistenceCheck = new PersistenceCheck(5,
+                () -> Math.abs(data.velocityInchesPerSec) < 0.5);
+        return cmd("Check Velocity").onInitialize(() -> {
+            data.setPoint = softLimit(retractSpeed);
+        }).runsUntil(velocityPersistenceCheck).onEnd(() -> {
+            data.setPoint = 0;
+            map.getMotor().getEncoder().reset();
+        });
     }
 
     @Override
