@@ -7,6 +7,7 @@ import org.littletonrobotics.junction.Logger;
 import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
 import com.chopshop166.chopshoplib.motors.Modifier;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -51,6 +52,8 @@ public class Drive extends SmartSubsystemBase {
     private final DrivePID drivePID;
     private Field2d field = new Field2d();
 
+    private final PIDController rotationPID;
+
     public Drive(SwerveDriveMap map) {
         this.map = map;
         io = new Data();
@@ -63,6 +66,17 @@ public class Drive extends SmartSubsystemBase {
                 map.cameraName(), Field.getApriltagLayout(),
                 map.cameraPosition(),
                 this.map);
+
+        rotationPID = drivePID.getRotationPidController();
+
+    }
+
+    public CommandBase rotateToAngle(Rotation2d angle, DoubleSupplier translateX, DoubleSupplier translateY) {
+        return cmd().onExecute(() -> {
+            double fb = rotationPID.calculate(pose.getRotation().getDegrees(), angle.getDegrees());
+            move(translateX.getAsDouble(), translateY.getAsDouble(), fb);
+        }).runsUntil(() -> Math.abs(pose.getRotation().getDegrees() - angle.getDegrees()) < 0.1)
+                .onEnd(() -> move(0, 0, 0));
 
     }
 

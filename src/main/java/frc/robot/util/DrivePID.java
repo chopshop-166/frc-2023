@@ -62,4 +62,22 @@ public class DrivePID {
         return error.getX() < delta && error.getY() < delta && error.getRotation().getDegrees() < delta;
     }
 
+    /**
+     * Get a PID Controller using the values from the translation PID Controller
+     * 
+     * @return the translation PID Controller
+     */
+    public PIDController getTranslationPidController() {
+        return new PIDController(xPid.getP(), xPid.getI(), xPid.getD());
+    }
+
+    /**
+     * Get a PID Controller using the values from the rotation PID Controller
+     * 
+     * @return the rotation PID Controller
+     */
+    public PIDController getRotationPidController() {
+        return new PIDController(anglePid.getP(), anglePid.getI(), anglePid.getD());
+    }
+
 }
