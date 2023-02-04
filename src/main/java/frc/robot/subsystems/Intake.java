@@ -20,28 +20,28 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
     }
 
     // Grabs game piece Cone
-    public CommandBase ConeGrab() {
+    public CommandBase coneGrab() {
         return runOnce(() -> {
             getData().solenoidSetPoint = Value.kForward;
         });
     }
 
     // Releases game piece Cone
-    public CommandBase ConeRelease() {
+    public CommandBase coneRelease() {
         return runOnce(() -> {
             getData().solenoidSetPoint = Value.kReverse;
         });
     }
 
     // Grabs game piece Cube
-    public CommandBase CubeGrab() {
+    public CommandBase cubeGrab() {
         return runOnce(() -> {
             getData().motorSetPoint = GRAB_SPEED;
         });
     }
 
     // Releases game piece Cube
-    public CommandBase CubeRelease() {
+    public CommandBase cubeRelease() {
         return runOnce(() -> {
             getData().motorSetPoint = RELEASE_SPEED;
         });

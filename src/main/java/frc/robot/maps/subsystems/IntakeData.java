@@ -59,8 +59,8 @@ public class IntakeData implements LoggableInputs {
         table.put("GamePieceDistance", gamePieceDistance);
     }
 
-    @Override
     // retrieves values of the variables
+    @Override
     public void fromLog(LogTable table) {
         double[] colorDoubleArray = { 0, 0, 0 };
 
