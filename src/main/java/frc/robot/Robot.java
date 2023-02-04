@@ -16,9 +16,9 @@ import frc.robot.subsystems.Led;
 
 public class Robot extends CommandRobot {
 
-    // private RobotMap map = getMapForName("OffAxis", RobotMap.class,
-    // "frc.robot.maps");
-    private RobotMap map = new RobotMap();
+    private RobotMap map = getMapForName("OffAxis", RobotMap.class,
+            "frc.robot.maps");
+    // private RobotMap map = new RobotMap();
     private ButtonXboxController driveController = new ButtonXboxController(0);
     // $Subsystems$
     Intake intake = new Intake(map.getIntakeMap());
