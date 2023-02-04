@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Field;
@@ -48,6 +49,7 @@ public class Drive extends SmartSubsystemBase {
     private Vision vision;
     private Pose2d pose = new Pose2d();
     private final DrivePID drivePID;
+    private Field2d field = new Field2d();
 
     public Drive(SwerveDriveMap map) {
         this.map = map;
@@ -61,6 +63,7 @@ public class Drive extends SmartSubsystemBase {
                 map.cameraName(), Field.getApriltagLayout(),
                 map.cameraPosition(),
                 this.map);
+
     }
 
     public CommandBase setSpeedCoef(double fac) {
@@ -112,7 +115,7 @@ public class Drive extends SmartSubsystemBase {
             System.out.println(
                     fb.getX() + ", " + fb.getY());
             move(fb.getX(), fb.getY(), fb.getRotation().getDegrees());
-        }).runsUntil(() -> drivePID.isFinished(pose, targetPose, 0.01));
+        }).runsUntil(() -> drivePID.isFinished(pose, targetPose, 0.01)).onEnd(() -> move(0, 0, 0));
     }
 
     // Drive to a pre-determined grid position
@@ -136,7 +139,7 @@ public class Drive extends SmartSubsystemBase {
         }).onExecute(() -> {
             Transform2d fb = drivePID.calculate(pose, closestPose);
             move(fb.getX(), fb.getY(), fb.getRotation().getDegrees());
-        }).runsUntil(() -> drivePID.isFinished(pose, closestPose, 0.01));
+        }).runsUntil(() -> drivePID.isFinished(pose, closestPose, 0.01)).onEnd(() -> move(0, 0, 0));
 
     }
 
@@ -158,9 +161,7 @@ public class Drive extends SmartSubsystemBase {
         Logger.getInstance().processInputs(getName(), io);
 
         pose = vision.update();
-
-        SmartDashboard.putNumber("robotX", pose.getX());
-        SmartDashboard.putNumber("robotY", pose.getY());
-        SmartDashboard.putNumber("robotAngle", pose.getRotation().getRadians());
+        field.setRobotPose(pose);
+        SmartDashboard.putData(field);
     }
 }
