@@ -42,6 +42,7 @@ public class ArmMap {
         public double[] currentAmps;
         public double[] tempCelcius;
 
+        // Logs the values of the variables
         @Override
         public void toLog(LogTable table) {
             table.put("MotorSetpoint", setPoint);
@@ -51,6 +52,7 @@ public class ArmMap {
             table.put("MotorTempCelcius", tempCelcius);
         }
 
+        // Retrieves the values of the variables
         @Override
         public void fromLog(LogTable table) {
             setPoint = table.getDouble("MotorSetpoint", setPoint);

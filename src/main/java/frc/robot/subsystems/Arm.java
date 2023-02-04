@@ -47,19 +47,22 @@ public class Arm extends SmartSubsystemBase {
         }
     }
 
+    // Manually sets the arm extension
     public CommandBase manual(DoubleSupplier motorSpeed) {
         return run(() -> {
             data.setPoint = softLimit(motorSpeed.getAsDouble());
         });
     }
 
+    // Compares arm current extension to set distance and retracts or extends based
+    // on current arm extenstion
     public CommandBase moveToDistanceBangBang(double distance, double speed) {
         return cmd("Move Distance").onInitialize(() -> {
             if (distance >= data.distanceInches) {
-                // extend
+                // Extend
                 data.setPoint = softLimit(speed);
             } else {
-                // retract
+                // Retract
                 data.setPoint = softLimit(-speed);
             }
         }).runsUntil(() -> Math.abs(distance - data.distanceInches) < 0.5).onEnd(() -> {
@@ -67,9 +70,10 @@ public class Arm extends SmartSubsystemBase {
         });
     }
 
+    // Uses PID to change extension of arm to set distance
     public CommandBase moveToDistancePID(double distance) {
         return cmd("Move Distance").onExecute(() -> {
-            // extend
+            // Extend
             data.setPoint = softLimit(map.pid.calculate(data.distanceInches, distance));
 
         }).runsUntil(() -> Math.abs(distance - data.distanceInches) < 4).onEnd(() -> {
@@ -81,9 +85,9 @@ public class Arm extends SmartSubsystemBase {
         return moveToDistanceBangBang(level.getLength(), SPEED);
     }
 
+    // This ensures that the arm is fully retracted (likely for the start or end of
+    // a match)
     public CommandBase zeroVelocityCheck() {
-        // this ensures that the arm is fully retracted (likely for the start or end of
-        // a match)
         PersistenceCheck velocityPersistenceCheck = new PersistenceCheck(5,
                 () -> Math.abs(data.velocityInchesPerSec) < 0.5);
         return cmd("Check Velocity").onInitialize(() -> {
@@ -101,6 +105,7 @@ public class Arm extends SmartSubsystemBase {
 
     @Override
     public void safeState() {
+        // Sets arm extension point to 0
         data.setPoint = 0;
     }
 
@@ -112,6 +117,7 @@ public class Arm extends SmartSubsystemBase {
         Logger.getInstance().processInputs(getName(), data);
     }
 
+    // Adds softlimit to arm extension speed
     private double softLimit(double speed) {
         if ((data.distanceInches > map.softMaxDistance && speed > 0) || (data.distanceInches < map.softMinDistance
                 && speed < 0)) {
