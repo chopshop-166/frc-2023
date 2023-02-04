@@ -17,6 +17,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import frc.robot.Field;
 import frc.robot.Vision;
 import frc.robot.maps.subsystems.SwerveDriveMap;
@@ -67,7 +68,7 @@ public class Drive extends SmartSubsystemBase {
                 map.cameraPosition(),
                 this.map);
 
-        rotationPID = drivePID.getRotationPidController();
+        rotationPID = drivePID.copyRotationPidController();
 
     }
 
@@ -135,23 +136,20 @@ public class Drive extends SmartSubsystemBase {
         return driveTo(gridPose.getPose());
     }
 
-    private Pose2d closestPose = GridPosition.values()[0].getPose();
-
     // Find the nearest grid position and line up with it
     public CommandBase driveToNearest() {
+        return new ProxyCommand(
+                () -> {
+                    Pose2d closestPose = GridPosition.values()[0].getPose();
+                    for (GridPosition position : GridPosition.values()) {
+                        if (position.getPose().getTranslation().getDistance(pose.getTranslation()) < closestPose
+                                .getTranslation().getDistance(pose.getTranslation())) {
+                            closestPose = position.getPose();
+                        }
+                    }
 
-        return cmd().onInitialize(() -> {
-            closestPose = GridPosition.values()[0].getPose();
-            for (GridPosition position : GridPosition.values()) {
-                if (position.getPose().getTranslation().getDistance(pose.getTranslation()) < closestPose
-                        .getTranslation().getDistance(pose.getTranslation())) {
-                    closestPose = position.getPose();
-                }
-            }
-        }).onExecute(() -> {
-            Transform2d fb = drivePID.calculate(pose, closestPose);
-            move(fb.getX(), fb.getY(), fb.getRotation().getDegrees());
-        }).runsUntil(() -> drivePID.isFinished(pose, closestPose, 0.005)).onEnd(() -> move(0, 0, 0));
+                    return driveTo(closestPose);
+                });
 
     }
 

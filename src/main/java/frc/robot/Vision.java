@@ -76,7 +76,7 @@ public class Vision {
                 Rotation2d.fromDegrees(driveMap.gyro().getAngle() - 180), getModulePositions()));
     }
 
-    // Create blank swerve module positions needed to reset the odometry object
+    // Get every swerve module state
     private SwerveModulePosition[] getModulePositions() {
         return new SwerveModulePosition[] {
                 new SwerveModulePosition(driveMap.frontLeft().getDistance(), driveMap.frontLeft().getAngle()),

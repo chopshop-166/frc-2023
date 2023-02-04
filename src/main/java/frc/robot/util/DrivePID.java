@@ -43,6 +43,7 @@ public class DrivePID {
     public Transform2d calculate(Pose2d currentPose, Pose2d targetPose) {
         return new Transform2d(
                 new Translation2d(
+                        // X and Y need to be swapped here for some reason
                         yPid.calculate(targetPose.getY(), currentPose.getY()),
                         xPid.calculate(targetPose.getX(), currentPose.getX())),
                 Rotation2d.fromDegrees(anglePid.calculate(currentPose.getRotation().getDegrees(),
@@ -72,7 +73,7 @@ public class DrivePID {
      * 
      * @return the translation PID Controller
      */
-    public PIDController getTranslationPidController() {
+    public PIDController copyTranslationPidController() {
         return new PIDController(xPid.getP(), xPid.getI(), xPid.getD());
     }
 
@@ -81,7 +82,7 @@ public class DrivePID {
      * 
      * @return the rotation PID Controller
      */
-    public PIDController getRotationPidController() {
+    public PIDController copyRotationPidController() {
         return new PIDController(anglePid.getP(), anglePid.getI(), anglePid.getD());
     }
 
