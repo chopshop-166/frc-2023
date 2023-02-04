@@ -17,8 +17,6 @@ import frc.robot.maps.subsystems.SwerveDriveMap;
 public class RobotMap {
     // $Maps$
 
-    SwerveDriveMap drive = new SwerveDriveMap();
-
     // $Getters$
     public ArmMap getArmMap() {
         return new ArmMap();
