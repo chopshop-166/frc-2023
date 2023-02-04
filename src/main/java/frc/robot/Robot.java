@@ -8,10 +8,9 @@ import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.maps.RobotMap;
+import frc.robot.subsystems.Drive;
 // $Imports$
 import frc.robot.subsystems.Intake;
-
-import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Led;
 
 public class Robot extends CommandRobot {
@@ -25,6 +24,8 @@ public class Robot extends CommandRobot {
 
     private Drive drive = new Drive(map.getDriveMap());
     private Led led = new Led(map.getLedMap());
+
+    private Auto auto = new Auto(drive);
 
     @Autonomous(defaultAuto = true)
     public CommandBase exampleAuto = auto.exampleAuto();
