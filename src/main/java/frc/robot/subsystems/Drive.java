@@ -28,6 +28,7 @@ public class Drive extends SmartSubsystemBase {
     private final SwerveDriveKinematics kinematics;
     double maxDriveSpeedMetersPerSecond;
     double maxRotationRadiansPerSecond;
+    double speedCoef = 1;
 
     public enum GridPosition {
 
@@ -62,14 +63,22 @@ public class Drive extends SmartSubsystemBase {
                 this.map);
     }
 
+    public CommandBase setSpeedCoef(double fac) {
+        return runOnce(() -> {
+            speedCoef = fac;
+        });
+    }
+
     private void move(final double xSpeed, final double ySpeed,
             final double rotation) {
+
         final Modifier deadband = Modifier.deadband(0.15);
         final double translateXSpeed = deadband.applyAsDouble(xSpeed)
-                * maxDriveSpeedMetersPerSecond;
+                * maxDriveSpeedMetersPerSecond * speedCoef;
         final double translateYSpeed = deadband.applyAsDouble(ySpeed)
-                * maxDriveSpeedMetersPerSecond;
-        final double rotationSpeed = deadband.applyAsDouble(rotation) * maxRotationRadiansPerSecond;
+                * maxDriveSpeedMetersPerSecond * speedCoef;
+        final double rotationSpeed = deadband.applyAsDouble(rotation)
+                * maxRotationRadiansPerSecond * speedCoef;
 
         // rotationOffset is temporary and startingRotation is set at the start
         final ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(translateYSpeed, translateXSpeed,

@@ -53,6 +53,7 @@ public class Robot extends CommandRobot {
 
     @Override
     public void configureButtonBindings() {
+        driveController.rightBumper().onTrue(drive.setSpeedCoef(0.5)).onFalse(drive.setSpeedCoef(1));
     }
 
     @Override
