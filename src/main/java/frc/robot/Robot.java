@@ -8,15 +8,16 @@ import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.maps.RobotMap;
+import frc.robot.subsystems.Drive;
 // $Imports$
 import frc.robot.subsystems.Intake;
-
-import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Led;
 
 public class Robot extends CommandRobot {
 
-    private RobotMap map = getMapForName("OffAxis", RobotMap.class, "frc.robot.maps");
+    private RobotMap map = getMapForName("OffAxis", RobotMap.class,
+            "frc.robot.maps");
+    // private RobotMap map = new RobotMap();
     private ButtonXboxController driveController = new ButtonXboxController(0);
     // $Subsystems$
     Intake intake = new Intake(map.getIntakeMap());
@@ -24,7 +25,7 @@ public class Robot extends CommandRobot {
     private Drive drive = new Drive(map.getDriveMap());
     private Led led = new Led(map.getLedMap());
 
-    private Auto auto = new Auto();
+    private Auto auto = new Auto(drive);
 
     @Autonomous(defaultAuto = true)
     public CommandBase exampleAuto = auto.exampleAuto();
@@ -50,6 +51,7 @@ public class Robot extends CommandRobot {
 
     @Override
     public void configureButtonBindings() {
+        driveController.rightBumper().onTrue(drive.setSpeedCoef(0.5)).onFalse(drive.setSpeedCoef(1));
     }
 
     @Override

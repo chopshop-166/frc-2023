@@ -1,20 +1,43 @@
 package frc.robot;
 
-import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
+import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 
+import java.util.Arrays;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Drive;
 
 public class Auto {
     // Declare references to subsystems
+    Drive drive;
 
     // Pass in all subsystems
-    Auto() {
-        // Assign all subsystems to local storage
+    public Auto(Drive drive) {
+        this.drive = drive;
+    }
+
+    public enum Path {
+
+        TEST(new Pose2d(13.52606, 2.3906, new Rotation2d()));
+
+        Pose2d poses[];
+
+        private Path(Pose2d... poses) {
+            this.poses = poses;
+        }
+
+        // Create a sequence command to drive to each pose
+        public CommandBase getPath(Drive drive) {
+            return sequence(
+                    Arrays.stream(poses).map(drive::driveTo).toArray(CommandBase[]::new)).withName(this.name());
+        }
     }
 
     public CommandBase exampleAuto() {
-        return runOnce(() -> {
-        }).withName("Empty Auto");
+        return sequence(Path.TEST.getPath(drive))
+                .withName("Test Auto");
     }
 
 }
