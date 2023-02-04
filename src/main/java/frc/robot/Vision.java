@@ -9,6 +9,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -70,7 +71,8 @@ public class Vision {
             }
         }
 
-        return filter.calculate(odometry.update(driveMap.gyro().getRotation2d(), getModulePositions()));
+        return filter.calculate(odometry.update(
+                Rotation2d.fromDegrees(driveMap.gyro().getAngle() - 180), getModulePositions()));
     }
 
     // Create blank swerve module positions needed to reset the odometry object
