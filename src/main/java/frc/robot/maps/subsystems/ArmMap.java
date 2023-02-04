@@ -8,13 +8,17 @@ import com.chopshop166.chopshoplib.motors.SmartMotorController;
 import edu.wpi.first.math.controller.PIDController;
 
 public class ArmMap {
-    public ArmMap() {
-    }
+    public PIDController pid;
+    public SmartMotorController extendMotor;
+    public double softMaxDistance;
+    public double softMinDistance;
 
-    public PIDController pid = new PIDController(0, 0, 0);
-    private SmartMotorController extendMotor = new SmartMotorController();
-    public double softMaxDistance = 20;
-    public double softMinDistance = 1;
+    public ArmMap() {
+        this.pid = new PIDController(0, 0, 0);
+        this.extendMotor = new SmartMotorController();
+        this.softMaxDistance = 20;
+        this.softMinDistance = 1;
+    }
 
     public ArmMap(SmartMotorController motor, double softMaxDistance, double softMinDistance, PIDController pid) {
         this.extendMotor = motor;
@@ -29,10 +33,6 @@ public class ArmMap {
         data.velocityInchesPerSec = extendMotor.getEncoder().getRate();
         data.currentAmps = extendMotor.getCurrentAmps();
         data.tempCelcius = extendMotor.getTemperatureC();
-    }
-
-    public SmartMotorController getMotor() {
-        return extendMotor;
     }
 
     public static class Data implements LoggableInputs {

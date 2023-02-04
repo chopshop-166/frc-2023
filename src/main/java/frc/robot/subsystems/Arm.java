@@ -16,7 +16,7 @@ public class Arm extends SmartSubsystemBase {
     public Data data = new Data();
     public ArmMap map;
     public final double SPEED = 0.3;
-    private final double retractSpeed = -0.1;
+    private final double RETRACT_SPEED = -0.1;
 
     public Arm(ArmMap map) {
         this.map = map;
@@ -91,10 +91,10 @@ public class Arm extends SmartSubsystemBase {
         PersistenceCheck velocityPersistenceCheck = new PersistenceCheck(5,
                 () -> Math.abs(data.velocityInchesPerSec) < 0.5);
         return cmd("Check Velocity").onInitialize(() -> {
-            data.setPoint = softLimit(retractSpeed);
+            data.setPoint = softLimit(RETRACT_SPEED);
         }).runsUntil(velocityPersistenceCheck).onEnd(() -> {
             data.setPoint = 0;
-            map.getMotor().getEncoder().reset();
+            map.extendMotor.getEncoder().reset();
         });
     }
 
