@@ -49,6 +49,7 @@ public class IntakeData implements LoggableInputs {
 
     }
 
+    // logs the values of the variables
     @Override
     public void toLog(LogTable table) {
         table.put("MotorSetPoint", motorSetPoint);
@@ -59,6 +60,7 @@ public class IntakeData implements LoggableInputs {
     }
 
     @Override
+    // retrieves values of the variables
     public void fromLog(LogTable table) {
         double[] colorDoubleArray = { 0, 0, 0 };
 
