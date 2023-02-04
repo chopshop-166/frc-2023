@@ -10,43 +10,45 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
 
+    // Motor speed variables
     private final double GRAB_SPEED = 1;
     private final double RELEASE_SPEED = -1;
 
+    // Creates constructor using IntakeData
     public Intake(IntakeData.Map map) {
         super(new IntakeData(), map);
     }
 
-    public CommandBase ConeGrab() {
+    // Grabs game piece Cone
+    public CommandBase coneGrab() {
         return runOnce(() -> {
             getData().solenoidSetPoint = Value.kForward;
         });
     }
 
-    public CommandBase ConeRelease() {
+    // Releases game piece Cone
+    public CommandBase coneRelease() {
         return runOnce(() -> {
             getData().solenoidSetPoint = Value.kReverse;
         });
     }
 
-    public CommandBase CubeGrab() {
+    // Grabs game piece Cube
+    public CommandBase cubeGrab() {
         return runOnce(() -> {
             getData().motorSetPoint = GRAB_SPEED;
         });
     }
 
-    public CommandBase CubeRelease() {
+    // Releases game piece Cube
+    public CommandBase cubeRelease() {
         return runOnce(() -> {
             getData().motorSetPoint = RELEASE_SPEED;
         });
     }
 
+    // Closes intake based on game piece detected
     public CommandBase sensorControl() {
-        /*
-         * 1: check color and game piece distance
-         * 2: respond based on game piece detected
-         * 3: safe state w/ mingamepiece distance is hit
-         */
 
         return cmd().onExecute(() -> {
             if (getData().gamePieceDistance <= getData().maxGamePieceDistance &&
@@ -70,7 +72,10 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
 
     @Override
     public void safeState() {
+        // turns off the motors
         getData().motorSetPoint = 0;
+
+        // stops movement of air
         getData().solenoidSetPoint = Value.kOff;
     }
 }
