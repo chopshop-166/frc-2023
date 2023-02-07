@@ -76,7 +76,7 @@ public class Arm extends SmartSubsystemBase {
             // Extend
             data.setPoint = softLimit(map.pid.calculate(data.distanceInches, distance));
 
-        }).runsUntil(() -> Math.abs(distance - data.distanceInches) < 4).onEnd(() -> {
+        }).runsUntil(map.pid::atSetpoint).onEnd(() -> {
             data.setPoint = 0;
         });
     }
