@@ -8,6 +8,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import com.chopshop166.chopshoplib.maps.RobotMapFor;
 
 // $Imports$
+import frc.robot.maps.subsystems.ArmMap;
 import frc.robot.maps.subsystems.IntakeData;
 import frc.robot.maps.subsystems.LedMap;
 import frc.robot.maps.subsystems.SwerveDriveMap;
@@ -17,6 +18,10 @@ public class RobotMap {
     // $Maps$
 
     // $Getters$
+    public ArmMap getArmMap() {
+        return new ArmMap();
+    }
+
     public IntakeData.Map getIntakeMap() {
         return new IntakeData.Map();
     }
@@ -29,7 +34,7 @@ public class RobotMap {
         return new LedMap();
     }
 
-    public void SetupLogging() {
+    public void setupLogging() {
         // Pull the replay log from AdvantageScope (or prompt the user)
         String logPath = LogFileUtil.findReplayLog();
         // Read replay log

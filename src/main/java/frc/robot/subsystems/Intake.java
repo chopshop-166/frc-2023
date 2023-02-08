@@ -72,10 +72,10 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
 
     @Override
     public void safeState() {
-        // turns off the motors
+        // Turns off the motors
         getData().motorSetPoint = 0;
 
-        // stops movement of air
+        // Stops movement of air
         getData().solenoidSetPoint = Value.kOff;
     }
 }
