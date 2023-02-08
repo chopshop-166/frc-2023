@@ -13,10 +13,24 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import frc.robot.maps.subsystems.ArmMap;
+import frc.robot.maps.subsystems.ArmRotateMap;
 import frc.robot.maps.subsystems.LedMap;
 
 @RobotMapFor("Valkyrie")
 public class Valkyrie extends RobotMap {
+
+    @Override
+    public LedMap getLedMap() {
+        return new LedMap(0, 30);
+    }
+
+    @Override
+    public ArmRotateMap getArmRotateMap() {
+        CSSparkMax motor = new CSSparkMax(18, MotorType.kBrushless);
+        PIDController pid = new PIDController(0.01, 0, 0);
+        pid.setTolerance(1);
+        return new ArmRotateMap(motor, 1, 10, pid);
+    }
 
     @Override
     public ArmMap getArmMap() {
@@ -25,11 +39,6 @@ public class Valkyrie extends RobotMap {
         PIDController pidController = new PIDController(0, 0, 0);
         pidController.setTolerance(4);
         return new ArmMap(motor, 400, 20, pidController);
-    }
-
-    @Override
-    public LedMap getLedMap() {
-        return new LedMap(0, 30);
     }
 
     @Override

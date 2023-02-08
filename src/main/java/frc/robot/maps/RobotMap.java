@@ -9,17 +9,21 @@ import com.chopshop166.chopshoplib.maps.RobotMapFor;
 
 // $Imports$
 import frc.robot.maps.subsystems.ArmMap;
+import frc.robot.maps.subsystems.ArmRotateMap;
 import frc.robot.maps.subsystems.IntakeData;
 import frc.robot.maps.subsystems.LedMap;
 import frc.robot.maps.subsystems.SwerveDriveMap;
 
 @RobotMapFor("Default")
 public class RobotMap {
-    // $Maps$
 
     // $Getters$
     public ArmMap getArmMap() {
         return new ArmMap();
+    }
+
+    public ArmRotateMap getArmRotateMap() {
+        return new ArmRotateMap();
     }
 
     public IntakeData.Map getIntakeMap() {

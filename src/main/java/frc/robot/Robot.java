@@ -11,14 +11,13 @@ import frc.robot.maps.RobotMap;
 import frc.robot.subsystems.Drive;
 // $Imports$
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.ArmRotate;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Led;
 
 public class Robot extends CommandRobot {
 
-    private RobotMap map = getMapForName("OffAxis", RobotMap.class,
-            "frc.robot.maps");
-    // private RobotMap map = new RobotMap();
+    private RobotMap map = getMapForName("Valkyrie", RobotMap.class, "frc.robot.maps");
     private ButtonXboxController driveController = new ButtonXboxController(0);
     private ButtonXboxController copilotController = new ButtonXboxController(1);
 
@@ -29,6 +28,7 @@ public class Robot extends CommandRobot {
 
     private Drive drive = new Drive(map.getDriveMap());
     private Led led = new Led(map.getLedMap());
+    private ArmRotate armRotate = new ArmRotate(map.getArmRotateMap());
 
     private Auto auto = new Auto(drive);
 
@@ -37,7 +37,6 @@ public class Robot extends CommandRobot {
 
     @Override
     public void teleopInit() {
-
     }
 
     @Override
@@ -70,8 +69,7 @@ public class Robot extends CommandRobot {
                 drive.drive(driveController::getLeftX, driveController::getLeftY, driveController::getRightX));
 
         led.setDefaultCommand(led.colorAlliance());
-        arm.setDefaultCommand(
-                arm.manual(driveController::getLeftY));
-
+        arm.setDefaultCommand(arm.manual(copilotController::getLeftY));
+        armRotate.setDefaultCommand(armRotate.move(copilotController::getRightY));
     }
 }
