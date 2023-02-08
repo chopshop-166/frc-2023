@@ -8,8 +8,8 @@ import com.chopshop166.chopshoplib.motors.SmartMotorController;
 import edu.wpi.first.math.controller.PIDController;
 
 public class ArmRotateMap {
-    final public SmartMotorController motor;
-    final public PIDController pid;
+    public final SmartMotorController motor;
+    public final PIDController pid;
     public final double topAngle;
     public final double bottomAngle;
 

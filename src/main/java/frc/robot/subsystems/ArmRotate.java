@@ -38,7 +38,7 @@ public class ArmRotate extends SmartSubsystemBase {
         return cmd("Move To Set Angle").onExecute(() -> {
             data.setPoint = pid.calculate(data.degrees, angle);
 
-        }).runsUntil(() -> (pid.atSetpoint())).onEnd(() -> {
+        }).runsUntil(pid::atSetpoint).onEnd(() -> {
             data.setPoint = 0;
         });
 
