@@ -77,7 +77,7 @@ public class Drive extends SmartSubsystemBase {
             double fb = rotationPID.calculate(pose.getRotation().getDegrees(), angle.getDegrees());
             move(translateX.getAsDouble(), translateY.getAsDouble(), fb);
         }).runsUntil(() -> Math.abs(pose.getRotation().getDegrees() - angle.getDegrees()) < 0.1)
-                .onEnd(() -> move(0, 0, 0));
+                .onEnd(this::safeState);
 
     }
 
@@ -128,7 +128,7 @@ public class Drive extends SmartSubsystemBase {
         return cmd().onExecute(() -> {
             Transform2d fb = drivePID.calculate(pose, targetPose);
             move(fb.getX(), fb.getY(), fb.getRotation().getDegrees());
-        }).runsUntil(() -> drivePID.isFinished(pose, targetPose, 0.005)).onEnd(() -> move(0, 0, 0));
+        }).runsUntil(() -> drivePID.isFinished(pose, targetPose, 0.005)).onEnd(this::safeState);
     }
 
     // Drive to a pre-determined grid position
@@ -160,7 +160,7 @@ public class Drive extends SmartSubsystemBase {
 
     @Override
     public void safeState() {
-
+        move(0, 0, 0);
     }
 
     @Override
