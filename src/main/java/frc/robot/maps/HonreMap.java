@@ -36,7 +36,9 @@ public class HonreMap extends RobotMap {
     public SwerveDriveMap getDriveMap() {
         // Value taken from CAD as offset from center of module base pulley to center
         // of the robot
-        final double MODULE_OFFSET_XY = 0.381;
+
+        // 8.89 in
+        final double MODULE_OFFSET_XY = Units.inchesToMeters(8.89);
         final PigeonGyro pigeonGyro = new PigeonGyro(new PigeonIMU(5));
 
         final CSSparkMax frontLeftSteer = new CSSparkMax(8, MotorType.kBrushless);
