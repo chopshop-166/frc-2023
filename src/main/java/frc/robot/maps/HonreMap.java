@@ -24,6 +24,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import frc.robot.maps.subsystems.ArmMap;
 import frc.robot.maps.subsystems.ArmRotateMap;
 import frc.robot.maps.subsystems.IntakeData;
 import frc.robot.maps.subsystems.SwerveDriveMap;
@@ -39,7 +40,7 @@ public class HonreMap extends RobotMap {
 
         // 8.89 in
         final double MODULE_OFFSET_XY = Units.inchesToMeters(8.89);
-        final PigeonGyro pigeonGyro = new PigeonGyro(new PigeonIMU(5));
+        final PigeonGyro pigeonGyro = new PigeonGyro(new PigeonIMU(1));
 
         final CSSparkMax frontLeftSteer = new CSSparkMax(8, MotorType.kBrushless);
         final CSSparkMax frontRightSteer = new CSSparkMax(6, MotorType.kBrushless);
@@ -109,16 +110,8 @@ public class HonreMap extends RobotMap {
     }
 
     @Override
-    public void setupLogging() {
-        Logger.getInstance().addDataReceiver(new WPILOGWriter("/media/sda1/")); // Log to a USB stick
-        Logger.getInstance().addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-        Logger.getInstance().recordMetadata("RobotMap", this.getClass().getSimpleName());
-        new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
-    }
-
-    @Override
     public IntakeData.Map getIntakeMap() {
-        CSSparkMax intakeMotor = new CSSparkMax(10, MotorType.kBrushless);
+        CSSparkMax intakeMotor = new CSSparkMax(14, MotorType.kBrushless);
         RevDSolenoid intakeSolenoid = new RevDSolenoid(0, 1);
 
         return new IntakeData.Map(intakeMotor, intakeSolenoid, new MockColorSensor());
@@ -132,4 +125,17 @@ public class HonreMap extends RobotMap {
 
     }
 
+    @Override
+    public ArmMap getArmMap() {
+        CSSparkMax motor = new CSSparkMax(11, MotorType.kBrushless);
+        return new ArmMap(motor, 0, 0, new PIDController(0, 0, 0));
+    }
+
+    @Override
+    public void setupLogging() {
+        Logger.getInstance().addDataReceiver(new WPILOGWriter("/media/sda1/")); // Log to a USB stick
+        Logger.getInstance().addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+        Logger.getInstance().recordMetadata("RobotMap", this.getClass().getSimpleName());
+        new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
+    }
 }
