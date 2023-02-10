@@ -111,7 +111,7 @@ public class HonreMap extends RobotMap {
 
     @Override
     public IntakeData.Map getIntakeMap() {
-        CSSparkMax intakeMotor = new CSSparkMax(14, MotorType.kBrushless);
+        CSSparkMax intakeMotor = new CSSparkMax(9, MotorType.kBrushless);
         RevDSolenoid intakeSolenoid = new RevDSolenoid(0, 1);
 
         return new IntakeData.Map(intakeMotor, intakeSolenoid, new MockColorSensor());
