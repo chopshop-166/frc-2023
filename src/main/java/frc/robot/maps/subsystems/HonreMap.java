@@ -1,5 +1,6 @@
 package frc.robot.maps.subsystems;
 
+import org.checkerframework.checker.units.qual.s;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
@@ -7,6 +8,8 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import com.chopshop166.chopshoplib.drive.SDSSwerveModule;
 import com.chopshop166.chopshoplib.maps.RobotMapFor;
 import com.chopshop166.chopshoplib.motors.CSSparkMax;
+import com.chopshop166.chopshoplib.pneumatics.RevDSolenoid;
+import com.chopshop166.chopshoplib.sensors.MockColorSensor;
 import com.chopshop166.chopshoplib.sensors.gyro.PigeonGyro;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
@@ -14,6 +17,7 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -21,6 +25,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj2.command.PIDCommand;
 import frc.robot.maps.RobotMap;
 import frc.robot.util.DrivePID;
 
@@ -87,7 +92,7 @@ public class HonreMap extends RobotMap {
         final DrivePID pid = new DrivePID(0.2, 0, 0.05, 0.001, 0, 0);
 
         final Transform3d cameraPosition = new Transform3d(
-                new Translation3d(0, 0, 0),
+                new Translation3d(0.061976, 0.18415, 0.635),
                 new Rotation3d());
 
         return new SwerveDriveMap(frontLeft, frontRight, rearLeft, rearRight,
@@ -101,6 +106,22 @@ public class HonreMap extends RobotMap {
         Logger.getInstance().addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
         Logger.getInstance().recordMetadata("RobotMap", this.getClass().getSimpleName());
         new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
+    }
+
+    @Override
+    public IntakeData.Map getIntakeMap() {
+        CSSparkMax intakeMotor = new CSSparkMax(10, MotorType.kBrushless);
+        RevDSolenoid intakeSolenoid = new RevDSolenoid(0, 1);
+
+        return new IntakeData.Map(intakeMotor, intakeSolenoid, new MockColorSensor());
+
+    }
+
+    @Override
+    public ArmRotateMap getArmRotateMap() {
+        CSSparkMax motor = new CSSparkMax(10, MotorType.kBrushless);
+        return new ArmRotateMap(motor, 0, 0, new PIDController(0, 0, 0));
+
     }
 
 }
