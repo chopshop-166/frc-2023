@@ -1,4 +1,4 @@
-package frc.robot.maps.subsystems;
+package frc.robot.maps;
 
 import org.checkerframework.checker.units.qual.s;
 import org.littletonrobotics.junction.Logger;
@@ -26,7 +26,10 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
-import frc.robot.maps.RobotMap;
+import frc.robot.maps.subsystems.ArmRotateMap;
+import frc.robot.maps.subsystems.IntakeData;
+import frc.robot.maps.subsystems.SwerveDriveMap;
+import frc.robot.maps.subsystems.IntakeData.Map;
 import frc.robot.util.DrivePID;
 
 @RobotMapFor("Honre")
