@@ -1,6 +1,5 @@
 package frc.robot.maps;
 
-import org.checkerframework.checker.units.qual.s;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
@@ -25,11 +24,9 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import edu.wpi.first.wpilibj2.command.PIDCommand;
 import frc.robot.maps.subsystems.ArmRotateMap;
 import frc.robot.maps.subsystems.IntakeData;
 import frc.robot.maps.subsystems.SwerveDriveMap;
-import frc.robot.maps.subsystems.IntakeData.Map;
 import frc.robot.util.DrivePID;
 
 @RobotMapFor("Honre")
@@ -95,7 +92,13 @@ public class HonreMap extends RobotMap {
         final DrivePID pid = new DrivePID(0.2, 0, 0.05, 0.001, 0, 0);
 
         final Transform3d cameraPosition = new Transform3d(
-                new Translation3d(0.061976, 0.18415, 0.635),
+                new Translation3d(
+                        Units.inchesToMeters(
+                                2.44),
+                        Units.inchesToMeters(
+                                7.25),
+                        Units.inchesToMeters(
+                                25)),
                 new Rotation3d());
 
         return new SwerveDriveMap(frontLeft, frontRight, rearLeft, rearRight,
