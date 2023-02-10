@@ -38,7 +38,6 @@ public class HonreMap extends RobotMap {
         // Value taken from CAD as offset from center of module base pulley to center
         // of the robot
 
-        // 8.89 in
         final double MODULE_OFFSET_XY = Units.inchesToMeters(8.89);
         final PigeonGyro pigeonGyro = new PigeonGyro(new PigeonIMU(1));
 
