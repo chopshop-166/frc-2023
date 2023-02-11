@@ -7,6 +7,9 @@ import org.littletonrobotics.junction.Logger;
 import com.chopshop166.chopshoplib.PersistenceCheck;
 import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.NetworkTableValue;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.maps.subsystems.ArmMap;
 import frc.robot.maps.subsystems.ArmMap.Data;
@@ -14,12 +17,22 @@ import frc.robot.maps.subsystems.ArmMap.Data;
 public class Arm extends SmartSubsystemBase {
 
     public Data data = new Data();
-    public ArmMap map;
+    public ArmMap extendMap;
     public final double SPEED = 0.3;
     private final double RETRACT_SPEED = -0.1;
+    final double pivotHeight = 46.654;
+    private double armAngle;
 
-    public Arm(ArmMap map) {
-        this.map = map;
+    NetworkTableInstance inst = NetworkTableInstance.getDefault();
+    NetworkTable table = inst.getTable("ArmTable");
+
+    public Arm(ArmMap extendMap) {
+        this.extendMap = extendMap;
+    }
+
+    public boolean intakeBelowGround() {
+        return pivotHeight > (Math.cos(armAngle) * data.distanceInches);
+
     }
 
     enum Level {
@@ -75,9 +88,9 @@ public class Arm extends SmartSubsystemBase {
     public CommandBase moveToDistancePID(double distance) {
         return cmd("Move Distance").onExecute(() -> {
             // Extend
-            data.setPoint = limit(map.pid.calculate(data.distanceInches, distance));
+            data.setPoint = limit(extendMap.pid.calculate(data.distanceInches, distance));
 
-        }).runsUntil(map.pid::atSetpoint).onEnd(() -> {
+        }).runsUntil(extendMap.pid::atSetpoint).onEnd(() -> {
             data.setPoint = 0;
         });
     }
@@ -95,14 +108,14 @@ public class Arm extends SmartSubsystemBase {
             data.setPoint = limit(RETRACT_SPEED);
         }).runsUntil(velocityPersistenceCheck).onEnd(() -> {
             data.setPoint = 0;
-            map.extendMotor.getEncoder().reset();
+            extendMap.extendMotor.getEncoder().reset();
         });
     }
 
     @Override
     public void reset() {
         // Nothing to reset here
-        map.extendMotor.getEncoder().reset();
+        extendMap.extendMotor.getEncoder().reset();
     }
 
     @Override
@@ -115,19 +128,25 @@ public class Arm extends SmartSubsystemBase {
     public void periodic() {
         // This method will be called once per scheduler run
         // Use this for any background processing
-        this.map.updateData(data);
+        this.extendMap.updateData(data);
         Logger.getInstance().processInputs(getName(), data);
+        table.putValue("armLegnth", NetworkTableValue.makeDouble(data.distanceInches));
+        armAngle = table.getValue("angle").getDouble();
     }
 
-    // Adds limits to arm extension speed
+    // Adds softlimit to arm extension speed
+
     private double limit(double speed) {
-        // softLimit
-        if ((data.distanceInches > map.softMaxDistance && speed > 0) || (data.distanceInches < map.softMinDistance
-                && speed < 0)) {
+        if (speed > 0 && intakeBelowGround()) {
+            return 0;
+        }
+        if ((data.distanceInches > extendMap.softMaxDistance && speed > 0)
+                || (data.distanceInches < extendMap.softMinDistance && speed < 0)) {
+
             return speed * 0.1;
         }
-        if ((data.distanceInches > map.hardMaxDistance && speed > 0)
-                || (data.distanceInches < map.hardMinDistance && speed < 0)) {
+        if ((data.distanceInches > extendMap.hardMaxDistance && speed > 0)
+                || (data.distanceInches < extendMap.hardMinDistance && speed < 0)) {
             return data.setPoint = 0;
         }
         return speed;
