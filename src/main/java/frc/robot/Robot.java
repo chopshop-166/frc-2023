@@ -72,8 +72,8 @@ public class Robot extends CommandRobot {
         // will need buttons for the scoring positions
 
         // Led
-        copilotController.povUp().onTrue(led.setYellow());
-        copilotController.povDown().onTrue(led.setPurple());
+        copilotController.povUp().whileTrue(led.setYellow());
+        copilotController.povDown().whileTrue(led.setPurple());
     }
 
     @Override
