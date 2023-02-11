@@ -58,7 +58,7 @@ public class HonreMap extends RobotMap {
         encoderFL.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
         final SDSSwerveModule frontLeft = new SDSSwerveModule(new Translation2d(MODULE_OFFSET_XY, MODULE_OFFSET_XY),
                 encoderFL, frontLeftSteer, new CSSparkMax(7, MotorType.kBrushless),
-                SDSSwerveModule.MK3_FAST);
+                SDSSwerveModule.MK4_V2);
 
         // Front Right Module
         final CANCoder encoderFR = new CANCoder(3);
@@ -67,7 +67,7 @@ public class HonreMap extends RobotMap {
         final SDSSwerveModule frontRight = new SDSSwerveModule(new Translation2d(MODULE_OFFSET_XY, -MODULE_OFFSET_XY),
                 encoderFR, frontRightSteer, new CSSparkMax(5,
                         MotorType.kBrushless),
-                SDSSwerveModule.MK3_FAST);
+                SDSSwerveModule.MK4_V2);
 
         // Rear Left Module
         final CANCoder encoderRL = new CANCoder(2);
@@ -76,7 +76,7 @@ public class HonreMap extends RobotMap {
         final SDSSwerveModule rearLeft = new SDSSwerveModule(new Translation2d(-MODULE_OFFSET_XY, MODULE_OFFSET_XY),
                 encoderRL, rearLeftSteer, new CSSparkMax(3,
                         MotorType.kBrushless),
-                SDSSwerveModule.MK3_FAST);
+                SDSSwerveModule.MK4_V2);
 
         // Rear Right Module
         final CANCoder encoderRR = new CANCoder(1);
@@ -85,7 +85,7 @@ public class HonreMap extends RobotMap {
         final SDSSwerveModule rearRight = new SDSSwerveModule(new Translation2d(-MODULE_OFFSET_XY, -MODULE_OFFSET_XY),
                 encoderRR, rearRightSteer, new CSSparkMax(1,
                         MotorType.kBrushless),
-                SDSSwerveModule.MK3_FAST);
+                SDSSwerveModule.MK4_V2);
 
         final double maxDriveSpeedMetersPerSecond = Units.feetToMeters(10);
 

@@ -17,7 +17,7 @@ import frc.robot.subsystems.Led;
 
 public class Robot extends CommandRobot {
 
-    private RobotMap map = getMapForName("Valkyrie", RobotMap.class, "frc.robot.maps");
+    private RobotMap map = getMapForName("Honre", RobotMap.class, "frc.robot.maps");
     private ButtonXboxController driveController = new ButtonXboxController(0);
     private ButtonXboxController copilotController = new ButtonXboxController(1);
 
