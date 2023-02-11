@@ -102,6 +102,7 @@ public class Arm extends SmartSubsystemBase {
     @Override
     public void reset() {
         // Nothing to reset here
+        map.extendMotor.getEncoder().reset();
     }
 
     @Override
