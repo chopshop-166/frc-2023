@@ -7,10 +7,9 @@ import org.littletonrobotics.junction.Logger;
 import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.NetworkTableValue;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.maps.subsystems.ArmRotateMap;
 import frc.robot.maps.subsystems.ArmRotateMap.Data;
@@ -27,7 +26,10 @@ public class ArmRotate extends SmartSubsystemBase {
     private double armLength;
 
     NetworkTableInstance ntinst = NetworkTableInstance.getDefault();
-    NetworkTable table = ntinst.getTable("ArmTable");
+
+    NetworkTableInstance inst = NetworkTableInstance.getDefault();
+    DoubleSubscriber lengthSub = inst.getDoubleTopic("Arm/Length").subscribe(0);
+    DoublePublisher anglePub = inst.getDoubleTopic("Arm/Angle").publish();
 
     public ArmRotate(ArmRotateMap map) {
 
@@ -75,8 +77,8 @@ public class ArmRotate extends SmartSubsystemBase {
         // Use this for any background processing
         this.map.updateData(data);
         Logger.getInstance().processInputs(getName(), data);
-        table.putValue("angle", NetworkTableValue.makeDouble(data.degrees));
-        armLength = table.getValue("armLegnth").getDouble();
+        anglePub.set(data.degrees);
+        armLength = lengthSub.get();
     }
 
     private double softLimit(double speed) {
