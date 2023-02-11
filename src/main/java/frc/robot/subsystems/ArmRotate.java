@@ -46,7 +46,7 @@ public class ArmRotate extends SmartSubsystemBase {
 
     @Override
     public void reset() {
-        // Nothing to reset here
+        map.motor.getEncoder().reset();
     }
 
     @Override
