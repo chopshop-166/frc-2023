@@ -70,7 +70,7 @@ public class Led extends SmartSubsystemBase {
         });
     }
 
-    public CommandBase lightUpPurple() {
+    public CommandBase setPurple() {
         return runOnce(() -> {
             setColor(133, 7, 168);
             Logger.getInstance().recordOutput("IndicateLEDs", "Purple");
