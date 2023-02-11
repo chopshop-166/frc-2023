@@ -29,7 +29,7 @@ public class Valkyrie extends RobotMap {
         CSSparkMax motor = new CSSparkMax(18, MotorType.kBrushless);
         PIDController pid = new PIDController(0.01, 0, 0);
         pid.setTolerance(1);
-        return new ArmRotateMap(motor, 1, 10, pid);
+        return new ArmRotateMap(motor, 1, 10, 1, 10, pid);
     }
 
     @Override

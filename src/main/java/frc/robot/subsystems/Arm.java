@@ -32,7 +32,7 @@ public class Arm extends SmartSubsystemBase {
     }
 
     public boolean intakeBelowGround() {
-        return pivotHeight > (Math.cos(armAngle) * data.distanceInches);
+        return pivotHeight < Math.cos(Math.toRadians(armAngle)) * (data.distanceInches + 42.3);
 
     }
 
@@ -141,14 +141,14 @@ public class Arm extends SmartSubsystemBase {
         if (speed > 0 && intakeBelowGround()) {
             return 0;
         }
-        if ((data.distanceInches > extendMap.softMaxDistance && speed > 0)
-                || (data.distanceInches < extendMap.softMinDistance && speed < 0)) {
-
-            return speed * 0.1;
-        }
         if ((data.distanceInches > extendMap.hardMaxDistance && speed > 0)
                 || (data.distanceInches < extendMap.hardMinDistance && speed < 0)) {
             return data.setPoint = 0;
+        }
+        if ((data.distanceInches > extendMap.softMaxDistance && speed > 0)
+                || (data.distanceInches < extendMap.softMinDistance && speed < 0)) {
+
+            return speed * 0.2;
         }
         return speed;
     }

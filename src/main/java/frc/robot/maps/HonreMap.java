@@ -114,6 +114,7 @@ public class HonreMap extends RobotMap {
     @Override
     public IntakeData.Map getIntakeMap() {
         CSTalonSRX intakeMotor = new CSTalonSRX(9);
+        intakeMotor.setInverted(true);
         RevDSolenoid intakeSolenoid = new RevDSolenoid(8, 9);
 
         return new IntakeData.Map(intakeMotor, intakeSolenoid, new MockColorSensor());
@@ -126,7 +127,7 @@ public class HonreMap extends RobotMap {
         motor.getMotorController().setInverted(false);
         motor.getEncoder().setPositionScaleFactor(1.125);
         motor.getEncoder().setVelocityScaleFactor(1.125);
-        return new ArmRotateMap(motor, 80, 10, new PIDController(0, 0, 0));
+        return new ArmRotateMap(motor, 85, 10, 115, 0, new PIDController(0, 0, 0));
 
     }
 
@@ -136,7 +137,7 @@ public class HonreMap extends RobotMap {
         motor.getMotorController().setInverted(true);
         motor.getEncoder().setPositionScaleFactor((1.273 * Math.PI) / 10);
         motor.getEncoder().setVelocityScaleFactor((1.273 * Math.PI) / 10);
-        return new ArmMap(motor, 20, 0, 20, 0, new PIDController(0, 0, 0));
+        return new ArmMap(motor, 19, 1, 19.9, 0, new PIDController(0, 0, 0));
     }
 
     @Override
