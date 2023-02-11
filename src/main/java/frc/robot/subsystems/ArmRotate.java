@@ -28,7 +28,7 @@ public class ArmRotate extends SmartSubsystemBase {
 
     public CommandBase move(DoubleSupplier rotationSpeed) {
         return run(() -> {
-            data.setPoint = softLimit(rotationSpeed.getAsDouble());
+            data.setPoint = softLimit(rotationSpeed.getAsDouble() / 2);
         });
     }
 

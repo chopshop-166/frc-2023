@@ -88,7 +88,7 @@ public class Robot extends CommandRobot {
 
         led.setDefaultCommand(led.colorAlliance());
         arm.setDefaultCommand(arm.manual(copilotController::getTriggers));
-        armRotate.setDefaultCommand(armRotate.move(copilotController::getLeftX));
+        armRotate.setDefaultCommand(armRotate.move(() -> -copilotController.getLeftY()));
 
     }
 }

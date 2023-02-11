@@ -7,6 +7,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import com.chopshop166.chopshoplib.drive.SDSSwerveModule;
 import com.chopshop166.chopshoplib.maps.RobotMapFor;
 import com.chopshop166.chopshoplib.motors.CSSparkMax;
+import com.chopshop166.chopshoplib.motors.CSTalonSRX;
 import com.chopshop166.chopshoplib.pneumatics.RevDSolenoid;
 import com.chopshop166.chopshoplib.sensors.MockColorSensor;
 import com.chopshop166.chopshoplib.sensors.gyro.PigeonGyro;
@@ -22,6 +23,8 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import frc.robot.maps.subsystems.ArmMap;
@@ -110,7 +113,7 @@ public class HonreMap extends RobotMap {
 
     @Override
     public IntakeData.Map getIntakeMap() {
-        CSSparkMax intakeMotor = new CSSparkMax(9, MotorType.kBrushless);
+        CSTalonSRX intakeMotor = new CSTalonSRX(9);
         RevDSolenoid intakeSolenoid = new RevDSolenoid(8, 9);
 
         return new IntakeData.Map(intakeMotor, intakeSolenoid, new MockColorSensor());
@@ -120,14 +123,20 @@ public class HonreMap extends RobotMap {
     @Override
     public ArmRotateMap getArmRotateMap() {
         CSSparkMax motor = new CSSparkMax(10, MotorType.kBrushless);
-        return new ArmRotateMap(motor, 0, 0, new PIDController(0, 0, 0));
+        motor.getMotorController().setInverted(false);
+        motor.getEncoder().setPositionScaleFactor(1.125);
+        motor.getEncoder().setVelocityScaleFactor(1.125);
+        return new ArmRotateMap(motor, 80, 10, new PIDController(0, 0, 0));
 
     }
 
     @Override
     public ArmMap getArmMap() {
         CSSparkMax motor = new CSSparkMax(11, MotorType.kBrushless);
-        return new ArmMap(motor, 0, 0, new PIDController(0, 0, 0));
+        motor.getMotorController().setInverted(true);
+        motor.getEncoder().setPositionScaleFactor((1.273 * Math.PI) / 10);
+        motor.getEncoder().setVelocityScaleFactor((1.273 * Math.PI) / 10);
+        return new ArmMap(motor, 20, -20, new PIDController(0, 0, 0));
     }
 
     @Override
@@ -136,5 +145,6 @@ public class HonreMap extends RobotMap {
         Logger.getInstance().addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
         Logger.getInstance().recordMetadata("RobotMap", this.getClass().getSimpleName());
         new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
+        new Compressor(PneumaticsModuleType.REVPH);
     }
 }

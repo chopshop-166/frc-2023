@@ -50,7 +50,7 @@ public class Arm extends SmartSubsystemBase {
     // Manually sets the arm extension
     public CommandBase manual(DoubleSupplier motorSpeed) {
         return run(() -> {
-            data.setPoint = softLimit(motorSpeed.getAsDouble());
+            data.setPoint = softLimit(motorSpeed.getAsDouble() / 3);
         });
     }
 
