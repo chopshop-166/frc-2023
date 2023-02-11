@@ -55,7 +55,25 @@ public class Robot extends CommandRobot {
 
     @Override
     public void configureButtonBindings() {
+        // DRIVE CONTROLLER
+        // Drive
         driveController.rightBumper().onTrue(drive.setSpeedCoef(0.5)).onFalse(drive.setSpeedCoef(1));
+        driveController.a().onTrue(drive.driveToNearest());
+
+        // COPILOT CONTROLLER
+        // Intake
+        copilotController.a().onTrue(intake.sensorControl());
+        copilotController.b().onTrue(intake.cubeGrab());
+        copilotController.rightBumper().onTrue(intake.cubeRelease());
+        copilotController.x().onTrue(intake.coneGrab());
+        copilotController.leftBumper().onTrue(intake.coneRelease());
+        // Arm
+        // extend and rotate are in default commands
+        // will need buttons for the scoring positions
+
+        // Led
+        copilotController.povUp().onTrue(led.setYellow());
+        copilotController.povDown().onTrue(led.setPurple());
     }
 
     @Override
@@ -69,7 +87,8 @@ public class Robot extends CommandRobot {
                 drive.drive(driveController::getLeftX, driveController::getLeftY, driveController::getRightX));
 
         led.setDefaultCommand(led.colorAlliance());
-        arm.setDefaultCommand(arm.manual(copilotController::getLeftY));
-        armRotate.setDefaultCommand(armRotate.move(copilotController::getRightY));
+        arm.setDefaultCommand(arm.manual(copilotController::getTriggers));
+        armRotate.setDefaultCommand(armRotate.move(copilotController::getLeftX));
+
     }
 }
