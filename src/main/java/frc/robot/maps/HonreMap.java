@@ -136,7 +136,7 @@ public class HonreMap extends RobotMap {
         motor.getMotorController().setInverted(true);
         motor.getEncoder().setPositionScaleFactor((1.273 * Math.PI) / 10);
         motor.getEncoder().setVelocityScaleFactor((1.273 * Math.PI) / 10);
-        return new ArmMap(motor, 20, -20, new PIDController(0, 0, 0));
+        return new ArmMap(motor, 20, 0, 20, 0, new PIDController(0, 0, 0));
     }
 
     @Override
