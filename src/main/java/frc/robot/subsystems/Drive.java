@@ -69,7 +69,6 @@ public class Drive extends SmartSubsystemBase {
                 this.map);
 
         rotationPID = drivePID.copyRotationPidController();
-
     }
 
     public CommandBase rotateToAngle(Rotation2d angle, DoubleSupplier translateX, DoubleSupplier translateY) {

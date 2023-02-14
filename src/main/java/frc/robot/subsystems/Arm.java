@@ -135,7 +135,7 @@ public class Arm extends SmartSubsystemBase {
         armAngle = angleSub.get();
     }
 
-    // Adds softlimit to arm extension speed
+    // Adds limits to arm extension speed
 
     private double limit(double speed) {
         if (speed > 0 && intakeBelowGround()) {

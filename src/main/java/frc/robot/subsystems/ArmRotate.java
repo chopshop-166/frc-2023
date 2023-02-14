@@ -39,7 +39,7 @@ public class ArmRotate extends SmartSubsystemBase {
 
     public CommandBase move(DoubleSupplier rotationSpeed) {
         return run(() -> {
-            data.setPoint = softLimit(rotationSpeed.getAsDouble() / 2);
+            data.setPoint = limits(rotationSpeed.getAsDouble() / 2);
         });
     }
 
@@ -85,7 +85,7 @@ public class ArmRotate extends SmartSubsystemBase {
         armLength = lengthSub.get();
     }
 
-    private double softLimit(double speed) {
+    private double limits(double speed) {
         if (speed < 0 && intakeBelowGround()) {
             return 0;
         }
