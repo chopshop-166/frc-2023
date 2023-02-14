@@ -5,12 +5,14 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import com.chopshop166.chopshoplib.drive.SDSSwerveModule;
+import com.chopshop166.chopshoplib.drive.SDSSwerveModule.Configuration;
 import com.chopshop166.chopshoplib.maps.RobotMapFor;
 import com.chopshop166.chopshoplib.motors.CSSparkMax;
 import com.chopshop166.chopshoplib.motors.CSTalonSRX;
 import com.chopshop166.chopshoplib.pneumatics.RevDSolenoid;
 import com.chopshop166.chopshoplib.sensors.MockColorSensor;
 import com.chopshop166.chopshoplib.sensors.gyro.PigeonGyro;
+import com.chopshop166.chopshoplib.states.PIDValues;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.PigeonIMU;
@@ -54,6 +56,10 @@ public class HonreMap extends RobotMap {
         rearLeftSteer.getMotorController().setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
         frontRightSteer.getMotorController().setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
 
+        // Configuration for MK4i with L2 speeds
+        Configuration MK4i_L2 = new Configuration(SDSSwerveModule.MK4_V2.gearRatio,
+                SDSSwerveModule.MK4_V2.wheelDiameter, new PIDValues(0.002568, 0.00, 0.0001));
+
         // All Distances are in Meters
         // Front Left Module
         final CANCoder encoderFL = new CANCoder(4);
@@ -61,7 +67,7 @@ public class HonreMap extends RobotMap {
         encoderFL.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
         final SDSSwerveModule frontLeft = new SDSSwerveModule(new Translation2d(MODULE_OFFSET_XY, MODULE_OFFSET_XY),
                 encoderFL, frontLeftSteer, new CSSparkMax(7, MotorType.kBrushless),
-                SDSSwerveModule.MK4_V2);
+                MK4i_L2);
 
         // Front Right Module
         final CANCoder encoderFR = new CANCoder(3);
@@ -70,7 +76,7 @@ public class HonreMap extends RobotMap {
         final SDSSwerveModule frontRight = new SDSSwerveModule(new Translation2d(MODULE_OFFSET_XY, -MODULE_OFFSET_XY),
                 encoderFR, frontRightSteer, new CSSparkMax(5,
                         MotorType.kBrushless),
-                SDSSwerveModule.MK4_V2);
+                MK4i_L2);
 
         // Rear Left Module
         final CANCoder encoderRL = new CANCoder(2);
@@ -79,7 +85,7 @@ public class HonreMap extends RobotMap {
         final SDSSwerveModule rearLeft = new SDSSwerveModule(new Translation2d(-MODULE_OFFSET_XY, MODULE_OFFSET_XY),
                 encoderRL, rearLeftSteer, new CSSparkMax(3,
                         MotorType.kBrushless),
-                SDSSwerveModule.MK4_V2);
+                MK4i_L2);
 
         // Rear Right Module
         final CANCoder encoderRR = new CANCoder(1);
@@ -88,7 +94,7 @@ public class HonreMap extends RobotMap {
         final SDSSwerveModule rearRight = new SDSSwerveModule(new Translation2d(-MODULE_OFFSET_XY, -MODULE_OFFSET_XY),
                 encoderRR, rearRightSteer, new CSSparkMax(1,
                         MotorType.kBrushless),
-                SDSSwerveModule.MK4_V2);
+                MK4i_L2);
 
         final double maxDriveSpeedMetersPerSecond = Units.feetToMeters(10);
 
@@ -146,6 +152,5 @@ public class HonreMap extends RobotMap {
         Logger.getInstance().addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
         Logger.getInstance().recordMetadata("RobotMap", this.getClass().getSimpleName());
         new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
-        new Compressor(PneumaticsModuleType.REVPH);
     }
 }
