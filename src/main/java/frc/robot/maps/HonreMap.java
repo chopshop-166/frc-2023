@@ -4,6 +4,7 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
+import com.chopshop166.chopshoplib.drive.MockSwerveModule;
 import com.chopshop166.chopshoplib.drive.SDSSwerveModule;
 import com.chopshop166.chopshoplib.drive.SDSSwerveModule.Configuration;
 import com.chopshop166.chopshoplib.maps.RobotMapFor;
@@ -54,16 +55,21 @@ public class HonreMap extends RobotMap {
         frontLeftSteer.getMotorController().setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
         frontRightSteer.getMotorController().setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
         rearLeftSteer.getMotorController().setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
-        frontRightSteer.getMotorController().setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
+        rearRightSteer.getMotorController().setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
+
+        frontLeftSteer.getMotorController().setInverted(true);
+        frontRightSteer.getMotorController().setInverted(true);
+        rearLeftSteer.getMotorController().setInverted(true);
+        rearRightSteer.getMotorController().setInverted(true);
 
         // Configuration for MK4i with L2 speeds
         Configuration MK4i_L2 = new Configuration(SDSSwerveModule.MK4_V2.gearRatio,
-                SDSSwerveModule.MK4_V2.wheelDiameter, new PIDValues(0.002568, 0.00, 0.0001));
+                SDSSwerveModule.MK4_V2.wheelDiameter, new PIDValues(0.001, 0.00, 0.0));
 
         // All Distances are in Meters
         // Front Left Module
         final CANCoder encoderFL = new CANCoder(4);
-        encoderFL.configMagnetOffset(34.365);
+        encoderFL.configMagnetOffset(-29.8828125);
         encoderFL.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
         final SDSSwerveModule frontLeft = new SDSSwerveModule(new Translation2d(MODULE_OFFSET_XY, MODULE_OFFSET_XY),
                 encoderFL, frontLeftSteer, new CSSparkMax(7, MotorType.kBrushless),
@@ -71,7 +77,7 @@ public class HonreMap extends RobotMap {
 
         // Front Right Module
         final CANCoder encoderFR = new CANCoder(3);
-        encoderFR.configMagnetOffset(52.910);
+        encoderFR.configMagnetOffset(-18.720703125);
         encoderFR.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
         final SDSSwerveModule frontRight = new SDSSwerveModule(new Translation2d(MODULE_OFFSET_XY, -MODULE_OFFSET_XY),
                 encoderFR, frontRightSteer, new CSSparkMax(5,
@@ -80,7 +86,7 @@ public class HonreMap extends RobotMap {
 
         // Rear Left Module
         final CANCoder encoderRL = new CANCoder(2);
-        encoderRL.configMagnetOffset(-92.285);
+        encoderRL.configMagnetOffset(-31.376953125);
         encoderRL.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
         final SDSSwerveModule rearLeft = new SDSSwerveModule(new Translation2d(-MODULE_OFFSET_XY, MODULE_OFFSET_XY),
                 encoderRL, rearLeftSteer, new CSSparkMax(3,
@@ -89,7 +95,7 @@ public class HonreMap extends RobotMap {
 
         // Rear Right Module
         final CANCoder encoderRR = new CANCoder(1);
-        encoderRR.configMagnetOffset(25.049);
+        encoderRR.configMagnetOffset(-324.140625);
         encoderRR.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
         final SDSSwerveModule rearRight = new SDSSwerveModule(new Translation2d(-MODULE_OFFSET_XY, -MODULE_OFFSET_XY),
                 encoderRR, rearRightSteer, new CSSparkMax(1,
@@ -115,6 +121,14 @@ public class HonreMap extends RobotMap {
         return new SwerveDriveMap(frontLeft, frontRight, rearLeft, rearRight,
                 maxDriveSpeedMetersPerSecond,
                 maxRotationRadianPerSecond, pigeonGyro, pid, cameraPosition, "eyes");
+
+        // return new SwerveDriveMap(
+        // new MockSwerveModule(frontLeft.getLocation()),
+        // frontRight,
+        // new MockSwerveModule(rearLeft.getLocation()),
+        // new MockSwerveModule(rearRight.getLocation()),
+        // maxDriveSpeedMetersPerSecond, maxRotationRadianPerSecond, pigeonGyro, pid,
+        // cameraPosition, "eyes");
     }
 
     @Override

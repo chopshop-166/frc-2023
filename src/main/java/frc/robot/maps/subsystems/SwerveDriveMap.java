@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.util.DrivePID;
 
 /**
@@ -70,6 +71,7 @@ public record SwerveDriveMap(SwerveModule frontLeft, SwerveModule frontRight, Sw
             public double[] steeringCurrentAmps;
             public double[] steeringTempC;
             public SwerveModuleState desiredState = new SwerveModuleState();
+            public double steeringSetpoint;
 
             public SwerveModuleData(String name) {
                 this.name = name;
@@ -91,6 +93,8 @@ public record SwerveDriveMap(SwerveModule frontLeft, SwerveModule frontRight, Sw
                 // Steering Motor params
                 subTable.put("SteeringCurrentAmps", this.steeringCurrentAmps);
                 subTable.put("SteeringTempCelsius", this.steeringTempC);
+
+                subTable.put("SteeringSetpoint", this.steeringSetpoint);
             }
 
             public void fromLog(LogTable table) {
@@ -111,6 +115,7 @@ public record SwerveDriveMap(SwerveModule frontLeft, SwerveModule frontRight, Sw
                 this.driveTempC = subTable.getDoubleArray("DriveTempCelsius", this.driveTempC);
                 this.steeringCurrentAmps = subTable.getDoubleArray("SteeringCurrentAmps", this.steeringCurrentAmps);
                 this.steeringTempC = subTable.getDoubleArray("SteeringTempCelsius", this.steeringTempC);
+                this.steeringSetpoint = subTable.getDouble("SteeringSetpoint", this.steeringSetpoint);
             }
 
             public void update(SwerveModule module) {
@@ -122,6 +127,7 @@ public record SwerveDriveMap(SwerveModule frontLeft, SwerveModule frontRight, Sw
                 this.steeringCurrentAmps = module.getSteeringMotor().getCurrentAmps();
                 this.steeringTempC = module.getSteeringMotor().getTemperatureC();
                 module.setDesiredState(this.desiredState);
+                this.steeringSetpoint = module.getSteeringMotor().get();
             }
         }
 
