@@ -21,6 +21,8 @@ public class ArmRotate extends SmartSubsystemBase {
     final double COMPARE_ANGLE = 5;
     final double SLOW_DOWN = 0.2;
     final double pivotHeight = 46.654;
+    final double armStartLength = 42.3;
+    final double noFall = 0.03;
     final PIDController pid;
     final Data data = new Data();
     private double armLength;
@@ -39,12 +41,12 @@ public class ArmRotate extends SmartSubsystemBase {
 
     public CommandBase move(DoubleSupplier rotationSpeed) {
         return run(() -> {
-            data.setPoint = limits(rotationSpeed.getAsDouble() / 2);
+            data.setPoint = limits(rotationSpeed.getAsDouble() + noFall);
         });
     }
 
     public boolean intakeBelowGround() {
-        double armZ = (Math.cos(Math.toRadians(data.degrees)) * (armLength + 42.3));
+        double armZ = (Math.cos(Math.toRadians(data.degrees)) * (armLength + armStartLength));
 
         Logger.getInstance().recordOutput("Intake extension", armLength);
         Logger.getInstance().recordOutput("Intake Z Height", armZ);
