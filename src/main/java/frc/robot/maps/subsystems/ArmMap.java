@@ -14,6 +14,7 @@ public class ArmMap {
     public double softMinDistance;
     public double hardMaxDistance;
     public double hardMinDistance;
+    public double armPivotHight;
 
     public ArmMap() {
         this.pid = new PIDController(0, 0, 0);
@@ -23,13 +24,14 @@ public class ArmMap {
     }
 
     public ArmMap(SmartMotorController motor, double softMaxDistance, double softMinDistance, double hardMaxDistance,
-            double hardMinDistance, PIDController pid) {
+            double hardMinDistance, PIDController pid, double armPivotHight) {
         this.extendMotor = motor;
         this.softMaxDistance = softMaxDistance;
         this.softMinDistance = softMinDistance;
         this.hardMaxDistance = hardMaxDistance;
         this.hardMinDistance = hardMinDistance;
         this.pid = pid;
+        this.armPivotHight = armPivotHight;
     }
 
     public void updateData(Data data) {

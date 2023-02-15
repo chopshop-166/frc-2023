@@ -38,7 +38,7 @@ public class Valkyrie extends RobotMap {
         motor.getMotorController().setIdleMode(IdleMode.kBrake);
         PIDController pidController = new PIDController(0, 0, 0);
         pidController.setTolerance(4);
-        return new ArmMap(motor, 400, 20, 400, 20, pidController);
+        return new ArmMap(motor, 400, 20, 400, 20, pidController, 46.654);
     }
 
     @Override

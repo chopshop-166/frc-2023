@@ -4,7 +4,6 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
-import com.chopshop166.chopshoplib.drive.MockSwerveModule;
 import com.chopshop166.chopshoplib.drive.SDSSwerveModule;
 import com.chopshop166.chopshoplib.drive.SDSSwerveModule.Configuration;
 import com.chopshop166.chopshoplib.maps.RobotMapFor;
@@ -26,8 +25,6 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import frc.robot.maps.subsystems.ArmMap;
@@ -36,8 +33,8 @@ import frc.robot.maps.subsystems.IntakeData;
 import frc.robot.maps.subsystems.SwerveDriveMap;
 import frc.robot.util.DrivePID;
 
-@RobotMapFor("Honre")
-public class HonreMap extends RobotMap {
+@RobotMapFor("FrostBite")
+public class FrostBiteMap extends RobotMap {
 
     @Override
     public SwerveDriveMap getDriveMap() {
@@ -157,7 +154,7 @@ public class HonreMap extends RobotMap {
         motor.getMotorController().setInverted(true);
         motor.getEncoder().setPositionScaleFactor((1.273 * Math.PI) / 10);
         motor.getEncoder().setVelocityScaleFactor((1.273 * Math.PI) / 10);
-        return new ArmMap(motor, 19, 1, 19.9, 0, new PIDController(0, 0, 0));
+        return new ArmMap(motor, 19, 1, 19.9, 0, new PIDController(0, 0, 0), 46.654);
     }
 
     @Override
