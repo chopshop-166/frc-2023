@@ -113,8 +113,7 @@ public class FrostBiteMap extends RobotMap {
                                 7.25),
                         Units.inchesToMeters(
                                 25)),
-                new Rotation3d(
-                        Units.degreesToRadians(180), 0, 0));
+                new Rotation3d());
 
         return new SwerveDriveMap(frontLeft, frontRight, rearLeft, rearRight,
                 maxDriveSpeedMetersPerSecond,
