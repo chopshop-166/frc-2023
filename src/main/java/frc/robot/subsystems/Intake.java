@@ -3,10 +3,12 @@ package frc.robot.subsystems;
 import com.chopshop166.chopshoplib.ColorMath;
 import com.chopshop166.chopshoplib.logging.LoggedSubsystem;
 
-import frc.robot.maps.subsystems.IntakeData;
+import edu.wpi.first.networktables.BooleanPublisher;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.maps.subsystems.IntakeData;
 
 public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
 
@@ -14,9 +16,19 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
     private final double GRAB_SPEED = 1;
     private final double RELEASE_SPEED = -1;
 
+    NetworkTableInstance ntinst = NetworkTableInstance.getDefault();
+
+    BooleanPublisher clawPub = ntinst.getBooleanTopic("Intake/Closed").publish();
+
     // Creates constructor using IntakeData
     public Intake(IntakeData.Map map) {
         super(new IntakeData(), map);
+    }
+
+    @Override
+    public void periodic() {
+        super.periodic();
+        clawPub.set(getData().solenoidSetPoint == Value.kForward);
     }
 
     // Grabs game piece Cone

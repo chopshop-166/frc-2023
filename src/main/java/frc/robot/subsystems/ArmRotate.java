@@ -7,6 +7,7 @@ import org.littletonrobotics.junction.Logger;
 import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.networktables.BooleanSubscriber;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -29,9 +30,9 @@ public class ArmRotate extends SmartSubsystemBase {
 
     NetworkTableInstance ntinst = NetworkTableInstance.getDefault();
 
-    NetworkTableInstance inst = NetworkTableInstance.getDefault();
-    DoubleSubscriber lengthSub = inst.getDoubleTopic("Arm/Length").subscribe(0);
-    DoublePublisher anglePub = inst.getDoubleTopic("Arm/Angle").publish();
+    DoubleSubscriber lengthSub = ntinst.getDoubleTopic("Arm/Length").subscribe(0);
+    DoublePublisher anglePub = ntinst.getDoubleTopic("Arm/Angle").publish();
+    BooleanSubscriber intakeSub = ntinst.getBooleanTopic("Intake/Closed").subscribe(false);
 
     public ArmRotate(ArmRotateMap map) {
 
@@ -87,6 +88,10 @@ public class ArmRotate extends SmartSubsystemBase {
 
     private double limits(double speed) {
         if (speed < 0 && intakeBelowGround()) {
+            return 0;
+        }
+
+        if (intakeSub.get() && speed < 0 && data.degrees < map.bumperAngle) {
             return 0;
         }
         if ((data.degrees > this.map.hardMaxAngle && speed > 0)

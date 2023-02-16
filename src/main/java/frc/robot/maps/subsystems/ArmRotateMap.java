@@ -12,24 +12,23 @@ public class ArmRotateMap {
     public final PIDController pid;
     public final double softMaxAngle;
     public final double softMinAngle;
+    public final double bumperAngle;
     public double hardMaxAngle;
     public double hardMinAngle;
 
     public ArmRotateMap() {
-        this.motor = new SmartMotorController();
-        this.softMaxAngle = 85;
-        this.softMinAngle = 5;
-        this.pid = new PIDController(0.01, 0, 0);
+        this(new SmartMotorController(), 0, 0, 0, 0, 0, new PIDController(0, 0, 0));
     }
 
     public ArmRotateMap(SmartMotorController motor, double softMaxAngle, double softMinAngle, double hardMaxAngle,
-            double hardMinAngle, PIDController pid) {
+            double hardMinAngle, double bumperAngle, PIDController pid) {
         this.motor = motor;
         this.softMaxAngle = softMaxAngle;
         this.softMinAngle = softMinAngle;
         this.hardMaxAngle = hardMaxAngle;
         this.hardMinAngle = hardMinAngle;
         this.pid = pid;
+        this.bumperAngle = bumperAngle;
     }
 
     public void updateData(Data data) {
