@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj.util.Color;
 public class IntakeData implements LoggableInputs {
 
     public double motorSetPoint;
-    public Value solenoidSetPoint;
+    public Value solenoidSetPoint = Value.kOff;
     public Color sensorColor;
     public int gamePieceDistance;
     public int maxGamePieceDistance;

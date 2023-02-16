@@ -35,15 +35,19 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
 
     // Grabs game piece Cube
     public CommandBase cubeGrab() {
-        return runOnce(() -> {
+        return runEnd(() -> {
             getData().motorSetPoint = GRAB_SPEED;
+        }, () -> {
+            getData().motorSetPoint = 0;
         });
     }
 
     // Releases game piece Cube
     public CommandBase cubeRelease() {
-        return runOnce(() -> {
+        return runEnd(() -> {
             getData().motorSetPoint = RELEASE_SPEED;
+        }, () -> {
+            getData().motorSetPoint = 0;
         });
     }
 

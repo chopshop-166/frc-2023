@@ -17,7 +17,7 @@ import frc.robot.subsystems.Led;
 
 public class Robot extends CommandRobot {
 
-    private RobotMap map = getMapForName("Valkyrie", RobotMap.class, "frc.robot.maps");
+    private RobotMap map = getMapForName("Honre", RobotMap.class, "frc.robot.maps");
     private ButtonXboxController driveController = new ButtonXboxController(0);
     private ButtonXboxController copilotController = new ButtonXboxController(1);
 
@@ -55,7 +55,27 @@ public class Robot extends CommandRobot {
 
     @Override
     public void configureButtonBindings() {
+        // DRIVE CONTROLLER
+        // Drive
         driveController.rightBumper().onTrue(drive.setSpeedCoef(0.5)).onFalse(drive.setSpeedCoef(1));
+        driveController.a().onTrue(drive.driveToNearest());
+
+        // COPILOT CONTROLLER
+        // Intake
+        copilotController.a().onTrue(intake.sensorControl());
+        copilotController.b().whileTrue(intake.cubeGrab());
+        copilotController.rightBumper().whileTrue(intake.cubeRelease());
+        copilotController.x().onTrue(intake.coneGrab());
+        copilotController.leftBumper().onTrue(intake.coneRelease());
+        // Arm
+        // extend and rotate are in default commands
+        // will need buttons for the scoring positions
+        copilotController.start().onTrue(arm.resetCmd());
+        copilotController.back().onTrue(armRotate.resetCmd());
+
+        // Led
+        copilotController.povUp().whileTrue(led.setYellow());
+        copilotController.povDown().whileTrue(led.setPurple());
     }
 
     @Override
@@ -69,7 +89,8 @@ public class Robot extends CommandRobot {
                 drive.drive(driveController::getLeftX, driveController::getLeftY, driveController::getRightX));
 
         led.setDefaultCommand(led.colorAlliance());
-        arm.setDefaultCommand(arm.manual(copilotController::getLeftY));
-        armRotate.setDefaultCommand(armRotate.move(copilotController::getRightY));
+        arm.setDefaultCommand(arm.manual(copilotController::getTriggers));
+        armRotate.setDefaultCommand(armRotate.move(() -> -copilotController.getLeftY()));
+
     }
 }

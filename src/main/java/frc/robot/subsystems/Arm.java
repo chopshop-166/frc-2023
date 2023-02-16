@@ -7,6 +7,9 @@ import org.littletonrobotics.junction.Logger;
 import com.chopshop166.chopshoplib.PersistenceCheck;
 import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
 
+import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.maps.subsystems.ArmMap;
 import frc.robot.maps.subsystems.ArmMap.Data;
@@ -14,12 +17,23 @@ import frc.robot.maps.subsystems.ArmMap.Data;
 public class Arm extends SmartSubsystemBase {
 
     public Data data = new Data();
-    public ArmMap map;
+    public ArmMap extendMap;
     public final double SPEED = 0.3;
     private final double RETRACT_SPEED = -0.1;
+    final double pivotHeight = 46.654;
+    private double armAngle;
 
-    public Arm(ArmMap map) {
-        this.map = map;
+    NetworkTableInstance inst = NetworkTableInstance.getDefault();
+    DoublePublisher lengthPub = inst.getDoubleTopic("Arm/Length").publish();
+    DoubleSubscriber angleSub = inst.getDoubleTopic("Arm/Angle").subscribe(0);
+
+    public Arm(ArmMap extendMap) {
+        this.extendMap = extendMap;
+    }
+
+    public boolean intakeBelowGround() {
+        return pivotHeight < Math.cos(Math.toRadians(armAngle)) * (data.distanceInches + 42.3);
+
     }
 
     enum Level {
@@ -50,7 +64,7 @@ public class Arm extends SmartSubsystemBase {
     // Manually sets the arm extension
     public CommandBase manual(DoubleSupplier motorSpeed) {
         return run(() -> {
-            data.setPoint = softLimit(motorSpeed.getAsDouble());
+            data.setPoint = limit(motorSpeed.getAsDouble() / 3);
         });
     }
 
@@ -60,10 +74,11 @@ public class Arm extends SmartSubsystemBase {
         return cmd("Move Distance").onInitialize(() -> {
             if (distance >= data.distanceInches) {
                 // Extend
-                data.setPoint = softLimit(speed);
+                data.setPoint = limit(speed);
+
             } else {
                 // Retract
-                data.setPoint = softLimit(-speed);
+                data.setPoint = limit(-speed);
             }
         }).runsUntil(() -> Math.abs(distance - data.distanceInches) < 0.5).onEnd(() -> {
             data.setPoint = 0;
@@ -74,9 +89,9 @@ public class Arm extends SmartSubsystemBase {
     public CommandBase moveToDistancePID(double distance) {
         return cmd("Move Distance").onExecute(() -> {
             // Extend
-            data.setPoint = softLimit(map.pid.calculate(data.distanceInches, distance));
+            data.setPoint = limit(extendMap.pid.calculate(data.distanceInches, distance));
 
-        }).runsUntil(map.pid::atSetpoint).onEnd(() -> {
+        }).runsUntil(extendMap.pid::atSetpoint).onEnd(() -> {
             data.setPoint = 0;
         });
     }
@@ -91,16 +106,17 @@ public class Arm extends SmartSubsystemBase {
         PersistenceCheck velocityPersistenceCheck = new PersistenceCheck(5,
                 () -> Math.abs(data.velocityInchesPerSec) < 0.5);
         return cmd("Check Velocity").onInitialize(() -> {
-            data.setPoint = softLimit(RETRACT_SPEED);
+            data.setPoint = limit(RETRACT_SPEED);
         }).runsUntil(velocityPersistenceCheck).onEnd(() -> {
             data.setPoint = 0;
-            map.extendMotor.getEncoder().reset();
+            extendMap.extendMotor.getEncoder().reset();
         });
     }
 
     @Override
     public void reset() {
         // Nothing to reset here
+        extendMap.extendMotor.getEncoder().reset();
     }
 
     @Override
@@ -113,17 +129,27 @@ public class Arm extends SmartSubsystemBase {
     public void periodic() {
         // This method will be called once per scheduler run
         // Use this for any background processing
-        this.map.updateData(data);
+        this.extendMap.updateData(data);
         Logger.getInstance().processInputs(getName(), data);
+        lengthPub.set(data.distanceInches);
+        armAngle = angleSub.get();
     }
 
-    // Adds softlimit to arm extension speed
-    private double softLimit(double speed) {
-        if ((data.distanceInches > map.softMaxDistance && speed > 0) || (data.distanceInches < map.softMinDistance
-                && speed < 0)) {
-            return speed * 0.1;
+    // Adds limits to arm extension speed
+
+    private double limit(double speed) {
+        if (speed > 0 && intakeBelowGround()) {
+            return 0;
+        }
+        if ((data.distanceInches > extendMap.hardMaxDistance && speed > 0)
+                || (data.distanceInches < extendMap.hardMinDistance && speed < 0)) {
+            return data.setPoint = 0;
+        }
+        if ((data.distanceInches > extendMap.softMaxDistance && speed > 0)
+                || (data.distanceInches < extendMap.softMinDistance && speed < 0)) {
+
+            return speed * 0.2;
         }
         return speed;
     }
-
 }

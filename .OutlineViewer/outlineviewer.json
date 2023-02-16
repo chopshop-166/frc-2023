@@ -1,0 +1,11 @@
+{
+  "Connections": {
+    "open": true
+  },
+  "NetworkTables Settings": {
+    "mode": "Server"
+  },
+  "Retained Values": {
+    "open": false
+  }
+}

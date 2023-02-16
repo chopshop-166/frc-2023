@@ -7,6 +7,9 @@ import org.littletonrobotics.junction.Logger;
 import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.maps.subsystems.ArmRotateMap;
 import frc.robot.maps.subsystems.ArmRotateMap.Data;
@@ -16,9 +19,19 @@ public class ArmRotate extends SmartSubsystemBase {
     private ArmRotateMap map;
     final double MOVE_SPEED = 0.5;
     final double COMPARE_ANGLE = 5;
-    final double SLOW_DOWN = 0.1;
+    final double SLOW_DOWN = 0.2;
+    final double pivotHeight = 46.654;
+    final double armStartLength = 42.3;
+    final double noFall = 0.03;
     final PIDController pid;
     final Data data = new Data();
+    private double armLength;
+
+    NetworkTableInstance ntinst = NetworkTableInstance.getDefault();
+
+    NetworkTableInstance inst = NetworkTableInstance.getDefault();
+    DoubleSubscriber lengthSub = inst.getDoubleTopic("Arm/Length").subscribe(0);
+    DoublePublisher anglePub = inst.getDoubleTopic("Arm/Angle").publish();
 
     public ArmRotate(ArmRotateMap map) {
 
@@ -28,8 +41,15 @@ public class ArmRotate extends SmartSubsystemBase {
 
     public CommandBase move(DoubleSupplier rotationSpeed) {
         return run(() -> {
-            data.setPoint = softLimit(rotationSpeed.getAsDouble());
+            data.setPoint = limits(rotationSpeed.getAsDouble() + noFall);
         });
+    }
+
+    public boolean intakeBelowGround() {
+        double armZ = (Math.cos(Math.toRadians(data.degrees)) * (armLength + armStartLength));
+
+        return pivotHeight < armZ;
+
     }
 
     public CommandBase moveToAngle(double angle) {
@@ -46,7 +66,7 @@ public class ArmRotate extends SmartSubsystemBase {
 
     @Override
     public void reset() {
-        // Nothing to reset here
+        map.motor.getEncoder().reset();
     }
 
     @Override
@@ -61,13 +81,23 @@ public class ArmRotate extends SmartSubsystemBase {
         // Use this for any background processing
         this.map.updateData(data);
         Logger.getInstance().processInputs(getName(), data);
+        anglePub.set(data.degrees);
+        armLength = lengthSub.get();
     }
 
-    private double softLimit(double speed) {
-        if ((data.degrees > this.map.topAngle && speed > 0) ||
-                (data.degrees < this.map.bottomAngle && speed < 0)) {
+    private double limits(double speed) {
+        if (speed < 0 && intakeBelowGround()) {
+            return 0;
+        }
+        if ((data.degrees > this.map.hardMaxAngle && speed > 0)
+                || (data.degrees < this.map.hardMinAngle && speed < 0)) {
+            return data.setPoint = 0;
+        }
+        if ((data.degrees > this.map.softMaxAngle && speed > 0) ||
+                (data.degrees < this.map.softMinAngle && speed < 0)) {
             return (speed * SLOW_DOWN);
         }
+
         return speed;
     }
 }

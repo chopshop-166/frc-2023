@@ -10,20 +10,25 @@ import edu.wpi.first.math.controller.PIDController;
 public class ArmRotateMap {
     public final SmartMotorController motor;
     public final PIDController pid;
-    public final double topAngle;
-    public final double bottomAngle;
+    public final double softMaxAngle;
+    public final double softMinAngle;
+    public double hardMaxAngle;
+    public double hardMinAngle;
 
     public ArmRotateMap() {
         this.motor = new SmartMotorController();
-        this.topAngle = 85;
-        this.bottomAngle = 5;
+        this.softMaxAngle = 85;
+        this.softMinAngle = 5;
         this.pid = new PIDController(0.01, 0, 0);
     }
 
-    public ArmRotateMap(SmartMotorController motor, double topAngle, double bottomAngle, PIDController pid) {
+    public ArmRotateMap(SmartMotorController motor, double softMaxAngle, double softMinAngle, double hardMaxAngle,
+            double hardMinAngle, PIDController pid) {
         this.motor = motor;
-        this.topAngle = topAngle;
-        this.bottomAngle = bottomAngle;
+        this.softMaxAngle = softMaxAngle;
+        this.softMinAngle = softMinAngle;
+        this.hardMaxAngle = hardMaxAngle;
+        this.hardMinAngle = hardMinAngle;
         this.pid = pid;
     }
 
