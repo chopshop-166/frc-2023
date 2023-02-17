@@ -54,6 +54,15 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
         });
     }
 
+    public CommandBase grab() {
+        return cmd().onInitialize(
+                () -> {
+                    getData().motorSetPoint = GRAB_SPEED;
+                }).runsUntil(() -> getMap().motor.errored()).onEnd(() -> {
+                    getData().motorSetPoint = 0;
+                });
+    }
+
     // Releases game piece Cube
     public CommandBase cubeRelease() {
         return runEnd(() -> {

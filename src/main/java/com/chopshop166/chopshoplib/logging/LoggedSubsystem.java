@@ -22,7 +22,7 @@ public abstract class LoggedSubsystem<D extends LoggableInputs, M extends Loggab
      * Constructor.
      * 
      * @param ioData The data object to use for i/o.
-     * @param map The hardware mapping.
+     * @param map    The hardware mapping.
      */
     public LoggedSubsystem(final D ioData, final M map) {
         super();
@@ -37,6 +37,10 @@ public abstract class LoggedSubsystem<D extends LoggableInputs, M extends Loggab
      */
     public D getData() {
         return this.ioData;
+    }
+
+    public M getMap() {
+        return this.map;
     }
 
     @Override
