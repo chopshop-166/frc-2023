@@ -1,5 +1,7 @@
 package frc.robot;
 
+import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
+
 import org.littletonrobotics.junction.Logger;
 
 import com.chopshop166.chopshoplib.Autonomous;
@@ -59,6 +61,7 @@ public class Robot extends CommandRobot {
         // Drive
         driveController.rightBumper().onTrue(drive.setSpeedCoef(0.5)).onFalse(drive.setSpeedCoef(1));
         driveController.a().onTrue(drive.driveToNearest());
+        driveController.back().onTrue(runOnce(drive::resetGyro));
 
         // COPILOT CONTROLLER
         // Intake

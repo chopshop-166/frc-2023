@@ -12,9 +12,11 @@ import com.chopshop166.chopshoplib.motors.CSTalonSRX;
 import com.chopshop166.chopshoplib.pneumatics.RevDSolenoid;
 import com.chopshop166.chopshoplib.sensors.MockColorSensor;
 import com.chopshop166.chopshoplib.sensors.gyro.PigeonGyro;
+import com.chopshop166.chopshoplib.sensors.gyro.PigeonGyro2;
 import com.chopshop166.chopshoplib.states.PIDValues;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.sensors.Pigeon2;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
@@ -42,7 +44,7 @@ public class FrostBiteMap extends RobotMap {
         // of the robot
 
         final double MODULE_OFFSET_XY = Units.inchesToMeters(8.89);
-        final PigeonGyro pigeonGyro = new PigeonGyro(new PigeonIMU(1));
+        final PigeonGyro2 pigeonGyro = new PigeonGyro2(1);
 
         final CSSparkMax frontLeftSteer = new CSSparkMax(8, MotorType.kBrushless);
         final CSSparkMax frontRightSteer = new CSSparkMax(6, MotorType.kBrushless);
@@ -74,7 +76,7 @@ public class FrostBiteMap extends RobotMap {
 
         // Front Right Module
         final CANCoder encoderFR = new CANCoder(3);
-        encoderFR.configMagnetOffset(-18.720703125);
+        encoderFR.configMagnetOffset(180 - 18.720703125);
         encoderFR.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
         final SDSSwerveModule frontRight = new SDSSwerveModule(new Translation2d(MODULE_OFFSET_XY, -MODULE_OFFSET_XY),
                 encoderFR, frontRightSteer, new CSSparkMax(5,
@@ -92,7 +94,7 @@ public class FrostBiteMap extends RobotMap {
 
         // Rear Right Module
         final CANCoder encoderRR = new CANCoder(1);
-        encoderRR.configMagnetOffset(-324.140625);
+        encoderRR.configMagnetOffset(180 - 324.140625);
         encoderRR.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
         final SDSSwerveModule rearRight = new SDSSwerveModule(new Translation2d(-MODULE_OFFSET_XY, -MODULE_OFFSET_XY),
                 encoderRR, rearRightSteer, new CSSparkMax(1,
@@ -145,7 +147,7 @@ public class FrostBiteMap extends RobotMap {
         motor.getMotorController().setInverted(false);
         motor.getEncoder().setPositionScaleFactor(1.125);
         motor.getEncoder().setVelocityScaleFactor(1.125);
-        return new ArmRotateMap(motor, 85, 10, 115, 0, 0, new PIDController(0, 0, 0));
+        return new ArmRotateMap(motor, 85, 10, 115, 0, 20, new PIDController(0, 0, 0));
 
     }
 

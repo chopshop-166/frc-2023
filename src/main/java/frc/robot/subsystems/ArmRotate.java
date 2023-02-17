@@ -23,7 +23,7 @@ public class ArmRotate extends SmartSubsystemBase {
     final double SLOW_DOWN = 0.2;
     final double pivotHeight = 46.654;
     final double armStartLength = 42.3;
-    final double noFall = 0.03;
+    final double noFall = 0.005;
     final PIDController pid;
     final Data data = new Data();
     private double armLength;

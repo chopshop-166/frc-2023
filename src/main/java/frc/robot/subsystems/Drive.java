@@ -152,6 +152,10 @@ public class Drive extends SmartSubsystemBase {
 
     }
 
+    public void resetGyro() {
+        map.gyro().reset();
+    }
+
     @Override
     public void reset() {
         // Nothing to reset here
