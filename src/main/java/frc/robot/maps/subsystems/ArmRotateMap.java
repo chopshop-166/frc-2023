@@ -15,13 +15,15 @@ public class ArmRotateMap {
     public final double bumperAngle;
     public double hardMaxAngle;
     public double hardMinAngle;
+    public double armPivotHeight;
+    public double armStartLength;
 
     public ArmRotateMap() {
-        this(new SmartMotorController(), 0, 0, 0, 0, 0, new PIDController(0, 0, 0));
+        this(new SmartMotorController(), 0, 0, 0, 0, 0, new PIDController(0, 0, 0), 0, 0);
     }
 
     public ArmRotateMap(SmartMotorController motor, double softMaxAngle, double softMinAngle, double hardMaxAngle,
-            double hardMinAngle, double bumperAngle, PIDController pid) {
+            double hardMinAngle, double bumperAngle, PIDController pid, double armPivotHeight, double armStartLength) {
         this.motor = motor;
         this.softMaxAngle = softMaxAngle;
         this.softMinAngle = softMinAngle;
@@ -29,6 +31,8 @@ public class ArmRotateMap {
         this.hardMinAngle = hardMinAngle;
         this.pid = pid;
         this.bumperAngle = bumperAngle;
+        this.armPivotHeight = armPivotHeight;
+        this.armStartLength = armStartLength;
     }
 
     public void updateData(Data data) {

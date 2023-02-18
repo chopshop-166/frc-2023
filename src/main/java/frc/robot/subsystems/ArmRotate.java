@@ -64,7 +64,7 @@ public class ArmRotate extends SmartSubsystemBase {
         });
 
     }
-    
+
     public CommandBase moveToAngleBangBang(double angle, double speed) {
         return cmd("Move To Set Angle").onExecute(() -> {
             if (angle >= data.degrees) {
@@ -72,12 +72,10 @@ public class ArmRotate extends SmartSubsystemBase {
             } else {
                 data.setPoint = limits(-speed);
             }
-        }).runsUntil(() -> Math.abs(angle - data.degrees) < 0.5).onEnd(() -> {
+        }).runsUntil(() -> Math.abs(angle - data.degrees) < 2.0).onEnd(() -> {
             data.setPoint = 0;
         });
     }
-    
-   
 
     @Override
     public void reset() {
