@@ -5,6 +5,7 @@ import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import org.littletonrobotics.junction.Logger;
 
 import com.chopshop166.chopshoplib.Autonomous;
+import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 
@@ -66,7 +67,7 @@ public class Robot extends CommandRobot {
         // COPILOT CONTROLLER
         // Intake
         copilotController.a().onTrue(intake.sensorControl());
-        copilotController.b().whileTrue(intake.cubeGrab());
+        copilotController.b().whileTrue(intake.grab());
         copilotController.rightBumper().whileTrue(intake.cubeRelease());
         copilotController.x().onTrue(intake.coneGrab());
         copilotController.leftBumper().onTrue(intake.coneRelease());
@@ -93,7 +94,7 @@ public class Robot extends CommandRobot {
 
         led.setDefaultCommand(led.colorAlliance());
         arm.setDefaultCommand(arm.manual(copilotController::getTriggers));
-        armRotate.setDefaultCommand(armRotate.move(() -> -copilotController.getLeftY()));
+        armRotate.setDefaultCommand(armRotate.move(RobotUtils.deadbandAxis(.1, () -> -copilotController.getLeftY())));
 
     }
 }

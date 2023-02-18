@@ -21,6 +21,7 @@ public class IntakeData implements LoggableInputs {
     public int gamePieceDistance;
     public int maxGamePieceDistance;
     public int minGamePieceDistance;
+    public double[] currentAmps;
 
     public static class Map implements LoggableMap<IntakeData> {
         public SmartMotorController motor;
@@ -45,6 +46,7 @@ public class IntakeData implements LoggableInputs {
             solenoid.set(data.solenoidSetPoint);
             data.sensorColor = colorSensor.getColor();
             data.gamePieceDistance = colorSensor.getProximity();
+            data.currentAmps = motor.getCurrentAmps();
         }
 
     }
@@ -57,6 +59,8 @@ public class IntakeData implements LoggableInputs {
         double[] detectedColor = new double[] { sensorColor.red, sensorColor.green, sensorColor.blue };
         table.put("DetetectedColor", detectedColor);
         table.put("GamePieceDistance", gamePieceDistance);
+        table.put("MotorCurrentAmps", currentAmps);
+
     }
 
     // Retrieves values of the variables
@@ -69,5 +73,6 @@ public class IntakeData implements LoggableInputs {
         double[] detectedColor = table.getDoubleArray("DetectedColor", colorDoubleArray);
         sensorColor = new Color(detectedColor[0], detectedColor[1], detectedColor[2]);
         gamePieceDistance = (int) table.getInteger("GamePieceDistance", gamePieceDistance);
+        this.currentAmps = table.getDoubleArray("MotorCurrentAmps", currentAmps);
     }
 }

@@ -23,7 +23,7 @@ public class ArmRotate extends SmartSubsystemBase {
     final double SLOW_DOWN = 0.2;
     final double pivotHeight = 46.654;
     final double armStartLength = 42.3;
-    final double noFall = 0.005;
+    final double NO_FALL = 0.02;
     final PIDController pid;
     final Data data = new Data();
     private double armLength;
@@ -42,7 +42,7 @@ public class ArmRotate extends SmartSubsystemBase {
 
     public CommandBase move(DoubleSupplier rotationSpeed) {
         return run(() -> {
-            data.setPoint = limits(rotationSpeed.getAsDouble() + noFall);
+            data.setPoint = limits(rotationSpeed.getAsDouble() * 0.75);
         });
     }
 
@@ -91,7 +91,7 @@ public class ArmRotate extends SmartSubsystemBase {
             return 0;
         }
 
-        if (intakeSub.get() && speed < 0 && data.degrees < map.bumperAngle) {
+        if (!intakeSub.get() && speed < 0 && data.degrees < map.bumperAngle) {
             return 0;
         }
         if ((data.degrees > this.map.hardMaxAngle && speed > 0)
@@ -101,6 +101,9 @@ public class ArmRotate extends SmartSubsystemBase {
         if ((data.degrees > this.map.softMaxAngle && speed > 0) ||
                 (data.degrees < this.map.softMinAngle && speed < 0)) {
             return (speed * SLOW_DOWN);
+        }
+        if (data.degrees > 10) {
+            return (speed + NO_FALL);
         }
 
         return speed;
