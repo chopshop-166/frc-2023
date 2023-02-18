@@ -32,7 +32,7 @@ public class Arm extends SmartSubsystemBase {
     }
 
     public boolean intakeBelowGround() {
-        return pivotHeight < Math.cos(Math.toRadians(armAngle)) * (data.distanceInches + 42.3);
+        return pivotHeight - 5 < Math.cos(Math.toRadians(armAngle)) * (data.distanceInches + 42.3);
 
     }
 

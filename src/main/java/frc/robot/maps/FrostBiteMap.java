@@ -136,7 +136,7 @@ public class FrostBiteMap extends RobotMap {
         intakeMotor.setInverted(true);
         RevDSolenoid intakeSolenoid = new RevDSolenoid(8, 9);
         intakeMotor.getMotorController().configContinuousCurrentLimit(10);
-        intakeMotor.validateCurrent(10, 0.1);
+        intakeMotor.validateCurrent(10, 0.5);
         return new IntakeData.Map(intakeMotor, intakeSolenoid, new MockColorSensor());
 
     }
@@ -147,7 +147,7 @@ public class FrostBiteMap extends RobotMap {
         motor.getMotorController().setInverted(false);
         motor.getEncoder().setPositionScaleFactor(1.125);
         motor.getEncoder().setVelocityScaleFactor(1.125);
-        return new ArmRotateMap(motor, 85, 10, 115, 0, 10, new PIDController(0, 0, 0), 46.654, 42.3);
+        return new ArmRotateMap(motor, 85, 10, 115, 0, 15, new PIDController(0, 0, 0), 46.654, 42.3);
 
     }
 

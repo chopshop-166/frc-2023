@@ -49,7 +49,7 @@ public class ArmRotate extends SmartSubsystemBase {
     public boolean intakeBelowGround() {
         double armZ = (Math.cos(Math.toRadians(data.degrees)) * (armLength + armStartLength));
 
-        return pivotHeight < armZ;
+        return pivotHeight - 5 < armZ;
 
     }
 
