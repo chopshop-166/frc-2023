@@ -71,7 +71,7 @@ public class Arm extends SmartSubsystemBase {
     // Compares arm current extension to set distance and retracts or extends based
     // on current arm extenstion
     public CommandBase moveToDistanceBangBang(double distance, double speed) {
-        return cmd("Move Distance").onInitialize(() -> {
+        return cmd("Move Distance").onExecute(() -> {
             if (distance >= data.distanceInches) {
                 // Extend
                 data.setPoint = limit(speed);
