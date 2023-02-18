@@ -48,6 +48,11 @@ public class Vision {
 
     }
 
+    public void setPose(Pose2d pose) {
+        driveMap.gyro().setAngle(pose.getRotation().getDegrees());
+        odometry.resetPosition(driveMap.gyro().getRotation2d(), getModulePositions(), pose);
+    }
+
     // Estimated pose from a combination of vision and odometry
     public Pose2d update() {
         PhotonPipelineResult result = camera.getLatestResult();

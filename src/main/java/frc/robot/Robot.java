@@ -66,20 +66,23 @@ public class Robot extends CommandRobot {
 
         // COPILOT CONTROLLER
         // Intake
-        copilotController.a().onTrue(intake.sensorControl());
-        copilotController.b().whileTrue(intake.grab());
-        copilotController.rightBumper().whileTrue(intake.cubeRelease());
-        copilotController.x().onTrue(intake.coneGrab());
-        copilotController.leftBumper().onTrue(intake.coneRelease());
+        // copilotController.a().onTrue(intake.sensorControl());
+        // copilotController.rightBumper().whileTrue(intake.cubeRelease());
+        // copilotController.x().onTrue(intake.coneGrab());
+        // copilotController.leftBumper().onTrue(intake.coneRelease());
+        copilotController.a().toggleOnTrue(intake.coneGrab()).toggleOnFalse(intake.coneRelease());
+        copilotController.b().onTrue(intake.grab());
+        // copilotController.b().whileTrue(intake.cubeGrab());
+        copilotController.y().whileTrue(intake.cubeRelease());
         // Arm
         // extend and rotate are in default commands
         // will need buttons for the scoring positions
-        copilotController.start().onTrue(arm.resetCmd());
-        copilotController.back().onTrue(armRotate.resetCmd());
+        // copilotController.start().onTrue(arm.resetCmd());
+        // copilotController.back().onTrue(armRotate.resetCmd());
 
         // Led
-        copilotController.povUp().whileTrue(led.setYellow());
-        copilotController.povDown().whileTrue(led.setPurple());
+        // copilotController.povUp().whileTrue(led.setYellow());
+        // copilotController.povDown().whileTrue(led.setPurple());
     }
 
     @Override
