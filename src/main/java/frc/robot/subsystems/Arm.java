@@ -20,7 +20,7 @@ public class Arm extends SmartSubsystemBase {
     public ArmMap extendMap;
     public final double SPEED = 0.2;
     private final double RETRACT_SPEED = -0.1;
-    final double pivotHeight = 46.654;
+    final double pivotHeight = 40.654;
     private double armAngle;
 
     NetworkTableInstance inst = NetworkTableInstance.getDefault();
