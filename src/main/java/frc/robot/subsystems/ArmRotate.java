@@ -19,6 +19,8 @@ public class ArmRotate extends SmartSubsystemBase {
 
     private ArmRotateMap map;
     final double MOVE_SPEED = 0.5;
+    final double RAISE_SPEED = 0.5;
+    final double LOWER_SPEED = 0.4;
     final double COMPARE_ANGLE = 5;
     final double SLOW_DOWN = 0.2;
     final double pivotHeight = 46.654;
@@ -42,14 +44,18 @@ public class ArmRotate extends SmartSubsystemBase {
 
     public CommandBase move(DoubleSupplier rotationSpeed) {
         return run(() -> {
-            data.setPoint = limits(rotationSpeed.getAsDouble() * 0.75);
+            double speedCoef = RAISE_SPEED;
+            if (rotationSpeed.getAsDouble() < 0) {
+                speedCoef = LOWER_SPEED;
+            }
+            data.setPoint = limits(rotationSpeed.getAsDouble() * speedCoef);
         });
     }
 
     public boolean intakeBelowGround() {
         double armZ = (Math.cos(Math.toRadians(data.degrees)) * (armLength + armStartLength));
 
-        return pivotHeight - 5 < armZ;
+        return pivotHeight < armZ;
 
     }
 

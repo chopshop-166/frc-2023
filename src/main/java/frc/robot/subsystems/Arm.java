@@ -18,7 +18,7 @@ public class Arm extends SmartSubsystemBase {
 
     public Data data = new Data();
     public ArmMap extendMap;
-    public final double SPEED = 0.3;
+    public final double SPEED = 0.2;
     private final double RETRACT_SPEED = -0.1;
     final double pivotHeight = 46.654;
     private double armAngle;
@@ -31,8 +31,16 @@ public class Arm extends SmartSubsystemBase {
         this.extendMap = extendMap;
     }
 
+    public CommandBase resetZero(DoubleSupplier speed) {
+        return cmd().onExecute(() -> {
+            data.setPoint = speed.getAsDouble() * SPEED;
+        }).onEnd(() -> {
+            extendMap.extendMotor.getEncoder().reset();
+        });
+    }
+
     public boolean intakeBelowGround() {
-        return pivotHeight - 5 < Math.cos(Math.toRadians(armAngle)) * (data.distanceInches + 42.3);
+        return pivotHeight < Math.cos(Math.toRadians(armAngle)) * (data.distanceInches + 42.3);
 
     }
 
@@ -64,7 +72,7 @@ public class Arm extends SmartSubsystemBase {
     // Manually sets the arm extension
     public CommandBase manual(DoubleSupplier motorSpeed) {
         return run(() -> {
-            data.setPoint = limit(motorSpeed.getAsDouble() / 3);
+            data.setPoint = limit(motorSpeed.getAsDouble() * SPEED);
         });
     }
 
@@ -138,6 +146,7 @@ public class Arm extends SmartSubsystemBase {
     // Adds limits to arm extension speed
 
     private double limit(double speed) {
+
         if (speed > 0 && intakeBelowGround()) {
             return 0;
         }
@@ -148,7 +157,7 @@ public class Arm extends SmartSubsystemBase {
         if ((data.distanceInches > extendMap.softMaxDistance && speed > 0)
                 || (data.distanceInches < extendMap.softMinDistance && speed < 0)) {
 
-            return speed * 0.2;
+            return speed * 0.5;
         }
         return speed;
     }

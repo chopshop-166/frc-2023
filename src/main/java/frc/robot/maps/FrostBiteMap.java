@@ -1,5 +1,7 @@
 package frc.robot.maps;
 
+import java.util.Arrays;
+
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
@@ -11,17 +13,16 @@ import com.chopshop166.chopshoplib.motors.CSSparkMax;
 import com.chopshop166.chopshoplib.motors.CSTalonSRX;
 import com.chopshop166.chopshoplib.pneumatics.RevDSolenoid;
 import com.chopshop166.chopshoplib.sensors.MockColorSensor;
-import com.chopshop166.chopshoplib.sensors.gyro.PigeonGyro;
 import com.chopshop166.chopshoplib.sensors.gyro.PigeonGyro2;
 import com.chopshop166.chopshoplib.states.PIDValues;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
-import com.ctre.phoenix.sensors.Pigeon2;
-import com.ctre.phoenix.sensors.PigeonIMU;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -135,8 +136,15 @@ public class FrostBiteMap extends RobotMap {
         CSTalonSRX intakeMotor = new CSTalonSRX(9);
         intakeMotor.setInverted(true);
         RevDSolenoid intakeSolenoid = new RevDSolenoid(8, 9);
-        intakeMotor.getMotorController().configContinuousCurrentLimit(10);
-        intakeMotor.validateCurrent(10, 0.5);
+        intakeMotor.getMotorController().configContinuousCurrentLimit(35);
+
+        final LinearFilter currentFilter = LinearFilter.singlePoleIIR(1, 0.01);
+        intakeMotor.addValidator(() -> {
+            final double current = Arrays.stream(intakeMotor.getCurrentAmps()).reduce(Double::sum).orElse(0.0);
+            return currentFilter.calculate(current) < 15;
+        });
+
+        // intakeMotor.validateCurrent(10, 0.5);
         return new IntakeData.Map(intakeMotor, intakeSolenoid, new MockColorSensor());
 
     }
@@ -145,6 +153,8 @@ public class FrostBiteMap extends RobotMap {
     public ArmRotateMap getArmRotateMap() {
         CSSparkMax motor = new CSSparkMax(10, MotorType.kBrushless);
         motor.getMotorController().setInverted(false);
+        motor.getMotorController().setIdleMode(IdleMode.kBrake);
+        motor.getMotorController().setSmartCurrentLimit(40);
         motor.getEncoder().setPositionScaleFactor(1.125);
         motor.getEncoder().setVelocityScaleFactor(1.125);
         return new ArmRotateMap(motor, 85, 10, 115, 0, 15, new PIDController(0, 0, 0), 46.654, 42.3);
@@ -155,6 +165,8 @@ public class FrostBiteMap extends RobotMap {
     public ArmMap getArmMap() {
         CSSparkMax motor = new CSSparkMax(11, MotorType.kBrushless);
         motor.getMotorController().setInverted(true);
+        motor.getMotorController().setIdleMode(IdleMode.kBrake);
+        motor.getMotorController().setSmartCurrentLimit(30);
         motor.getEncoder().setPositionScaleFactor((1.273 * Math.PI) / 10);
         motor.getEncoder().setVelocityScaleFactor((1.273 * Math.PI) / 10);
         return new ArmMap(motor, 19, 1, 19.9, 0, new PIDController(0, 0, 0), 46.654, 42.3);
