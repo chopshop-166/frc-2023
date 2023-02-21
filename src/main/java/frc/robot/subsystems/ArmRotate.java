@@ -23,7 +23,8 @@ public class ArmRotate extends SmartSubsystemBase {
     final double LOWER_SPEED = 0.4;
     final double COMPARE_ANGLE = 5;
     final double SLOW_DOWN = 0.2;
-    final double pivotHeight = 40.654;
+    final double PIVOT_HEIGHT = 46.654;
+    private final double INTAKE_DEPTH_LIMIT = 5;
     final double armStartLength = 42.3;
     final double NO_FALL = 0.02;
     final PIDController pid;
@@ -55,8 +56,27 @@ public class ArmRotate extends SmartSubsystemBase {
     public boolean intakeBelowGround() {
         double armZ = (Math.cos(Math.toRadians(data.degrees)) * (armLength + armStartLength));
 
-        return pivotHeight < armZ;
+        return PIVOT_HEIGHT < armZ;
 
+    }
+
+    enum Level {
+        // 0 in.
+        LOW(0),
+        // 34 in.
+        MEDIUM(0),
+        // 41 7/8 in.
+        HIGH(0);
+
+        private double angle;
+
+        private Level(double angle) {
+            this.angle = angle;
+        }
+
+        public double getAngle() {
+            return angle;
+        }
     }
 
     public CommandBase moveToAngle(double angle) {

@@ -20,7 +20,8 @@ public class Arm extends SmartSubsystemBase {
     public ArmMap extendMap;
     public final double SPEED = 0.2;
     private final double RETRACT_SPEED = -0.1;
-    final double pivotHeight = 40.654;
+    final double PIVOT_HEIGHT = 46.654;
+    private final double INTAKE_DEPTH_LIMIT = 5;
     private double armAngle;
 
     NetworkTableInstance inst = NetworkTableInstance.getDefault();
@@ -40,32 +41,26 @@ public class Arm extends SmartSubsystemBase {
     }
 
     public boolean intakeBelowGround() {
-        return pivotHeight < Math.cos(Math.toRadians(armAngle)) * (data.distanceInches + 42.3);
+        return PIVOT_HEIGHT < Math.cos(Math.toRadians(armAngle)) * (data.distanceInches + 42.3);
 
     }
 
     enum Level {
         // 0 in.
-        LOW(0, 0),
+        LOW(0),
         // 34 in.
-        MEDIUM(0, 0),
+        MEDIUM(0),
         // 41 7/8 in.
-        HIGH(0, 0);
+        HIGH(0);
 
         private double length;
-        private double angle;
 
-        private Level(double length, double angle) {
+        private Level(double length) {
             this.length = length;
-            this.angle = angle;
         }
 
         public double getLength() {
             return length;
-        }
-
-        public double getAngle() {
-            return angle;
         }
     }
 
