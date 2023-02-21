@@ -66,9 +66,6 @@ public class Robot extends CommandRobot {
 
         // COPILOT CONTROLLER
         // Intake
-        // copilotController.a().onTrue(intake.sensorControl());
-        // copilotController.rightBumper().whileTrue(intake.cubeRelease());
-        // copilotController.x().onTrue(intake.coneGrab());
         // copilotController.leftBumper().onTrue(intake.coneRelease());
         copilotController.a().onTrue(intake.coneGrab());
         copilotController.x().onTrue(intake.coneRelease());
@@ -83,8 +80,8 @@ public class Robot extends CommandRobot {
         // copilotController.back().onTrue(armRotate.resetCmd());
 
         // Led
-        // copilotController.povUp().whileTrue(led.setYellow());
-        // copilotController.povDown().whileTrue(led.setPurple());
+        copilotController.povUp().whileTrue(led.setYellow());
+        copilotController.povDown().whileTrue(led.setPurple());
     }
 
     @Override

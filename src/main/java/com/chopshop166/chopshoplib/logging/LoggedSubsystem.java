@@ -39,6 +39,11 @@ public abstract class LoggedSubsystem<D extends LoggableInputs, M extends Loggab
         return this.ioData;
     }
 
+    /**
+     * Get the map for subsystem.
+     * 
+     * @return The map object.
+     */
     public M getMap() {
         return this.map;
     }
