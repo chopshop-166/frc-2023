@@ -2,15 +2,15 @@ package frc.robot.util;
 
 public class FireLeds {
     public class FireEffect {
-        private static final int NUM_LEDS = 30;
-        private static byte[] heat = new byte[NUM_LEDS];
+        private static final int LED_BUFFER = 30;
+        private static byte[] heat = new byte[LED_BUFFER];
 
         public static void fire(int flameHeight, int sparks, int delayDuration) {
             int cooldown;
 
             // Cool down each cell a little
-            for (int i = 0; i < NUM_LEDS; i++) {
-                cooldown = (int) (Math.random() * ((flameHeight * 10) / NUM_LEDS + 2));
+            for (int i = 0; i < LED_BUFFER; i++) {
+                cooldown = (int) (Math.random() * ((flameHeight * 10) / LED_BUFFER + 2));
 
                 if (cooldown > heat[i]) {
                     heat[i] = 0;
@@ -20,7 +20,7 @@ public class FireLeds {
             }
 
             // Heat from each cell drifts up and diffuses slightly
-            for (int k = NUM_LEDS - 1; k >= 2; k--) {
+            for (int k = LED_BUFFER - 1; k >= 2; k--) {
                 heat[k] = (byte) ((heat[k - 1] + heat[k - 2] + heat[k - 2]) / 3);
             }
 
@@ -31,7 +31,7 @@ public class FireLeds {
             }
 
             // Convert heat to LED colors
-            for (int j = 0; j < NUM_LEDS; j++) {
+            for (int j = 0; j < LED_BUFFER; j++) {
                 setPixelHeatColor(j, heat[j]);
             }
 
