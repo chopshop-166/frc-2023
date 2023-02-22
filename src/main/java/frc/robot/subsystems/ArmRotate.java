@@ -4,6 +4,7 @@ import java.util.function.DoubleSupplier;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.chopshop166.chopshoplib.PersistenceCheck;
 import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -25,6 +26,7 @@ public class ArmRotate extends SmartSubsystemBase {
     final double SLOW_DOWN = 0.2;
     final double PIVOT_HEIGHT = 46.654;
     private final double INTAKE_DEPTH_LIMIT = 5;
+    private final double DESCEND_SPEED = -0.1;
     final double armStartLength = 42.3;
     final double NO_FALL = 0.02;
     final PIDController pid;
@@ -89,6 +91,17 @@ public class ArmRotate extends SmartSubsystemBase {
             data.setPoint = 0;
         });
 
+    }
+
+    public CommandBase zeroVelocityCheck() {
+        PersistenceCheck velocityPersistenceCheck = new PersistenceCheck(5,
+                () -> Math.abs(data.velocityDegreesPerSecond) < 0.5);
+        return cmd("Check Velocity").onInitialize(() -> {
+            data.setPoint = limits(DESCEND_SPEED);
+        }).runsUntil(velocityPersistenceCheck).onEnd(() -> {
+            data.setPoint = 0;
+            map.motor.getEncoder().reset();
+        });
     }
 
     public CommandBase moveToAngleBangBang(double angle, double speed) {
