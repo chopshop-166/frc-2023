@@ -2,7 +2,7 @@ package frc.robot.util;
 
 public class FireLeds {
     public class FireEffect {
-  private static final int NUM_LEDS = 0;
+        private static final int NUM_LEDS = 30;
         private static byte[] heat = new byte[NUM_LEDS];
 
         public static void fire(int flameHeight, int sparks, int delayDuration) {
@@ -57,5 +57,5 @@ public class FireLeds {
             }
         }
     }
-    
+
 }
