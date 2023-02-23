@@ -32,6 +32,7 @@ public class Drive extends SmartSubsystemBase {
     double maxDriveSpeedMetersPerSecond;
     double maxRotationRadiansPerSecond;
     double speedCoef = 1;
+    double ROTATIONSLOWCOEF = 1;
 
     public enum GridPosition {
 
@@ -81,9 +82,11 @@ public class Drive extends SmartSubsystemBase {
 
     }
 
-    public CommandBase setSpeedCoef(double fac) {
+    public CommandBase setSpeedCoef(double fac, double rotationfac) {
         return runOnce(() -> {
             speedCoef = fac;
+            ROTATIONSLOWCOEF = rotationfac;
+
         });
     }
 
@@ -96,7 +99,7 @@ public class Drive extends SmartSubsystemBase {
         final double translateYSpeed = deadband.applyAsDouble(ySpeed)
                 * maxDriveSpeedMetersPerSecond * speedCoef;
         final double rotationSpeed = deadband.applyAsDouble(rotation)
-                * maxRotationRadiansPerSecond * speedCoef;
+                * maxRotationRadiansPerSecond * ROTATIONSLOWCOEF;
 
         // rotationOffset is temporary and startingRotation is set at the start
         final ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(translateYSpeed, translateXSpeed,

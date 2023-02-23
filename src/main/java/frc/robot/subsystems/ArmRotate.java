@@ -25,7 +25,7 @@ public class ArmRotate extends SmartSubsystemBase {
     final double COMPARE_ANGLE = 5;
     final double SLOW_DOWN = 0.2;
     final double PIVOT_HEIGHT = 46.654;
-    private final double INTAKE_DEPTH_LIMIT = 5;
+    private final double INTAKE_DEPTH_LIMIT = 3;
     private final double DESCEND_SPEED = -0.1;
     final double armStartLength = 42.3;
     final double NO_FALL = 0.02;

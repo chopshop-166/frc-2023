@@ -60,7 +60,7 @@ public class Robot extends CommandRobot {
     public void configureButtonBindings() {
         // DRIVE CONTROLLER
         // Drive
-        driveController.rightBumper().onTrue(drive.setSpeedCoef(0.25)).onFalse(drive.setSpeedCoef(1));
+        driveController.rightBumper().onTrue(drive.setSpeedCoef(0.25, 0.35)).onFalse(drive.setSpeedCoef(1, 1));
         driveController.a().onTrue(drive.driveToNearest());
         driveController.back().onTrue(runOnce(drive::resetGyro));
 
@@ -69,9 +69,9 @@ public class Robot extends CommandRobot {
         // copilotController.leftBumper().onTrue(intake.coneRelease());
         copilotController.a().onTrue(intake.coneGrab());
         copilotController.x().onTrue(intake.coneRelease());
-        copilotController.leftBumper().onTrue(intake.grab());
+        copilotController.b().onTrue(intake.grab());
         copilotController.rightBumper().whileTrue(arm.resetZero(() -> copilotController.getTriggers()));
-        copilotController.b().whileTrue(intake.cubeGrab());
+       // copilotController.b().whileTrue(intake.cubeGrab());
         copilotController.y().whileTrue(intake.cubeRelease());
         // Arm
         // extend and rotate are in default commands

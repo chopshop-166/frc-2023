@@ -60,6 +60,7 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
                     getData().motorSetPoint = GRAB_SPEED;
                 }).runsUntil(() -> getMap().motor.errored()).onEnd(() -> {
                     getData().motorSetPoint = 0;
+                    getData().solenoidSetPoint = Value.kForward;
                 });
     }
 
