@@ -8,8 +8,10 @@ import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.maps.subsystems.LedMap;
+import frc.robot.util.FireLeds;
 
 public class Led extends SmartSubsystemBase {
 
@@ -41,18 +43,17 @@ public class Led extends SmartSubsystemBase {
         led.setData(ledBuffer);
     }
 
-    public CommandBase colorAlliance() {
-        return cmd("Set to Alliance Color").onExecute(() -> {
-            Alliance alliance = DriverStation.getAlliance();
-            if (alliance == Alliance.Blue) {
-                setColor(2, 15, 250);
-                Logger.getInstance().recordOutput("IndicateLEDs", "Blue");
-            } else {
-                setColor(250, 2, 2);
-                Logger.getInstance().recordOutput("IndicateLEDs", "Red");
-            }
-        });
-    }
+    // } public CommandBase colorAlliance() {
+    // return cmd("Set to Alliance Color").onExecute(() -> {
+    // Alliance alliance = DriverStation.getAlliance();
+    // if (alliance == Alliance.Blue) {
+    // setColor(2, 15, 250);
+    // Logger.getInstance().recordOutput("IndicateLEDs", "Blue");
+    // } else {
+    // setColor(250, 2, 2);
+    // Logger.getInstance().recordOutput("IndicateLEDs", "Red");
+    // }
+    // });
 
     public CommandBase resetColor() {
         return runOnce(() -> {
@@ -74,6 +75,15 @@ public class Led extends SmartSubsystemBase {
         return runOnce(() -> {
             setColor(133, 7, 168);
             Logger.getInstance().recordOutput("IndicateLEDs", "Purple");
+        });
+    }
+
+    public CommandBase Fire() {
+        return cmd("Make leds fire").onExecute(() -> {
+            for (int i = 0; i < FireLeds.heat.length; i++) {
+                Color color = new Color(FireLeds.heat[i] / 255.0, 0, 0);
+                ledBuffer.setLED(i, color);
+            }
         });
     }
 

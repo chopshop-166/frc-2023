@@ -145,9 +145,10 @@ public class Robot extends CommandRobot {
         drive.setDefaultCommand(
                 drive.drive(driveController::getLeftX, driveController::getLeftY, driveController::getRightX));
 
-        led.setDefaultCommand(led.colorAlliance());
+        // led.setDefaultCommand(led.colorAlliance());
         arm.setDefaultCommand(arm.manual(copilotController::getTriggers));
-        armRotate.setDefaultCommand(armRotate.move(RobotUtils.deadbandAxis(.1, () -> -copilotController.getLeftY())));
+        armRotate.setDefaultCommand(armRotate.move(() -> -copilotController.getLeftY()));
+        led.setDefaultCommand(led.Fire());
 
     }
 }
