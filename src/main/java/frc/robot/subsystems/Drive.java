@@ -57,6 +57,7 @@ public class Drive extends SmartSubsystemBase {
 
     public Drive(SwerveDriveMap map) {
         this.map = map;
+        this.map.gyro().reset();
         io = new Data();
         kinematics = new SwerveDriveKinematics(map.frontLeft().getLocation(), map.frontRight().getLocation(),
                 map.rearLeft().getLocation(), map.rearRight().getLocation());
