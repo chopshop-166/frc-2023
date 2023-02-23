@@ -141,7 +141,7 @@ public class FrostBiteMap extends RobotMap {
         final LinearFilter currentFilter = LinearFilter.singlePoleIIR(1, 0.01);
         intakeMotor.addValidator(() -> {
             final double current = Arrays.stream(intakeMotor.getCurrentAmps()).reduce(Double::sum).orElse(0.0);
-            return currentFilter.calculate(current) < 15;
+            return currentFilter.calculate(current) < 37;
         });
 
         // intakeMotor.validateCurrent(10, 0.5);

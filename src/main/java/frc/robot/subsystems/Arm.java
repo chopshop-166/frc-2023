@@ -41,7 +41,7 @@ public class Arm extends SmartSubsystemBase {
     }
 
     public boolean intakeBelowGround() {
-        return PIVOT_HEIGHT < Math.cos(Math.toRadians(armAngle)) * (data.distanceInches + 42.3);
+        return PIVOT_HEIGHT - INTAKE_DEPTH_LIMIT < Math.cos(Math.toRadians(armAngle)) * (data.distanceInches + 42.3);
 
     }
 
@@ -109,7 +109,7 @@ public class Arm extends SmartSubsystemBase {
         PersistenceCheck velocityPersistenceCheck = new PersistenceCheck(5,
                 () -> Math.abs(data.velocityInchesPerSec) < 0.5);
         return cmd("Check Velocity").onInitialize(() -> {
-            data.setPoint = limit(RETRACT_SPEED);
+            data.setPoint = (RETRACT_SPEED);
         }).runsUntil(velocityPersistenceCheck).onEnd(() -> {
             data.setPoint = 0;
             extendMap.extendMotor.getEncoder().reset();

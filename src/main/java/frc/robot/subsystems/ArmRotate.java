@@ -58,7 +58,7 @@ public class ArmRotate extends SmartSubsystemBase {
     public boolean intakeBelowGround() {
         double armZ = (Math.cos(Math.toRadians(data.degrees)) * (armLength + armStartLength));
 
-        return PIVOT_HEIGHT < armZ;
+        return PIVOT_HEIGHT - INTAKE_DEPTH_LIMIT < armZ;
 
     }
 
@@ -97,7 +97,7 @@ public class ArmRotate extends SmartSubsystemBase {
         PersistenceCheck velocityPersistenceCheck = new PersistenceCheck(5,
                 () -> Math.abs(data.velocityDegreesPerSecond) < 0.5);
         return cmd("Check Velocity").onInitialize(() -> {
-            data.setPoint = limits(DESCEND_SPEED);
+            data.setPoint = DESCEND_SPEED;
         }).runsUntil(velocityPersistenceCheck).onEnd(() -> {
             data.setPoint = 0;
             map.motor.getEncoder().reset();
@@ -139,7 +139,7 @@ public class ArmRotate extends SmartSubsystemBase {
 
     private double limits(double speed) {
         if (speed < 0 && intakeBelowGround()) {
-            return 0;
+            return NO_FALL;
         }
 
         if (!intakeSub.get() && speed < 0 && data.degrees < map.bumperAngle) {
@@ -153,7 +153,7 @@ public class ArmRotate extends SmartSubsystemBase {
                 (data.degrees < this.map.softMinAngle && speed < 0)) {
             return (speed * SLOW_DOWN);
         }
-        if (data.degrees > 10) {
+        if (data.degrees > 13) {
             return (speed + NO_FALL);
         }
 
