@@ -77,7 +77,7 @@ public class ArmRotate extends SmartSubsystemBase {
 
     public CommandBase zeroVelocityCheck() {
         PersistenceCheck velocityPersistenceCheck = new PersistenceCheck(5,
-                () -> Math.abs(data.velocityDegreesPerSecond) < 600);
+                () -> Math.abs(data.velocityDegreesPerSecond) < 15);
         return cmd("Check Velocity").onInitialize(() -> {
             velocityPersistenceCheck.reset();
             data.setPoint = DESCEND_SPEED;
