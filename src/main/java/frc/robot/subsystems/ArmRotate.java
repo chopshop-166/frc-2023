@@ -103,17 +103,6 @@ public class ArmRotate extends SmartSubsystemBase {
         return moveToAngleBangBang(level.getAngle(), MOVE_SPEED);
     }
 
-    public CommandBase zeroVelocityCheck() {
-        PersistenceCheck velocityPersistenceCheck = new PersistenceCheck(5,
-                () -> Math.abs(data.velocityDegreesPerSecond) < 0.5);
-        return cmd("Check Velocity").onInitialize(() -> {
-            data.setPoint = DESCEND_SPEED;
-        }).runsUntil(velocityPersistenceCheck).onEnd(() -> {
-            data.setPoint = 0;
-            map.motor.getEncoder().reset();
-        });
-    }
-
     @Override
     public void reset() {
         map.motor.getEncoder().reset();
