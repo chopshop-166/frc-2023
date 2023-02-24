@@ -13,6 +13,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.maps.subsystems.ArmMap;
 import frc.robot.maps.subsystems.ArmMap.Data;
+import frc.robot.EnumLevel;
 
 public class Arm extends SmartSubsystemBase {
 
@@ -43,25 +44,6 @@ public class Arm extends SmartSubsystemBase {
     public boolean intakeBelowGround() {
         return PIVOT_HEIGHT - INTAKE_DEPTH_LIMIT < Math.cos(Math.toRadians(armAngle)) * (data.distanceInches + 42.3);
 
-    }
-
-    enum Level {
-        // 0 in.
-        LOW(0),
-        // 34 in.
-        MEDIUM(0),
-        // 41 7/8 in.
-        HIGH(0);
-
-        private double length;
-
-        private Level(double length) {
-            this.length = length;
-        }
-
-        public double getLength() {
-            return length;
-        }
     }
 
     // Manually sets the arm extension
@@ -99,7 +81,7 @@ public class Arm extends SmartSubsystemBase {
         });
     }
 
-    public CommandBase moveTo(Level level) {
+    public CommandBase moveTo(EnumLevel level) {
         return moveToDistanceBangBang(level.getLength(), SPEED);
     }
 

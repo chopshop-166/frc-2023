@@ -15,6 +15,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.maps.subsystems.ArmRotateMap;
 import frc.robot.maps.subsystems.ArmRotateMap.Data;
+import frc.robot.EnumLevel;
 
 public class ArmRotate extends SmartSubsystemBase {
 
@@ -62,25 +63,6 @@ public class ArmRotate extends SmartSubsystemBase {
 
     }
 
-    enum Level {
-        // 0 in.
-        LOW(0),
-        // 34 in.
-        MEDIUM(0),
-        // 41 7/8 in.
-        HIGH(0);
-
-        private double angle;
-
-        private Level(double angle) {
-            this.angle = angle;
-        }
-
-        public double getAngle() {
-            return angle;
-        }
-    }
-
     public CommandBase moveToAngle(double angle) {
         // When executed the arm will move. The encoder will update until the desired
         // value is reached, then the command will end.
@@ -93,17 +75,6 @@ public class ArmRotate extends SmartSubsystemBase {
 
     }
 
-    public CommandBase zeroVelocityCheck() {
-        PersistenceCheck velocityPersistenceCheck = new PersistenceCheck(5,
-                () -> Math.abs(data.velocityDegreesPerSecond) < 0.5);
-        return cmd("Check Velocity").onInitialize(() -> {
-            data.setPoint = DESCEND_SPEED;
-        }).runsUntil(velocityPersistenceCheck).onEnd(() -> {
-            data.setPoint = 0;
-            map.motor.getEncoder().reset();
-        });
-    }
-
     public CommandBase moveToAngleBangBang(double angle, double speed) {
         return cmd("Move To Set Angle").onExecute(() -> {
             if (angle >= data.degrees) {
@@ -113,6 +84,21 @@ public class ArmRotate extends SmartSubsystemBase {
             }
         }).runsUntil(() -> Math.abs(angle - data.degrees) < 2.0).onEnd(() -> {
             data.setPoint = 0;
+        });
+    }
+
+    public CommandBase moveTo(EnumLevel level) {
+        return moveToAngleBangBang(level.getAngle(), MOVE_SPEED);
+    }
+
+    public CommandBase zeroVelocityCheck() {
+        PersistenceCheck velocityPersistenceCheck = new PersistenceCheck(5,
+                () -> Math.abs(data.velocityDegreesPerSecond) < 0.5);
+        return cmd("Check Velocity").onInitialize(() -> {
+            data.setPoint = DESCEND_SPEED;
+        }).runsUntil(velocityPersistenceCheck).onEnd(() -> {
+            data.setPoint = 0;
+            map.motor.getEncoder().reset();
         });
     }
 
