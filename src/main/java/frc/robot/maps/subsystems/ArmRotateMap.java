@@ -54,7 +54,7 @@ public class ArmRotateMap {
         public void toLog(LogTable table) {
             table.put("MotorSetpoint", setPoint);
             table.put("RotationDegrees", degrees);
-            table.put("MotorVelocityMetersPerSeconds", velocityDegreesPerSecond);
+            table.put("MotorVelocityDegreesPerSeconds", velocityDegreesPerSecond);
             table.put("MotorTempCelcius", tempCelcius);
             table.put("MotorCurrentAmps", currentAmps);
 
