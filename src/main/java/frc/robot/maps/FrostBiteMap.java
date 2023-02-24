@@ -155,7 +155,7 @@ public class FrostBiteMap extends RobotMap {
         motor.getMotorController().setInverted(false);
         motor.getMotorController().setIdleMode(IdleMode.kBrake);
         motor.getMotorController().setSmartCurrentLimit(40);
-        motor.getEncoder().setPositionScaleFactor(1.125 / 60);
+        motor.getEncoder().setPositionScaleFactor(1.125);
         motor.getEncoder().setVelocityScaleFactor(1.125 / 60);
         return new ArmRotateMap(motor, 85, 10, 115, 0, 15, new PIDController(0, 0, 0), 46.654, 42.3);
 
