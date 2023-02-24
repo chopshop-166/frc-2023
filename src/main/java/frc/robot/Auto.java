@@ -74,9 +74,9 @@ public class Auto {
         }
     }
 
-    public CommandBase exampleAuto() {
-        return sequence(Path.TEST.getPath(drive))
-                .withName("Test Auto");
+    public CommandBase testOne() {
+        return sequence(Path.ONEBYONE.getPath(drive))
+                .withName("1x1");
     }
 
     public CommandBase oneConeAuto() {
