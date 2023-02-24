@@ -70,14 +70,14 @@ public class Robot extends CommandRobot {
         copilotController.a().onTrue(intake.coneGrab());
         copilotController.x().onTrue(intake.coneRelease());
         copilotController.b().onTrue(intake.grab());
-        copilotController.rightBumper().whileTrue(arm.resetZero(() -> copilotController.getTriggers()));
+        copilotController.rightBumper().whileTrue(armRotate.resetZero(() -> copilotController.getTriggers()));
        // copilotController.b().whileTrue(intake.cubeGrab());
         copilotController.y().whileTrue(intake.cubeRelease());
         // Arm
         // extend and rotate are in default commands
         // will need buttons for the scoring positions
         copilotController.start().onTrue(arm.zeroVelocityCheck());
-        copilotController.back().onTrue(armRotate.zeroVelocityCheck());
+        copilotController.back().onTrue(armRotate.resetCmd());
 
         // Led
         copilotController.povUp().whileTrue(led.setYellow());

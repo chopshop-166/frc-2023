@@ -86,6 +86,14 @@ public class ArmRotate extends SmartSubsystemBase {
             map.motor.getEncoder().reset();
         });
     }
+    
+    public CommandBase resetZero(DoubleSupplier speed) {
+        return cmd().onExecute(() -> {
+            data.setPoint = DESCEND_SPEED;;
+        }).onEnd(() -> {
+            map.motor.getEncoder().reset();
+        });
+    }
 
     public CommandBase moveToAngleBangBang(double angle, double speed) {
         return cmd("Move To Set Angle").onExecute(() -> {
