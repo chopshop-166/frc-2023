@@ -63,7 +63,7 @@ public class Robot extends CommandRobot {
 
         // COPILOT CONTROLLER
         // Intake
-        copilotController.a().onTrue(intake.grabTwo());
+        copilotController.a().onTrue(intake.grab());
         copilotController.b().onTrue(intake.coneToggle());
         copilotController.x().whileTrue(intake.cubeRelease());
 

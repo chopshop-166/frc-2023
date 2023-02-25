@@ -60,16 +60,6 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
         });
     }
 
-    public CommandBase grab() {
-        return cmd().onInitialize(
-                () -> {
-                    getData().motorSetPoint = GRAB_SPEED;
-                }).runsUntil(() -> getMap().motor.errored()).onEnd(() -> {
-                    getData().motorSetPoint = 0;
-                    getData().solenoidSetPoint = Value.kForward;
-                });
-    }
-
     public CommandBase spinIn() {
         PersistenceCheck currentPersistenceCheck = new PersistenceCheck(5,
                 () -> Math.abs(getData().currentAmps[0]) > 30);
@@ -80,7 +70,7 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
                 }).runsUntil(currentPersistenceCheck);
     }
 
-    public CommandBase grabTwo() {
+    public CommandBase grab() {
         return spinIn().andThen(new FunctionalWaitCommand(() -> 0.75), runOnce(() -> {
             getData().motorSetPoint = 0.05;
         }));
@@ -124,6 +114,6 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
         getData().motorSetPoint = 0;
 
         // Stops movement of air
-        // getData().solenoidSetPoint = Value.kOff;
+        getData().solenoidSetPoint = Value.kOff;
     }
 }
