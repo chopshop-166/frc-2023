@@ -1,7 +1,5 @@
 package frc.robot.maps;
 
-import java.util.Arrays;
-
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
@@ -22,7 +20,6 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -109,26 +106,13 @@ public class FrostBiteMap extends RobotMap {
         final DrivePID pid = new DrivePID(0.2, 0, 0.05, 0.01, 0, 0);
 
         final Transform3d cameraPosition = new Transform3d(
-                new Translation3d(
-                        Units.inchesToMeters(
-                                0),
-                        Units.inchesToMeters(
-                                0),
-                        Units.inchesToMeters(
-                                0)),
+                new Translation3d(0, 0, 0),
                 new Rotation3d());
 
         return new SwerveDriveMap(frontLeft, frontRight, rearLeft, rearRight,
                 maxDriveSpeedMetersPerSecond,
                 maxRotationRadianPerSecond, pigeonGyro, pid, cameraPosition, "eyes");
 
-        // return new SwerveDriveMap(
-        // new MockSwerveModule(frontLeft.getLocation()),
-        // frontRight,
-        // new MockSwerveModule(rearLeft.getLocation()),
-        // new MockSwerveModule(rearRight.getLocation()),
-        // maxDriveSpeedMetersPerSecond, maxRotationRadianPerSecond, pigeonGyro, pid,
-        // cameraPosition, "eyes");
     }
 
     @Override
@@ -139,13 +123,6 @@ public class FrostBiteMap extends RobotMap {
         intakeMotor.getMotorController().configContinuousCurrentLimit(35);
         intakeMotor.getMotorController().configPeakCurrentLimit(35);
 
-        final LinearFilter currentFilter = LinearFilter.singlePoleIIR(1, 0.01);
-        intakeMotor.addValidator(() -> {
-            final double current = Arrays.stream(intakeMotor.getCurrentAmps()).reduce(Double::sum).orElse(0.0);
-            return currentFilter.calculate(current) < 20;
-        });
-
-        // intakeMotor.validateCurrent(10, 0.5);
         return new IntakeData.Map(intakeMotor, intakeSolenoid, new MockColorSensor());
 
     }

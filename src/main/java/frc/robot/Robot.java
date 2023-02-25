@@ -63,13 +63,9 @@ public class Robot extends CommandRobot {
 
         // COPILOT CONTROLLER
         // Intake
-        // copilotController.leftBumper().onTrue(intake.coneRelease());
         copilotController.a().onTrue(intake.grabTwo());
-        // .onFalse(intake.safeStateCmd());
         copilotController.b().onTrue(intake.coneToggle());
         copilotController.x().whileTrue(intake.cubeRelease());
-        // copilotController.a().onTrue(intake.coneGrab());
-        // copilotController.b().whileTrue(intake.cubeGrab());
 
         // Arm
         // extend and rotate are in default commands
@@ -83,8 +79,6 @@ public class Robot extends CommandRobot {
                 .whileTrue(armRotate.moveTo(EnumLevel.MEDIUM_SCORE).andThen(arm.moveTo(EnumLevel.MEDIUM_SCORE)));
         copilotController.y().whileTrue(armRotate.moveTo(EnumLevel.HPS_PICKUP));
         // Led
-        // copilotController.povUp().whileTrue(led.setYellow());
-        // copilotController.povDown().whileTrue(led.setPurple());
     }
 
     @Override

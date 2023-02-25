@@ -68,10 +68,6 @@ public class Vision {
                 Pose2d pose = aprilTags.getTagPose(tagId).get().plus(cameraToTarget.inverse())
                         .plus(cameraToRobot.inverse()).toPose2d();
 
-                // driveMap.gyro().setAngle(pose.getRotation().getDegrees());
-
-                // odometry.resetPosition(driveMap.gyro().getRotation2d(),
-                // getModulePositions(), pose);
                 setPose(pose);
             }
         }
