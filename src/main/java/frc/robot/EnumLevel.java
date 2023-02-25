@@ -2,11 +2,16 @@ package frc.robot;
 
 public enum EnumLevel {
     // 0 in.
-    LOW(0, 0),
+    LOW_SCORE(0, 0),
     // 34 in.
-    MEDIUM(0, 0),
+    MEDIUM_SCORE(3.75, 78),
     // 41 7/8 in.
-    HIGH(0, 0);
+    HIGH_SCORE(19.6, 92),
+
+    FLOOR_PICKUP(0, 0),
+
+    // Human Player Station = HPS
+    HPS_PICKUP(0, 76);
 
     private double length;
     private double angle;
@@ -23,4 +28,5 @@ public enum EnumLevel {
     public double getAngle() {
         return angle;
     }
+
 }

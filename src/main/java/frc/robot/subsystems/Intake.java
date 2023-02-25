@@ -1,20 +1,25 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
+
 import com.chopshop166.chopshoplib.ColorMath;
 import com.chopshop166.chopshoplib.logging.LoggedSubsystem;
 
 import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.maps.subsystems.IntakeData;
+import com.chopshop166.chopshoplib.PersistenceCheck;
+import com.chopshop166.chopshoplib.commands.FunctionalWaitCommand;
 
 public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
 
     // Motor speed variables
     private final double GRAB_SPEED = 1;
-    private final double RELEASE_SPEED = -1;
+    private final double RELEASE_SPEED = -0.25;
 
     NetworkTableInstance ntinst = NetworkTableInstance.getDefault();
 
@@ -39,9 +44,13 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
     }
 
     // Releases game piece Cone
-    public CommandBase coneRelease() {
+    public CommandBase coneToggle() {
         return runOnce(() -> {
-            getData().solenoidSetPoint = Value.kReverse;
+            if (getData().solenoidSetPoint == Value.kForward) {
+                getData().solenoidSetPoint = Value.kReverse;
+            } else {
+                getData().solenoidSetPoint = Value.kForward;
+            }
         });
     }
 
@@ -62,6 +71,22 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
                     getData().motorSetPoint = 0;
                     getData().solenoidSetPoint = Value.kForward;
                 });
+    }
+
+    public CommandBase spinIn() {
+        PersistenceCheck currentPersistenceCheck = new PersistenceCheck(5,
+                () -> Math.abs(getData().currentAmps[0]) > 30);
+        return cmd().onInitialize(
+                () -> {
+                    currentPersistenceCheck.reset();
+                    getData().motorSetPoint = GRAB_SPEED;
+                }).runsUntil(currentPersistenceCheck);
+    }
+
+    public CommandBase grabTwo() {
+        return spinIn().andThen(coneGrab(), new FunctionalWaitCommand(() -> 0.75), runOnce(() -> {
+            getData().motorSetPoint = 0.01;
+        }));
     }
 
     // Releases game piece Cube
@@ -102,6 +127,6 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
         getData().motorSetPoint = 0;
 
         // Stops movement of air
-        getData().solenoidSetPoint = Value.kOff;
+        // getData().solenoidSetPoint = Value.kOff;
     }
 }

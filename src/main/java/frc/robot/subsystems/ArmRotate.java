@@ -26,7 +26,7 @@ public class ArmRotate extends SmartSubsystemBase {
     final double COMPARE_ANGLE = 5;
     final double SLOW_DOWN = 0.2;
     final double PIVOT_HEIGHT = 46.654;
-    private final double INTAKE_DEPTH_LIMIT = 2;
+    private final double INTAKE_DEPTH_LIMIT = 0;
     private final double DESCEND_SPEED = -0.1;
     final double armStartLength = 42.3;
     final double NO_FALL = 0.02;
@@ -66,10 +66,12 @@ public class ArmRotate extends SmartSubsystemBase {
     public CommandBase moveToAngle(double angle) {
         // When executed the arm will move. The encoder will update until the desired
         // value is reached, then the command will end.
+        PersistenceCheck setPointPersistenceCheck = new PersistenceCheck(20, pid::atSetpoint);
         return cmd("Move To Set Angle").onExecute(() -> {
-            data.setPoint = pid.calculate(data.degrees, angle);
+            data.setPoint = pid.calculate(data.degrees, angle) + NO_FALL;
+            Logger.getInstance().recordOutput("getPositionErrors", pid.getPositionError());
 
-        }).runsUntil(pid::atSetpoint).onEnd(() -> {
+        }).runsUntil(setPointPersistenceCheck).onEnd(() -> {
             data.setPoint = 0;
         });
 
@@ -87,6 +89,15 @@ public class ArmRotate extends SmartSubsystemBase {
         });
     }
 
+    public CommandBase resetZero(DoubleSupplier speed) {
+        return cmd().onExecute(() -> {
+            data.setPoint = DESCEND_SPEED;
+            ;
+        }).onEnd(() -> {
+            map.motor.getEncoder().reset();
+        });
+    }
+
     public CommandBase moveToAngleBangBang(double angle, double speed) {
         return cmd("Move To Set Angle").onExecute(() -> {
             if (angle >= data.degrees) {
@@ -100,7 +111,7 @@ public class ArmRotate extends SmartSubsystemBase {
     }
 
     public CommandBase moveTo(EnumLevel level) {
-        return moveToAngleBangBang(level.getAngle(), MOVE_SPEED);
+        return moveToAngle(level.getAngle());
     }
 
     @Override
