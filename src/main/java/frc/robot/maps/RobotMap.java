@@ -1,7 +1,5 @@
 package frc.robot.maps;
 
-import javax.sound.midi.Sequence;
-
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
