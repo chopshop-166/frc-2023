@@ -55,6 +55,9 @@ public class Drive extends SmartSubsystemBase {
     private Field2d field = new Field2d();
 
     private final PIDController rotationPID;
+    private final PIDController driveRotationPID;
+
+    private double latestAngle = 0;
 
     public Drive(SwerveDriveMap map) {
         this.map = map;
@@ -69,7 +72,7 @@ public class Drive extends SmartSubsystemBase {
                 map.cameraName(), Field.getApriltagLayout(),
                 map.cameraPosition(),
                 this.map);
-
+        driveRotationPID = drivePID.copyRotationPidController();
         rotationPID = drivePID.copyRotationPidController();
     }
 
@@ -94,11 +97,20 @@ public class Drive extends SmartSubsystemBase {
             final double rotation) {
 
         final Modifier deadband = Modifier.deadband(0.15);
+
+        double rotationDeadband = deadband.applyAsDouble(rotation);
+
+        if (Math.abs(rotationDeadband) < 0.1) {
+            rotationDeadband = driveRotationPID.calculate(map.gyro().getAngle(), latestAngle);
+        } else {
+            latestAngle = map.gyro().getAngle();
+        }
+
         final double translateXSpeed = deadband.applyAsDouble(xSpeed)
                 * maxDriveSpeedMetersPerSecond * speedCoef;
         final double translateYSpeed = deadband.applyAsDouble(ySpeed)
                 * maxDriveSpeedMetersPerSecond * speedCoef;
-        final double rotationSpeed = deadband.applyAsDouble(rotation)
+        final double rotationSpeed = rotationDeadband
                 * maxRotationRadiansPerSecond * ROTATIONSLOWCOEF;
 
         // rotationOffset is temporary and startingRotation is set at the start
