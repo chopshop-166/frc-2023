@@ -1,7 +1,7 @@
 plugins {
     id "java"
     id "edu.wpi.first.GradleRIO" version "2023.4.1"
-    id "com.chopshop166.plugin" version "0.8"
+    id "com.chopshop166.plugin" version "0.9"
 }
 
 sourceCompatibility = JavaVersion.VERSION_17
@@ -90,7 +90,6 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
 
-
     implementation chopshop.deps()
     annotationProcessor "org.littletonrobotics.akit.junction:junction-autolog:2.0.0"
 }
@@ -108,8 +107,10 @@ wpi.sim.addDriverstation()
 // in order to make them all available at runtime. Also adding the manifest so WPILib
 // knows where to look for our Robot Class.
 jar {
-    chopshop.setupManifest(manifest, ROBOT_MAIN_CLASS)
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    manifest chopshop.setupManifest()
 }
 
 configurations.all {
