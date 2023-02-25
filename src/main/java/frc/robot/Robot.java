@@ -76,9 +76,9 @@ public class Robot extends CommandRobot {
         // Arm
         // extend and rotate are in default commands
         copilotController.start().onTrue(arm.zeroVelocityCheck());
-        copilotController.back().onTrue(armRotate.zeroVelocityCheck());
         // will need buttons for the scoring positions
         copilotController.y().whileTrue(armRotate.moveTo(EnumLevel.HPS_PICKUP));
+        copilotController.back().onTrue(armRotate.resetCmd());
 
         // Led
         copilotController.povUp().whileTrue(led.setYellow());
