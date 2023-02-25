@@ -22,7 +22,7 @@ public class Arm extends SmartSubsystemBase {
     public final double SPEED = 0.3;
     private final double RETRACT_SPEED = -0.1;
     final double PIVOT_HEIGHT = 46.654;
-    private final double INTAKE_DEPTH_LIMIT = 2;
+    private final double INTAKE_DEPTH_LIMIT = 0;
     private double armAngle;
 
     NetworkTableInstance inst = NetworkTableInstance.getDefault();
@@ -82,7 +82,7 @@ public class Arm extends SmartSubsystemBase {
     }
 
     public CommandBase moveTo(EnumLevel level) {
-        return moveToDistanceBangBang(level.getLength(), SPEED);
+        return moveToDistancePID(level.getLength());
     }
 
     // This ensures that the arm is fully retracted (likely for the start or end of
