@@ -111,11 +111,11 @@ public class FrostBiteMap extends RobotMap {
         final Transform3d cameraPosition = new Transform3d(
                 new Translation3d(
                         Units.inchesToMeters(
-                                2.44),
+                                0),
                         Units.inchesToMeters(
-                                7.25),
+                                0),
                         Units.inchesToMeters(
-                                25 * 0)),
+                                0)),
                 new Rotation3d());
 
         return new SwerveDriveMap(frontLeft, frontRight, rearLeft, rearRight,

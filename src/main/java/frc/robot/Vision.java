@@ -49,8 +49,7 @@ public class Vision {
     }
 
     public void setPose(Pose2d pose) {
-        driveMap.gyro().setAngle(pose.getRotation().getDegrees());
-        odometry.resetPosition(driveMap.gyro().getRotation2d(), getModulePositions(), pose);
+        odometry.resetPosition(Rotation2d.fromDegrees(driveMap.gyro().getAngle() - 180), getModulePositions(), pose);
     }
 
     // Estimated pose from a combination of vision and odometry
@@ -69,16 +68,17 @@ public class Vision {
                 Pose2d pose = aprilTags.getTagPose(tagId).get().plus(cameraToTarget.inverse())
                         .plus(cameraToRobot.inverse()).toPose2d();
 
-                driveMap.gyro().setAngle(pose.getRotation().getDegrees());
+                // driveMap.gyro().setAngle(pose.getRotation().getDegrees());
 
-                odometry.resetPosition(driveMap.gyro().getRotation2d(),
-                        getModulePositions(), pose);
+                // odometry.resetPosition(driveMap.gyro().getRotation2d(),
+                // getModulePositions(), pose);
+                setPose(pose);
             }
         }
 
         // Subtract 180 degrees from the gyro angle for some reason
         return filter.calculate(odometry.update(
-                Rotation2d.fromDegrees(driveMap.gyro().getAngle() - 180), getModulePositions()));
+                Rotation2d.fromDegrees(driveMap.gyro().getAngle()), getModulePositions()));
     }
 
     // Get every swerve module state
