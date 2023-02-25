@@ -39,10 +39,6 @@ public class Robot extends CommandRobot {
     public CommandBase exampleAuto = auto.exampleAuto();
 
     @Override
-    public void teleopInit() {
-    }
-
-    @Override
     public void robotInit() {
         super.robotInit();
 
