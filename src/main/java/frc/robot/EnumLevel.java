@@ -4,9 +4,9 @@ public enum EnumLevel {
     // 0 in.
     LOW_SCORE(0, 0),
     // 34 in.
-    MEDIUM_SCORE(3.41, 76.1),
+    MEDIUM_SCORE(3.75, 78),
     // 41 7/8 in.
-    HIGH_SCORE(18.59, 90),
+    HIGH_SCORE(19.6, 92),
 
     FLOOR_PICKUP(0, 0),
 

@@ -61,25 +61,31 @@ public class Robot extends CommandRobot {
         // DRIVE CONTROLLER
         // Drive
         driveController.rightBumper().onTrue(drive.setSpeedCoef(0.25, 0.35)).onFalse(drive.setSpeedCoef(1, 1));
-        driveController.a().onTrue(drive.driveToNearest());
+        driveController.x().onTrue(drive.driveToNearest());
         driveController.back().onTrue(runOnce(drive::resetGyro));
+        // Arm
+        driveController.a()
+                .onTrue(arm.moveTo(EnumLevel.HIGH_SCORE).andThen(armRotate.moveTo(EnumLevel.HIGH_SCORE)));
+        driveController.b()
+                .onTrue(arm.moveTo(EnumLevel.MEDIUM_SCORE).andThen(armRotate.moveTo(EnumLevel.MEDIUM_SCORE)));
 
         // COPILOT CONTROLLER
         // Intake
         // copilotController.leftBumper().onTrue(intake.coneRelease());
-        copilotController.a().onTrue(intake.coneGrab());
-        copilotController.x().onTrue(intake.coneRelease());
-        copilotController.b().onTrue(intake.grab());
-        copilotController.rightBumper().whileTrue(arm.resetZero(() -> copilotController.getTriggers()));
+        copilotController.a().onTrue(intake.grabTwo()).onFalse(intake.safeStateCmd());
+        copilotController.b().onTrue(intake.coneToggle());
+        copilotController.x().whileTrue(intake.cubeRelease());
+        copilotController.y().onTrue(intake.grab());
+        // copilotController.a().onTrue(intake.coneGrab());
         // copilotController.b().whileTrue(intake.cubeGrab());
-        // copilotController.y().whileTrue(intake.cubeRelease());
+
         // Arm
         // extend and rotate are in default commands
         copilotController.start().onTrue(arm.zeroVelocityCheck());
-        // will need buttons for the scoring positions
-        copilotController.y().whileTrue(armRotate.moveTo(EnumLevel.HPS_PICKUP));
         copilotController.back().onTrue(armRotate.resetCmd());
-
+        copilotController.rightBumper().whileTrue(armRotate.resetZero(() -> copilotController.getTriggers()));
+        // will need buttons for the scoring positions
+        // copilotController.y().whileTrue(armRotate.moveTo(EnumLevel.HPS_PICKUP));
         // Led
         copilotController.povUp().whileTrue(led.setYellow());
         copilotController.povDown().whileTrue(led.setPurple());

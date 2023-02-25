@@ -66,9 +66,9 @@ public class ArmRotate extends SmartSubsystemBase {
     public CommandBase moveToAngle(double angle) {
         // When executed the arm will move. The encoder will update until the desired
         // value is reached, then the command will end.
-        PersistenceCheck setPointPersistenceCheck = new PersistenceCheck(30, pid::atSetpoint);
+        PersistenceCheck setPointPersistenceCheck = new PersistenceCheck(20, pid::atSetpoint);
         return cmd("Move To Set Angle").onExecute(() -> {
-            data.setPoint = pid.calculate(data.degrees, angle);
+            data.setPoint = pid.calculate(data.degrees, angle) + NO_FALL;
             Logger.getInstance().recordOutput("getPositionErrors", pid.getPositionError());
 
         }).runsUntil(setPointPersistenceCheck).onEnd(() -> {
@@ -88,10 +88,11 @@ public class ArmRotate extends SmartSubsystemBase {
             map.motor.getEncoder().reset();
         });
     }
-    
+
     public CommandBase resetZero(DoubleSupplier speed) {
         return cmd().onExecute(() -> {
-            data.setPoint = DESCEND_SPEED;;
+            data.setPoint = DESCEND_SPEED;
+            ;
         }).onEnd(() -> {
             map.motor.getEncoder().reset();
         });

@@ -19,7 +19,7 @@ public class Arm extends SmartSubsystemBase {
 
     public Data data = new Data();
     public ArmMap extendMap;
-    public final double SPEED = 0.3;
+    public final double SPEED = 0.4;
     private final double RETRACT_SPEED = -0.1;
     final double PIVOT_HEIGHT = 46.654;
     private final double INTAKE_DEPTH_LIMIT = 0;
@@ -135,7 +135,7 @@ public class Arm extends SmartSubsystemBase {
         if ((data.distanceInches > extendMap.softMaxDistance && speed > 0)
                 || (data.distanceInches < extendMap.softMinDistance && speed < 0)) {
 
-            return speed * 0.5;
+            return speed * 0.3;
         }
         return speed;
     }

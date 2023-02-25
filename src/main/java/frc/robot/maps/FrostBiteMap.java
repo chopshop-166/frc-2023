@@ -137,11 +137,12 @@ public class FrostBiteMap extends RobotMap {
         intakeMotor.setInverted(true);
         RevDSolenoid intakeSolenoid = new RevDSolenoid(8, 9);
         intakeMotor.getMotorController().configContinuousCurrentLimit(35);
+        intakeMotor.getMotorController().configPeakCurrentLimit(35);
 
         final LinearFilter currentFilter = LinearFilter.singlePoleIIR(1, 0.01);
         intakeMotor.addValidator(() -> {
             final double current = Arrays.stream(intakeMotor.getCurrentAmps()).reduce(Double::sum).orElse(0.0);
-            return currentFilter.calculate(current) < 25;
+            return currentFilter.calculate(current) < 20;
         });
 
         // intakeMotor.validateCurrent(10, 0.5);
@@ -157,7 +158,7 @@ public class FrostBiteMap extends RobotMap {
         motor.getMotorController().setSmartCurrentLimit(40);
         motor.getEncoder().setPositionScaleFactor(1.125);
         motor.getEncoder().setVelocityScaleFactor(1.125 / 60);
-        PIDController pid = new PIDController(0.05, 0.007, 0);
+        PIDController pid = new PIDController(0.06, 0, 0);
         pid.setTolerance(0.5);
         return new ArmRotateMap(motor, 85, 10, 115, 0, 15, pid, 46.654, 42.3);
 
@@ -171,7 +172,7 @@ public class FrostBiteMap extends RobotMap {
         motor.getMotorController().setSmartCurrentLimit(30);
         motor.getEncoder().setPositionScaleFactor((1.273 * Math.PI) / 10);
         motor.getEncoder().setVelocityScaleFactor((1.273 * Math.PI) / 10);
-        return new ArmMap(motor, 19, 1, 19.9, 0.1, new PIDController(0, 0, 0), 46.654, 42.3);
+        return new ArmMap(motor, 18.5, 3, 19.8, 0.3, new PIDController(0, 0, 0), 46.654, 42.3);
     }
 
     @Override
