@@ -32,7 +32,7 @@ public class Drive extends SmartSubsystemBase {
     double maxDriveSpeedMetersPerSecond;
     double maxRotationRadiansPerSecond;
     double speedCoef = 1;
-    double ROTATIONSLOWCOEF = 1;
+    double rotationCoef = 1;
 
     public enum GridPosition {
 
@@ -54,8 +54,10 @@ public class Drive extends SmartSubsystemBase {
     private final DrivePID drivePID;
     private Field2d field = new Field2d();
 
+    // Used for automatic alignment while driving
     private final PIDController rotationPID;
-    private final PIDController driveRotationPID;
+    // Used for rotation correction while driving
+    private final PIDController correctionPID;
 
     private double latestAngle = 0;
 
@@ -72,7 +74,7 @@ public class Drive extends SmartSubsystemBase {
                 map.cameraName(), Field.getApriltagLayout(),
                 map.cameraPosition(),
                 this.map);
-        driveRotationPID = drivePID.copyRotationPidController();
+        correctionPID = drivePID.copyRotationPidController();
         rotationPID = drivePID.copyRotationPidController();
     }
 
@@ -88,7 +90,7 @@ public class Drive extends SmartSubsystemBase {
     public CommandBase setSpeedCoef(double fac, double rotationfac) {
         return runOnce(() -> {
             speedCoef = fac;
-            ROTATIONSLOWCOEF = rotationfac;
+            rotationCoef = rotationfac;
 
         });
     }
@@ -101,7 +103,7 @@ public class Drive extends SmartSubsystemBase {
         double rotationInput = deadband.applyAsDouble(rotation);
 
         if (Math.abs(rotationInput) < 0.1) {
-            rotationInput = driveRotationPID.calculate(latestAngle, map.gyro().getAngle());
+            rotationInput = correctionPID.calculate(latestAngle, map.gyro().getAngle());
         } else {
             latestAngle = map.gyro().getAngle();
         }
@@ -111,7 +113,7 @@ public class Drive extends SmartSubsystemBase {
         final double translateYSpeed = deadband.applyAsDouble(ySpeed)
                 * maxDriveSpeedMetersPerSecond * speedCoef;
         final double rotationSpeed = rotationInput
-                * maxRotationRadiansPerSecond * ROTATIONSLOWCOEF;
+                * maxRotationRadiansPerSecond * rotationCoef;
 
         // rotationOffset is temporary and startingRotation is set at the start
         final ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(translateYSpeed, translateXSpeed,
