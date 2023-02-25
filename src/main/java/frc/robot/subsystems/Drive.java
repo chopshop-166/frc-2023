@@ -101,7 +101,7 @@ public class Drive extends SmartSubsystemBase {
         double rotationInput = deadband.applyAsDouble(rotation);
 
         if (Math.abs(rotationInput) < 0.1) {
-            rotationInput = driveRotationPID.calculate(map.gyro().getAngle(), latestAngle);
+            rotationInput = driveRotationPID.calculate(latestAngle, map.gyro().getAngle());
         } else {
             latestAngle = map.gyro().getAngle();
         }
@@ -170,6 +170,7 @@ public class Drive extends SmartSubsystemBase {
 
     public void resetGyro() {
         map.gyro().reset();
+        latestAngle = 0;
     }
 
     @Override

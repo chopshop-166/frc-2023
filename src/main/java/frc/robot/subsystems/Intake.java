@@ -18,8 +18,8 @@ import com.chopshop166.chopshoplib.commands.FunctionalWaitCommand;
 public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
 
     // Motor speed variables
-    private final double GRAB_SPEED = 1;
-    private final double RELEASE_SPEED = -0.25;
+    private final double GRAB_SPEED = 0.75;
+    private final double RELEASE_SPEED = -0.5;
 
     NetworkTableInstance ntinst = NetworkTableInstance.getDefault();
 
@@ -84,8 +84,8 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
     }
 
     public CommandBase grabTwo() {
-        return spinIn().andThen(coneGrab(), new FunctionalWaitCommand(() -> 0.75), runOnce(() -> {
-            getData().motorSetPoint = 0.01;
+        return spinIn().andThen(new FunctionalWaitCommand(() -> 0.75), runOnce(() -> {
+            getData().motorSetPoint = 0.05;
         }));
     }
 
