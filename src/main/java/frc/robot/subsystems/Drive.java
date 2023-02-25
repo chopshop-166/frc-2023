@@ -98,10 +98,10 @@ public class Drive extends SmartSubsystemBase {
 
         final Modifier deadband = Modifier.deadband(0.15);
 
-        double rotationDeadband = deadband.applyAsDouble(rotation);
+        double rotationInput = deadband.applyAsDouble(rotation);
 
-        if (Math.abs(rotationDeadband) < 0.1) {
-            rotationDeadband = driveRotationPID.calculate(map.gyro().getAngle(), latestAngle);
+        if (Math.abs(rotationInput) < 0.1) {
+            rotationInput = driveRotationPID.calculate(map.gyro().getAngle(), latestAngle);
         } else {
             latestAngle = map.gyro().getAngle();
         }
@@ -110,7 +110,7 @@ public class Drive extends SmartSubsystemBase {
                 * maxDriveSpeedMetersPerSecond * speedCoef;
         final double translateYSpeed = deadband.applyAsDouble(ySpeed)
                 * maxDriveSpeedMetersPerSecond * speedCoef;
-        final double rotationSpeed = rotationDeadband
+        final double rotationSpeed = rotationInput
                 * maxRotationRadiansPerSecond * ROTATIONSLOWCOEF;
 
         // rotationOffset is temporary and startingRotation is set at the start
