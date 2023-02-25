@@ -19,7 +19,7 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
 
     // Motor speed variables
     private final double GRAB_SPEED = 1;
-    private final double RELEASE_SPEED = -1;
+    private final double RELEASE_SPEED = -0.25;
 
     NetworkTableInstance ntinst = NetworkTableInstance.getDefault();
 

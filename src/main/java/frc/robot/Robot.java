@@ -64,10 +64,6 @@ public class Robot extends CommandRobot {
         driveController.x().onTrue(drive.driveToNearest());
         driveController.back().onTrue(runOnce(drive::resetGyro));
         // Arm
-        driveController.a()
-                .onTrue(arm.moveTo(EnumLevel.HIGH_SCORE).andThen(armRotate.moveTo(EnumLevel.HIGH_SCORE)));
-        driveController.b()
-                .onTrue(arm.moveTo(EnumLevel.MEDIUM_SCORE).andThen(armRotate.moveTo(EnumLevel.MEDIUM_SCORE)));
 
         // COPILOT CONTROLLER
         // Intake
@@ -75,7 +71,6 @@ public class Robot extends CommandRobot {
         copilotController.a().onTrue(intake.grabTwo()).onFalse(intake.safeStateCmd());
         copilotController.b().onTrue(intake.coneToggle());
         copilotController.x().whileTrue(intake.cubeRelease());
-        copilotController.y().onTrue(intake.grab());
         // copilotController.a().onTrue(intake.coneGrab());
         // copilotController.b().whileTrue(intake.cubeGrab());
 
@@ -85,10 +80,14 @@ public class Robot extends CommandRobot {
         copilotController.back().onTrue(armRotate.resetCmd());
         copilotController.rightBumper().whileTrue(armRotate.resetZero(() -> copilotController.getTriggers()));
         // will need buttons for the scoring positions
-        // copilotController.y().whileTrue(armRotate.moveTo(EnumLevel.HPS_PICKUP));
+        copilotController.povUp()
+                .whileTrue(armRotate.moveTo(EnumLevel.HIGH_SCORE).andThen(arm.moveTo(EnumLevel.HIGH_SCORE)));
+        copilotController.povRight()
+                .whileTrue(armRotate.moveTo(EnumLevel.MEDIUM_SCORE).andThen(arm.moveTo(EnumLevel.MEDIUM_SCORE)));
+        copilotController.y().whileTrue(armRotate.moveTo(EnumLevel.HPS_PICKUP));
         // Led
-        copilotController.povUp().whileTrue(led.setYellow());
-        copilotController.povDown().whileTrue(led.setPurple());
+        // copilotController.povUp().whileTrue(led.setYellow());
+        // copilotController.povDown().whileTrue(led.setPurple());
     }
 
     @Override

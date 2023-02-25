@@ -82,7 +82,7 @@ public class Arm extends SmartSubsystemBase {
     }
 
     public CommandBase moveTo(EnumLevel level) {
-        return moveToDistancePID(level.getLength());
+        return moveToDistanceBangBang(level.getLength(), SPEED);
     }
 
     // This ensures that the arm is fully retracted (likely for the start or end of
