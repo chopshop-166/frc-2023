@@ -99,6 +99,17 @@ public class Arm extends SmartSubsystemBase {
         });
     }
 
+    public CommandBase stow() {
+        PersistenceCheck velocityPersistenceCheck = new PersistenceCheck(5,
+                () -> Math.abs(data.velocityInchesPerSec) < 0.5);
+        return cmd("Check Velocity").onInitialize(() -> {
+            velocityPersistenceCheck.reset();
+            data.setPoint = (RETRACT_SPEED);
+        }).runsUntil(velocityPersistenceCheck).onEnd(() -> {
+            data.setPoint = 0;
+        });
+    }
+
     @Override
     public void reset() {
         // Nothing to reset here

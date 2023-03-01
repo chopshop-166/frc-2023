@@ -73,7 +73,7 @@ public class Robot extends CommandRobot {
         // Arm
         // extend and rotate are in default commands
         copilotController.start().onTrue(arm.zeroVelocityCheck());
-        // copilotController.back().onTrue(armRotate.resetCmd());
+        // copilotController.back().onTrue(armRotate.zeroVelocityCheck());
         copilotController.rightBumper().whileTrue(armRotate.resetZero(() -> copilotController.getTriggers()));
         // will need buttons for the scoring positions
         copilotController.povUp()
@@ -83,6 +83,9 @@ public class Robot extends CommandRobot {
         copilotController.povLeft()
                 .whileTrue(arm.zeroVelocityCheck());
         copilotController.y().whileTrue(armRotate.moveTo(EnumLevel.HPS_PICKUP));
+        // copilotController.povLeft()
+        // .whileTrue(arm.stow().andThen(armRotate.stow()));
+
         // Led
     }
 
