@@ -45,7 +45,7 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
     }
 
     // Releases game piece Cone
-    public CommandBase coneToggle() {
+    public CommandBase toggle() {
         return runOnce(() -> {
             if (getData().solenoidSetPoint == Value.kForward) {
                 if (armAngle > 13) {
