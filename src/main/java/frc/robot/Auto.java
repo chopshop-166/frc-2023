@@ -75,9 +75,11 @@ public class Auto {
     }
 
     public CommandBase testConeLOne() {
-        return sequence(drive.setPose(new Pose2d(4.72, 15.37, new Rotation2d(180))), intake.coneToggle(),
-                drive.driveTo(new Pose2d(4.72, 10.43, new Rotation2d(0))), armRotate.moveToAngle(20), intake.cubeGrab(),
-                drive.driveTo(new Pose2d(5.32, 15.37, new Rotation2d(180))), armRotate.moveTo(EnumLevel.HIGH_SCORE))
+        return sequence(intake.coneToggle(), drive.driveTo(new Pose2d(10.43,
+                4.72, new Rotation2d(0))), armRotate.moveToAngle(20), intake.cubeGrab(), drive.driveTo(
+                        new Pose2d(
+                                15.37, 5.32, new Rotation2d(180))),
+                armRotate.moveTo(EnumLevel.HIGH_SCORE))
                 .withName("TEST-ConeL1");
     }
 
