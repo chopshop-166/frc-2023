@@ -58,7 +58,10 @@ public class Robot extends CommandRobot {
         // Drive
         driveController.rightBumper().onTrue(drive.setSpeedCoef(0.25, 0.35)).onFalse(drive.setSpeedCoef(1, 1));
         driveController.x().onTrue(drive.driveToNearest());
-        driveController.back().onTrue(runOnce(drive::resetGyro));
+        driveController.back().onTrue(runOnce(() -> {
+            drive.resetGyro();
+            drive.resetTag();
+        }));
         // Arm
 
         // COPILOT CONTROLLER
