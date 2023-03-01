@@ -11,7 +11,9 @@ public enum EnumLevel {
     FLOOR_PICKUP(0, 0),
 
     // Human Player Station = HPS
-    HPS_PICKUP(0, 76);
+    HPS_PICKUP(0, 76),
+
+    ARM_STOWED(0, 0);
 
     private double length;
     private double angle;

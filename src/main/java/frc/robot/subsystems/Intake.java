@@ -6,6 +6,7 @@ import com.chopshop166.chopshoplib.commands.FunctionalWaitCommand;
 import com.chopshop166.chopshoplib.logging.LoggedSubsystem;
 
 import edu.wpi.first.networktables.BooleanPublisher;
+import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.util.Color;
@@ -14,12 +15,14 @@ import frc.robot.maps.subsystems.IntakeData;
 
 public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
 
+    private double armAngle;
+
     // Motor speed variables
     private final double GRAB_SPEED = 0.75;
     private final double RELEASE_SPEED = -0.5;
 
     NetworkTableInstance ntinst = NetworkTableInstance.getDefault();
-
+    DoubleSubscriber angleSub = ntinst.getDoubleTopic("Arm/Angle").subscribe(0);
     BooleanPublisher clawPub = ntinst.getBooleanTopic("Intake/Closed").publish();
 
     // Creates constructor using IntakeData
@@ -30,6 +33,7 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
     @Override
     public void periodic() {
         super.periodic();
+        armAngle = angleSub.get();
         clawPub.set(getData().solenoidSetPoint == Value.kForward);
     }
 
@@ -44,7 +48,9 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
     public CommandBase toggle() {
         return runOnce(() -> {
             if (getData().solenoidSetPoint == Value.kForward) {
-                getData().solenoidSetPoint = Value.kReverse;
+                if (armAngle > 13) {
+                    getData().solenoidSetPoint = Value.kReverse;
+                }
             } else {
                 getData().solenoidSetPoint = Value.kForward;
             }
