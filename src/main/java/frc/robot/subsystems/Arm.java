@@ -76,13 +76,13 @@ public class Arm extends SmartSubsystemBase {
             // Extend
             data.setPoint = limit(extendMap.pid.calculate(data.distanceInches, distance));
 
-        }).runsUntil(extendMap.pid::atSetpoint).onEnd(() -> {
+        }).runsUntil(() -> false).onEnd(() -> {
             data.setPoint = 0;
         });
     }
 
     public CommandBase moveTo(EnumLevel level) {
-        return moveToDistanceBangBang(level.getLength(), SPEED);
+        return moveToDistancePID(level.getLength());
     }
 
     // This ensures that the arm is fully retracted (likely for the start or end of
