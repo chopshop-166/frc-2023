@@ -48,13 +48,11 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
     public CommandBase coneToggle() {
         return runOnce(() -> {
             if (getData().solenoidSetPoint == Value.kForward) {
-                getData().solenoidSetPoint = Value.kReverse;
-            } else {
-                if (armAngle < 13) {
+                if (armAngle > 13) {
                     getData().solenoidSetPoint = Value.kReverse;
-                } else {
-                    getData().solenoidSetPoint = Value.kForward;
                 }
+            } else {
+                getData().solenoidSetPoint = Value.kForward;
             }
         });
     }
