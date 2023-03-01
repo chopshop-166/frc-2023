@@ -27,6 +27,8 @@ public class Vision {
     Transform3d cameraToRobot;
     AprilTagFieldLayout aprilTags;
     PoseFilter filter = new PoseFilter(0.1);
+    Pose2d prevPose = new Pose2d();
+    public boolean sawTag = false;
 
     public Vision(
             String cameraName, AprilTagFieldLayout aprilTags,
@@ -57,24 +59,36 @@ public class Vision {
         PhotonPipelineResult result = camera.getLatestResult();
 
         // Sees an apriltag
+
         if (result.hasTargets()) {
             PhotonTrackedTarget target = result.getBestTarget();
             Transform3d cameraToTarget = target.getBestCameraToTarget();
             int tagId = target.getFiducialId();
             SmartDashboard.putNumber("Tag ID", tagId);
             Optional<Pose3d> opt = aprilTags.getTagPose(tagId);
-            if (opt.isPresent() && target.getPoseAmbiguity() < 1.0) {
+
+            if (opt.isPresent() && target.getPoseAmbiguity() < 0.3) {
                 // Reverse the pose to determine the position on the field
                 Pose2d pose = aprilTags.getTagPose(tagId).get().plus(cameraToTarget.inverse())
                         .plus(cameraToRobot.inverse()).toPose2d();
 
-                setPose(pose);
+                double distance = 0;
+                if (sawTag) {
+                    distance = prevPose.getTranslation().getDistance(pose.getTranslation());
+                }
+                if (distance < 2) {
+                    setPose(pose);
+                }
+                sawTag = true;
             }
         }
 
+        SmartDashboard.putBoolean("Saw Tag", sawTag);
         // Subtract 180 degrees from the gyro angle for some reason
-        return filter.calculate(odometry.update(
+
+        prevPose = filter.calculate(odometry.update(
                 Rotation2d.fromDegrees(driveMap.gyro().getAngle()), getModulePositions()));
+        return prevPose;
     }
 
     // Get every swerve module state

@@ -95,7 +95,7 @@ public class Drive extends SmartSubsystemBase {
         });
     }
 
-    private void move(final double xSpeed, final double ySpeed,
+    private void deadbandMove(final double xSpeed, final double ySpeed,
             final double rotation) {
 
         final Modifier deadband = Modifier.deadband(0.15);
@@ -114,10 +114,15 @@ public class Drive extends SmartSubsystemBase {
                 * maxDriveSpeedMetersPerSecond * speedCoef;
         final double rotationSpeed = rotationInput
                 * maxRotationRadiansPerSecond * rotationCoef;
+        move(translateXSpeed, translateYSpeed, rotationSpeed);
+    }
+
+    private void move(final double xSpeed, final double ySpeed,
+            final double rotation) {
 
         // rotationOffset is temporary and startingRotation is set at the start
-        final ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(translateYSpeed, translateXSpeed,
-                rotationSpeed,
+        final ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(ySpeed, xSpeed,
+                rotation,
                 Rotation2d.fromDegrees(io.gyroYawPositionDegrees));
 
         // Now use this in our kinematics
@@ -137,7 +142,7 @@ public class Drive extends SmartSubsystemBase {
     }
 
     public CommandBase drive(DoubleSupplier xSpeed, DoubleSupplier ySpeed, DoubleSupplier rotation) {
-        return run(() -> move(xSpeed.getAsDouble(), ySpeed.getAsDouble(), rotation.getAsDouble()));
+        return run(() -> deadbandMove(xSpeed.getAsDouble(), ySpeed.getAsDouble(), rotation.getAsDouble()));
     }
 
     // Use DrivePID to drive to a target pose on the field
@@ -145,7 +150,15 @@ public class Drive extends SmartSubsystemBase {
         return cmd().onExecute(() -> {
             Transform2d fb = drivePID.calculate(pose, targetPose);
             move(fb.getX(), fb.getY(), fb.getRotation().getDegrees());
-        }).runsUntil(() -> drivePID.isFinished(pose, targetPose, 0.005)).onEnd(this::safeState);
+
+            double debugPose[] = new double[] { targetPose.getX(), targetPose.getY(),
+                    targetPose.getRotation().getDegrees() };
+            SmartDashboard.putNumberArray("Target Pose", debugPose);
+        }).runsUntil(() -> drivePID.isFinished(pose, targetPose, 0.01)).onEnd(this::safeState);
+    }
+
+    public void resetTag() {
+        vision.sawTag = false;
     }
 
     // Drive to a pre-determined grid position

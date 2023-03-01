@@ -44,8 +44,8 @@ public class DrivePID {
         return new Transform2d(
                 new Translation2d(
                         // X and Y need to be swapped here for some reason
-                        yPid.calculate(targetPose.getY(), currentPose.getY()),
-                        xPid.calculate(targetPose.getX(), currentPose.getX())),
+                        yPid.calculate(currentPose.getY(), targetPose.getY()),
+                        xPid.calculate(currentPose.getX(), targetPose.getX())),
                 Rotation2d.fromDegrees(anglePid.calculate(currentPose.getRotation().getDegrees(),
                         targetPose.getRotation().getDegrees())));
     }
@@ -65,7 +65,8 @@ public class DrivePID {
         SmartDashboard.putNumberArray("PID Error",
                 new double[] { error.getX(), error.getY(), error.getRotation().getRadians() });
 
-        return (error.getX() < deadband) && (error.getY() < deadband) && error.getRotation().getRadians() < deadband;
+        return (Math.abs(error.getX()) < deadband) && (Math.abs(error.getY()) < deadband)
+                && Math.abs(error.getRotation().getRadians() * 0) < deadband;
     }
 
     /**

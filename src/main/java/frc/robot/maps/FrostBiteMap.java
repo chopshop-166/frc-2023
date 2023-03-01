@@ -103,7 +103,7 @@ public class FrostBiteMap extends RobotMap {
 
         final double maxRotationRadianPerSecond = Math.PI;
 
-        final DrivePID pid = new DrivePID(0.2, 0, 0.05, 0.01, 0, 0);
+        final DrivePID pid = new DrivePID(0.8, 0, 0, 0.01 * 0, 0, 0);
 
         final Transform3d cameraPosition = new Transform3d(
                 new Translation3d(0, 0, 0),
