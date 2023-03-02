@@ -23,6 +23,7 @@ public class Arm extends SmartSubsystemBase {
     private final double RETRACT_SPEED = -0.1;
     final double PIVOT_HEIGHT = 46.654;
     private final double INTAKE_DEPTH_LIMIT = 0;
+    private final double EXTEND_SPEED = 0.3;
     private double armAngle;
 
     NetworkTableInstance inst = NetworkTableInstance.getDefault();
@@ -96,6 +97,18 @@ public class Arm extends SmartSubsystemBase {
         }).runsUntil(velocityPersistenceCheck).onEnd(() -> {
             data.setPoint = 0;
             extendMap.extendMotor.getEncoder().reset();
+        });
+    }
+
+    public CommandBase fullExtend() {
+        PersistenceCheck velocityPersistenceCheck = new PersistenceCheck(5,
+                () -> Math.abs(data.velocityInchesPerSec) < 0.5);
+        return cmd("Check Velocity").onInitialize(() -> {
+            velocityPersistenceCheck.reset();
+        }).onExecute(() -> {
+            data.setPoint = (EXTEND_SPEED);
+        }).runsUntil(velocityPersistenceCheck).onEnd(() -> {
+            data.setPoint = 0;
         });
     }
 
