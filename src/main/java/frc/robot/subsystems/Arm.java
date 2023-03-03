@@ -24,6 +24,7 @@ public class Arm extends SmartSubsystemBase {
     final double PIVOT_HEIGHT = 46.654;
     private final double INTAKE_DEPTH_LIMIT = 0;
     private final double EXTEND_SPEED = 0.3;
+    final double NO_FALL = 0.02;
     private double armAngle;
 
     NetworkTableInstance inst = NetworkTableInstance.getDefault();
@@ -51,23 +52,6 @@ public class Arm extends SmartSubsystemBase {
     public CommandBase manual(DoubleSupplier motorSpeed) {
         return run(() -> {
             data.setPoint = limit(motorSpeed.getAsDouble() * SPEED);
-        });
-    }
-
-    // Compares arm current extension to set distance and retracts or extends based
-    // on current arm extenstion
-    public CommandBase moveToDistanceBangBang(double distance, double speed) {
-        return cmd("Move Distance").onExecute(() -> {
-            if (distance >= data.distanceInches) {
-                // Extend
-                data.setPoint = limit(speed);
-
-            } else {
-                // Retract
-                data.setPoint = limit(-speed);
-            }
-        }).runsUntil(() -> Math.abs(distance - data.distanceInches) < 0.5).onEnd(() -> {
-            data.setPoint = 0;
         });
     }
 
@@ -160,6 +144,9 @@ public class Arm extends SmartSubsystemBase {
                 || (data.distanceInches < extendMap.softMinDistance && speed < 0)) {
 
             return speed * 0.3;
+        }
+        if (armAngle <= 30) {
+            return speed - NO_FALL;
         }
         return speed;
     }
