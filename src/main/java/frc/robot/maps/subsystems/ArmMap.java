@@ -16,12 +16,14 @@ public class ArmMap {
     public double hardMinDistance;
     public double armPivotHeight;
     public double armStartLength;
+    public double PIVOT_HEIGHT;
 
     public ArmMap() {
         this.pid = new PIDController(0, 0, 0);
         this.extendMotor = new SmartMotorController();
         this.softMaxDistance = 20;
         this.softMinDistance = 1;
+        this.PIVOT_HEIGHT = 46.654;
     }
 
     public ArmMap(SmartMotorController motor, double softMaxDistance, double softMinDistance, double hardMaxDistance,

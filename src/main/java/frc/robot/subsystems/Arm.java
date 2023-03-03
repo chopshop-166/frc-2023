@@ -21,7 +21,6 @@ public class Arm extends SmartSubsystemBase {
     public ArmMap extendMap;
     public final double SPEED = 0.4;
     private final double RETRACT_SPEED = -0.1;
-    final double PIVOT_HEIGHT = 46.654;
     private final double INTAKE_DEPTH_LIMIT = 0;
     private final double EXTEND_SPEED = 0.3;
     final double NO_FALL = 0.02;
@@ -44,7 +43,7 @@ public class Arm extends SmartSubsystemBase {
     }
 
     public boolean intakeBelowGround() {
-        return PIVOT_HEIGHT - INTAKE_DEPTH_LIMIT < Math.cos(Math.toRadians(armAngle)) * (data.distanceInches + 42.3);
+        return extendMap.PIVOT_HEIGHT - INTAKE_DEPTH_LIMIT < Math.cos(Math.toRadians(armAngle)) * (data.distanceInches + 42.3);
 
     }
 
