@@ -54,8 +54,8 @@ public class Robot extends CommandRobot {
 
     @Override
     public void teleopInit() {
-        armRotate.resetAngle().schedule();
         super.teleopInit();
+        armRotate.brakeMode().schedule();
     }
 
     @Override
@@ -79,7 +79,7 @@ public class Robot extends CommandRobot {
         // Arm
         // extend and rotate are in default commands
         copilotController.start().onTrue(arm.zeroVelocityCheck());
-        copilotController.back().onTrue(armRotate.zeroVelocityCheck());
+        // copilotController.back().onTrue(armRotate.zeroVelocityCheck());
         copilotController.rightBumper().whileTrue(armRotate.resetZero(() -> copilotController.getTriggers()));
         // will need buttons for the scoring positions
         copilotController.povUp()

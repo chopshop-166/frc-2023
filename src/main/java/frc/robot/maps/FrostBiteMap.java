@@ -143,7 +143,9 @@ public class FrostBiteMap extends RobotMap {
             @Override
             public void setBrake() {
                 csmotor.getMotorController().setIdleMode(IdleMode.kBrake);
+                System.out.println("Setting brake mode");
             }
+
             @Override
             public void setCoast() {
                 csmotor.getMotorController().setIdleMode(IdleMode.kCoast);

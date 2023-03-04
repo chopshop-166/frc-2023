@@ -120,6 +120,18 @@ public class ArmRotate extends SmartSubsystemBase {
         }).runsWhenDisabled(true);
     }
 
+    public CommandBase brakeMode() {
+        return cmd().onInitialize(() -> {
+            map.setBrake();
+        }).runsWhenDisabled(true);
+    }
+
+    public CommandBase coastMode() {
+        return cmd().onInitialize(() -> {
+            map.setCoast();
+        }).runsWhenDisabled(true);
+    }
+
     @Override
     public void reset() {
         map.motor.getEncoder().reset();
