@@ -45,7 +45,6 @@ public class ArmRotate extends SmartSubsystemBase {
 
         this.map = map;
         pid = map.pid;
-        SmartDashboard.putData(resetAngle());
     }
 
     public CommandBase move(DoubleSupplier rotationSpeed) {

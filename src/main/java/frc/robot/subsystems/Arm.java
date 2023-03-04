@@ -42,11 +42,11 @@ public class Arm extends SmartSubsystemBase {
         });
     }
 
-    public boolean intakeBelowGround() {
-        return extendMap.PIVOT_HEIGHT - INTAKE_DEPTH_LIMIT < Math.cos(Math.toRadians(armAngle))
-                * (data.distanceInches + 42.3);
-
-    }
+    // public boolean intakeBelowGround() {
+    // return extendMap.PIVOT_HEIGHT - INTAKE_DEPTH_LIMIT <
+    // Math.cos(Math.toRadians(armAngle))
+    // * (data.distanceInches + 42.3);
+    // }
 
     // Manually sets the arm extension
     public CommandBase manual(DoubleSupplier motorSpeed) {
@@ -122,9 +122,9 @@ public class Arm extends SmartSubsystemBase {
 
     private double limit(double speed) {
 
-        if (speed > 0 && intakeBelowGround()) {
-            return 0;
-        }
+        // if (speed > 0 && intakeBelowGround()) {
+        // return 0;
+        // }
         if ((data.distanceInches > extendMap.hardMaxDistance && speed > 0)
                 || (data.distanceInches < extendMap.hardMinDistance && speed < 0)) {
             return data.setPoint = 0;
