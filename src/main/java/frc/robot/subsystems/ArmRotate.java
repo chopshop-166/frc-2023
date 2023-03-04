@@ -105,18 +105,24 @@ public class ArmRotate extends SmartSubsystemBase {
     public CommandBase resetAngle() {
         return cmd().onInitialize(() -> {
             reset();
+        }).runsUntil(() -> {
+            return true;
         }).runsWhenDisabled(true);
     }
 
     public CommandBase brakeMode() {
         return cmd().onInitialize(() -> {
             map.setBrake();
+        }).runsUntil(() -> {
+            return true;
         }).runsWhenDisabled(true);
     }
 
     public CommandBase coastMode() {
         return cmd().onInitialize(() -> {
             map.setCoast();
+        }).runsUntil(() -> {
+            return true;
         }).runsWhenDisabled(true);
     }
 
@@ -143,6 +149,7 @@ public class ArmRotate extends SmartSubsystemBase {
     }
 
     private double limits(double speed) {
+        Logger.getInstance().recordOutput("speed", speed);
         if (speed < 0 && intakeBelowGround()) {
             return NO_FALL;
         }
