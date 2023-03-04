@@ -82,7 +82,7 @@ public class Robot extends CommandRobot {
                 .whileTrue(armRotate.moveTo(EnumLevel.MEDIUM_SCORE).alongWith(arm.moveTo(EnumLevel.MEDIUM_SCORE)));
         copilotController.y().whileTrue(armRotate.moveTo(EnumLevel.HPS_PICKUP));
         copilotController.povLeft()
-                .whileTrue(arm.moveTo(EnumLevel.ARM_STOWED).andThen(armRotate.moveTo(EnumLevel.ARM_STOWED)));
+                .whileTrue(arm.moveTo(EnumLevel.ARM_STOWED).alongWith(armRotate.moveTo(EnumLevel.ARM_STOWED)));
         // Led
 
     }

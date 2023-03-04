@@ -69,7 +69,7 @@ public class Vision {
 
             if (opt.isPresent() && target.getPoseAmbiguity() < 0.3) {
                 // Reverse the pose to determine the position on the field
-                Pose2d pose = aprilTags.getTagPose(tagId).get().plus(cameraToTarget.inverse())
+                Pose2d pose = opt.get().plus(cameraToTarget.inverse())
                         .plus(cameraToRobot.inverse()).toPose2d();
 
                 double distance = 0;

@@ -64,15 +64,6 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
         });
     }
 
-    // Grabs game piece Cube
-    public CommandBase cubeGrab() {
-        return runEnd(() -> {
-            getData().motorSetPoint = GRAB_SPEED;
-        }, () -> {
-            getData().motorSetPoint = 0;
-        });
-    }
-
     public CommandBase spinIn() {
         PersistenceCheck currentPersistenceCheck = new PersistenceCheck(5,
                 () -> Math.abs(getData().currentAmps[0]) > 30);
