@@ -91,12 +91,12 @@ public class Robot extends CommandRobot {
         copilotController.rightBumper().whileTrue(armRotate.resetZero(() -> copilotController.getTriggers()));
         // will need buttons for the scoring positions
         copilotController.povUp()
-                .whileTrue(armRotate.moveTo(EnumLevel.HIGH_SCORE).alongWith(arm.fullExtend()));
+                .whileTrue(armRotate.moveTo(EnumLevel.HIGH_SCORE).andThen(arm.fullExtend()));
         copilotController.povRight()
-                .whileTrue(armRotate.moveTo(EnumLevel.MEDIUM_SCORE).alongWith(arm.moveTo(EnumLevel.MEDIUM_SCORE)));
+                .whileTrue(armRotate.moveTo(EnumLevel.MEDIUM_SCORE).andThen(arm.moveTo(EnumLevel.MEDIUM_SCORE)));
         copilotController.y().whileTrue(armRotate.moveTo(EnumLevel.HPS_PICKUP));
         copilotController.povLeft()
-                .whileTrue(arm.moveTo(EnumLevel.ARM_STOWED).alongWith(armRotate.moveTo(EnumLevel.ARM_STOWED)));
+                .whileTrue(arm.moveTo(EnumLevel.ARM_STOWED).andThen(armRotate.moveTo(EnumLevel.ARM_STOWED)));
         // Led
 
     }
