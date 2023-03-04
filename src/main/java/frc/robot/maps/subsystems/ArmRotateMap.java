@@ -17,6 +17,7 @@ public class ArmRotateMap {
     public double hardMinAngle;
     public double armPivotHeight;
     public double armStartLength;
+    private double previousRate = 0;
 
     public ArmRotateMap() {
         this(new SmartMotorController(), 0, 0, 0, 0, 0, new PIDController(0, 0, 0), 0, 0);
@@ -41,12 +42,15 @@ public class ArmRotateMap {
         data.velocityDegreesPerSecond = motor.getEncoder().getRate();
         data.currentAmps = motor.getCurrentAmps();
         data.tempCelcius = motor.getTemperatureC();
+        data.acceleration = data.velocityDegreesPerSecond - previousRate;
+        previousRate = data.velocityDegreesPerSecond;
     }
 
     public static class Data implements LoggableInputs {
         public double setPoint;
         public double degrees;
         public double velocityDegreesPerSecond;
+        public double acceleration;
         public double[] currentAmps;
         public double[] tempCelcius;
 
@@ -57,6 +61,7 @@ public class ArmRotateMap {
             table.put("MotorVelocityDegreesPerSeconds", velocityDegreesPerSecond);
             table.put("MotorTempCelcius", tempCelcius);
             table.put("MotorCurrentAmps", currentAmps);
+            table.put("MotorAcceleration", acceleration);
 
         }
 
@@ -67,6 +72,7 @@ public class ArmRotateMap {
             this.velocityDegreesPerSecond = table.getDouble("MotorVelocityMetersPerSeconds", velocityDegreesPerSecond);
             this.currentAmps = table.getDoubleArray("MotorCurrentAmps", currentAmps);
             this.tempCelcius = table.getDoubleArray("MotorTempCelcius", tempCelcius);
+            this.acceleration = table.getDouble("MotorAcceleration", acceleration);
 
         }
     }

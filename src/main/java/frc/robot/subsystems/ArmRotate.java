@@ -12,10 +12,11 @@ import edu.wpi.first.networktables.BooleanSubscriber;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.EnumLevel;
 import frc.robot.maps.subsystems.ArmRotateMap;
 import frc.robot.maps.subsystems.ArmRotateMap.Data;
-import frc.robot.EnumLevel;
 
 public class ArmRotate extends SmartSubsystemBase {
 
@@ -27,7 +28,7 @@ public class ArmRotate extends SmartSubsystemBase {
     final double SLOW_DOWN = 0.2;
     final double PIVOT_HEIGHT = 46.654;
     private final double INTAKE_DEPTH_LIMIT = 0;
-    private final double DESCEND_SPEED = -0.1;
+    private final double DESCEND_SPEED = -0.3;
     final double armStartLength = 42.3;
     final double NO_FALL = 0.02;
     final PIDController pid;
@@ -72,14 +73,14 @@ public class ArmRotate extends SmartSubsystemBase {
             Logger.getInstance().recordOutput("getPositionErrors", pid.getPositionError());
 
         }).runsUntil(setPointPersistenceCheck).onEnd(() -> {
-            data.setPoint = 0;
+            data.setPoint = NO_FALL;
         });
 
     }
 
     public CommandBase zeroVelocityCheck() {
-        PersistenceCheck velocityPersistenceCheck = new PersistenceCheck(10,
-                () -> Math.abs(data.velocityDegreesPerSecond) < 5);
+        PersistenceCheck velocityPersistenceCheck = new PersistenceCheck(1,
+                () -> data.acceleration > 2);
         return cmd("Check Velocity").onInitialize(() -> {
             velocityPersistenceCheck.reset();
             data.setPoint = DESCEND_SPEED;
@@ -132,6 +133,7 @@ public class ArmRotate extends SmartSubsystemBase {
         Logger.getInstance().processInputs(getName(), data);
         anglePub.set(data.degrees);
         armLength = lengthSub.get();
+
     }
 
     private double limits(double speed) {
