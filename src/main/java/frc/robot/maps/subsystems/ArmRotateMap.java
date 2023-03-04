@@ -46,6 +46,14 @@ public class ArmRotateMap {
         previousRate = data.velocityDegreesPerSecond;
     }
 
+    public void setCoast() {
+    
+    }
+
+    public void setBrake() {
+    
+    }
+
     public static class Data implements LoggableInputs {
         public double setPoint;
         public double degrees;

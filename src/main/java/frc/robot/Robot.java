@@ -53,6 +53,12 @@ public class Robot extends CommandRobot {
     }
 
     @Override
+    public void teleopInit() {
+        armRotate.resetAngle().schedule();
+        super.teleopInit();
+    }
+
+    @Override
     public void configureButtonBindings() {
         // DRIVE CONTROLLER
         // Drive

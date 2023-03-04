@@ -45,6 +45,7 @@ public class ArmRotate extends SmartSubsystemBase {
 
         this.map = map;
         pid = map.pid;
+        SmartDashboard.putData(resetAngle());
     }
 
     public CommandBase move(DoubleSupplier rotationSpeed) {
@@ -111,6 +112,12 @@ public class ArmRotate extends SmartSubsystemBase {
 
     public CommandBase moveTo(EnumLevel level) {
         return moveToAngle(level.getAngle());
+    }
+
+    public CommandBase resetAngle() {
+        return cmd().onInitialize(() -> {
+            reset();
+        }).runsWhenDisabled(true);
     }
 
     @Override
