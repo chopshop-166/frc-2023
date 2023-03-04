@@ -133,9 +133,6 @@ public class Arm extends SmartSubsystemBase {
                 || (data.distanceInches < extendMap.softMinDistance && speed < 0)) {
             return speed * 0.3;
         }
-        if (armAngle <= 30) {
-            return speed - NO_FALL;
-        }
         return speed;
     }
 }
