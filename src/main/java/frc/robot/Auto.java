@@ -9,7 +9,6 @@ import com.chopshop166.chopshoplib.commands.FunctionalWaitCommand;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.ArmRotate;
 import frc.robot.subsystems.Drive;
@@ -32,33 +31,37 @@ public class Auto {
 
     public enum Path {
 
-        BEFORE_CONE_STATION(
+        BEFORE_CONE_STATION(0.1,
                 new Pose2d(14.56, 1.48, Rotation2d.fromDegrees(0))),
 
-        UP_TO_CONE_STATION(
-                new Pose2d(14.85, 1.42, Rotation2d.fromDegrees(0))),
-        OUT_OF_COMMUNITY(
+        UP_TO_CONE_STATION(0.05,
+                new Pose2d(14.83, 1.42, Rotation2d.fromDegrees(0))),
+        OUT_OF_COMMUNITY(0.1,
                 new Pose2d(14.04, 3.86, Rotation2d.fromDegrees(0)),
                 new Pose2d(10.58, 3.92, Rotation2d.fromDegrees(0))
 
         ),
 
-        TEST(
+        TEST(0.1,
                 new Pose2d(14.38, 3.45, Rotation2d.fromDegrees(90)),
                 new Pose2d(12.38, 3.45, Rotation2d.fromDegrees(180))
 
         );
 
         Pose2d poses[];
+        double tolerance;
 
-        private Path(Pose2d... poses) {
+        private Path(double tolerance, Pose2d... poses) {
             this.poses = poses;
+            this.tolerance = tolerance;
         }
 
         // Create a sequence command to drive to each pose
         public CommandBase getPath(Drive drive) {
+
             return sequence(
-                    Arrays.stream(poses).map(drive::driveTo).toArray(CommandBase[]::new))
+                    Arrays.stream(poses).map((pos) -> drive.driveTo(pos,
+                            this.tolerance)).toArray(CommandBase[]::new))
                     .withName(this.name()).andThen(drive.safeStateCmd());
         }
     }
@@ -84,7 +87,6 @@ public class Auto {
                 Path.BEFORE_CONE_STATION.getPath(drive),
                 armExtend.moveTo(EnumLevel.ARM_STOWED),
                 intake.coneGrab(),
-                Path.UP_TO_CONE_STATION.getPath(drive),
                 armRotate.moveTo(EnumLevel.ARM_STOWED),
                 Path.OUT_OF_COMMUNITY.getPath(drive)
 

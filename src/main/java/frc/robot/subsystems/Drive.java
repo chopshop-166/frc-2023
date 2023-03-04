@@ -37,7 +37,7 @@ public class Drive extends SmartSubsystemBase {
 
     public enum GridPosition {
 
-        TEST(new Pose2d());
+        TEST(new Pose2d(14.83, 1.42, Rotation2d.fromDegrees(0)));
 
         private Pose2d pose;
 
@@ -162,25 +162,6 @@ public class Drive extends SmartSubsystemBase {
     // Use DrivePID to drive to a target pose on the field
     public CommandBase driveTo(Pose2d targetPose) {
         return driveTo(targetPose, 0.1);
-    }
-
-    public CommandBase driveTowards(Pose2d targetPose) {
-        double moveSpeed = 0.5;
-        double rotationSpeed = 0.5;
-        double tolerance = 0.1;
-        return cmd().onExecute(() -> {
-            Transform2d fb = new Transform2d(new Translation2d(
-                    moveSpeed * Math.signum(pose.getX() - targetPose.getX()),
-                    moveSpeed * Math.signum(pose.getY() - targetPose.getY())),
-                    Rotation2d.fromDegrees(
-                            rotationSpeed * Math
-                                    .signum(pose.getRotation().getDegrees() - targetPose.getRotation().getDegrees())));
-            move(fb.getX(), fb.getY(), fb.getRotation().getDegrees());
-
-            double debugPose[] = new double[] { targetPose.getX(), targetPose.getY(),
-                    targetPose.getRotation().getDegrees() };
-            SmartDashboard.putNumberArray("Target Pose", debugPose);
-        }).runsUntil(() -> drivePID.isFinished(pose, targetPose, tolerance)).onEnd(this::safeState);
     }
 
     public void resetTag() {

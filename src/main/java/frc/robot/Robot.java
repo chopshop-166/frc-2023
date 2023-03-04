@@ -1,14 +1,17 @@
 package frc.robot;
 
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
+import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 
 import org.littletonrobotics.junction.Logger;
 
 import com.chopshop166.chopshoplib.Autonomous;
 import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.commands.CommandRobot;
+import com.chopshop166.chopshoplib.commands.FunctionalWaitCommand;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.maps.RobotMap;
 import frc.robot.subsystems.Drive;
@@ -38,6 +41,10 @@ public class Robot extends CommandRobot {
     @Autonomous(defaultAuto = true)
     public CommandBase exampleAuto = auto.oneConeAuto();
 
+    private CommandBase scoreHigh = sequence(
+            armRotate.moveTo(EnumLevel.HIGH_SCORE), drive.driveToNearest(), arm.moveTo(EnumLevel.HIGH_SCORE),
+            intake.coneRelease());
+
     @Override
     public void robotInit() {
         super.robotInit();
@@ -57,11 +64,12 @@ public class Robot extends CommandRobot {
         // DRIVE CONTROLLER
         // Drive
         driveController.rightBumper().onTrue(drive.setSpeedCoef(0.25, 0.35)).onFalse(drive.setSpeedCoef(1, 1));
-        driveController.x().onTrue(drive.driveToNearest());
+        driveController.x().onTrue(scoreHigh);
         driveController.back().onTrue(runOnce(() -> {
             drive.resetGyro();
             drive.resetTag();
         }));
+
         // Arm
 
         // COPILOT CONTROLLER

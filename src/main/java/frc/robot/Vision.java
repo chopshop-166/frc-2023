@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -72,11 +73,13 @@ public class Vision {
                 Pose2d pose = opt.get().plus(cameraToTarget.inverse())
                         .plus(cameraToRobot.inverse()).toPose2d();
 
+                double tagDistance = cameraToTarget.getTranslation().getDistance(new Translation3d());
+
                 double distance = 0;
                 if (sawTag) {
                     distance = prevPose.getTranslation().getDistance(pose.getTranslation());
                 }
-                if (distance < 2) {
+                if (distance < 2 && tagDistance < 4) {
                     setPose(pose);
                 }
                 sawTag = true;
