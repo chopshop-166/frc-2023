@@ -129,16 +129,28 @@ public class FrostBiteMap extends RobotMap {
 
     @Override
     public ArmRotateMap getArmRotateMap() {
-        CSSparkMax motor = new CSSparkMax(10, MotorType.kBrushless);
-        motor.getMotorController().setInverted(false);
-        motor.getMotorController().setIdleMode(IdleMode.kBrake);
-        motor.getMotorController().setSmartCurrentLimit(40);
-        motor.getMotorController().burnFlash();
-        motor.getEncoder().setPositionScaleFactor(1.125);
-        motor.getEncoder().setVelocityScaleFactor(1.125 / 60);
+        CSSparkMax csmotor = new CSSparkMax(10, MotorType.kBrushless);
+        csmotor.getMotorController().setInverted(false);
+        csmotor.getMotorController().setIdleMode(IdleMode.kBrake);
+        csmotor.getMotorController().setSmartCurrentLimit(40);
+        csmotor.getMotorController().burnFlash();
+        csmotor.getMotorController().setIdleMode(IdleMode.kCoast);
+        csmotor.getEncoder().setPositionScaleFactor(1.125);
+        csmotor.getEncoder().setVelocityScaleFactor(1.125 / 60);
         PIDController pid = new PIDController(0.06, 0, 0);
         pid.setTolerance(0.5);
-        return new ArmRotateMap(motor, 85, 10, 115, 0, 15, pid, 46.654, 42.3);
+        return new ArmRotateMap(csmotor, 85, 10, 115, 0, 15, pid, 46.654, 42.3) {
+            @Override
+            public void setBrake() {
+                csmotor.getMotorController().setIdleMode(IdleMode.kBrake);
+                System.out.println("Setting brake mode");
+            }
+
+            @Override
+            public void setCoast() {
+                csmotor.getMotorController().setIdleMode(IdleMode.kCoast);
+            }
+        };
 
     }
 

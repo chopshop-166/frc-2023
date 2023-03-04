@@ -43,8 +43,8 @@ public class Arm extends SmartSubsystemBase {
     }
 
     public boolean intakeBelowGround() {
-        return extendMap.PIVOT_HEIGHT - INTAKE_DEPTH_LIMIT < Math.cos(Math.toRadians(armAngle)) * (data.distanceInches + 42.3);
-
+        return extendMap.pivotHeight - INTAKE_DEPTH_LIMIT < Math.cos(Math.toRadians(armAngle))
+                * (data.distanceInches + 42.3);
     }
 
     // Manually sets the arm extension
@@ -95,17 +95,6 @@ public class Arm extends SmartSubsystemBase {
         });
     }
 
-    public CommandBase stow() {
-        PersistenceCheck velocityPersistenceCheck = new PersistenceCheck(5,
-                () -> Math.abs(data.velocityInchesPerSec) < 0.5);
-        return cmd("Check Velocity").onInitialize(() -> {
-            velocityPersistenceCheck.reset();
-            data.setPoint = (RETRACT_SPEED);
-        }).runsUntil(velocityPersistenceCheck).onEnd(() -> {
-            data.setPoint = 0;
-        });
-    }
-
     @Override
     public void reset() {
         // Nothing to reset here
@@ -141,11 +130,7 @@ public class Arm extends SmartSubsystemBase {
         }
         if ((data.distanceInches > extendMap.softMaxDistance && speed > 0)
                 || (data.distanceInches < extendMap.softMinDistance && speed < 0)) {
-
             return speed * 0.3;
-        }
-        if (armAngle <= 30) {
-            return speed - NO_FALL;
         }
         return speed;
     }

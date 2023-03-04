@@ -89,17 +89,6 @@ public class ArmRotate extends SmartSubsystemBase {
         });
     }
 
-    public CommandBase stow() {
-        PersistenceCheck velocityPersistenceCheck = new PersistenceCheck(10,
-                () -> Math.abs(data.velocityDegreesPerSecond) < 5);
-        return cmd("Check Velocity").onInitialize(() -> {
-            velocityPersistenceCheck.reset();
-            data.setPoint = DESCEND_SPEED;
-        }).runsUntil(velocityPersistenceCheck).onEnd(() -> {
-            data.setPoint = 0;
-        });
-    }
-
     public CommandBase resetZero(DoubleSupplier speed) {
         return cmd().onExecute(() -> {
             data.setPoint = DESCEND_SPEED;
@@ -110,6 +99,30 @@ public class ArmRotate extends SmartSubsystemBase {
 
     public CommandBase moveTo(EnumLevel level) {
         return moveToAngle(level.getAngle());
+    }
+
+    public CommandBase resetAngle() {
+        return cmd().onInitialize(() -> {
+            reset();
+        }).runsUntil(() -> {
+            return true;
+        }).runsWhenDisabled(true);
+    }
+
+    public CommandBase brakeMode() {
+        return cmd().onInitialize(() -> {
+            map.setBrake();
+        }).runsUntil(() -> {
+            return true;
+        }).runsWhenDisabled(true);
+    }
+
+    public CommandBase coastMode() {
+        return cmd().onInitialize(() -> {
+            map.setCoast();
+        }).runsUntil(() -> {
+            return true;
+        }).runsWhenDisabled(true);
     }
 
     @Override
@@ -135,6 +148,7 @@ public class ArmRotate extends SmartSubsystemBase {
     }
 
     private double limits(double speed) {
+        Logger.getInstance().recordOutput("speed", speed);
         if (speed < 0 && intakeBelowGround()) {
             return NO_FALL;
         }
