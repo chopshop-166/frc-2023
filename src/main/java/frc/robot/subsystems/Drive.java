@@ -102,6 +102,8 @@ public class Drive extends SmartSubsystemBase {
 
         double rotationInput = deadband.applyAsDouble(rotation);
 
+        SmartDashboard.putNumber("Rotation Correction Error", latestAngle - map.gyro().getAngle());
+
         if (Math.abs(rotationInput) < 0.1) {
             rotationInput = correctionPID.calculate(latestAngle, map.gyro().getAngle());
         } else {
@@ -154,7 +156,7 @@ public class Drive extends SmartSubsystemBase {
             double debugPose[] = new double[] { targetPose.getX(), targetPose.getY(),
                     targetPose.getRotation().getDegrees() };
             SmartDashboard.putNumberArray("Target Pose", debugPose);
-        }).runsUntil(() -> drivePID.isFinished(pose, targetPose, 0.01)).onEnd(this::safeState);
+        }).runsUntil(() -> drivePID.isFinished(pose, targetPose, 0.1)).onEnd(this::safeState);
     }
 
     public void resetTag() {

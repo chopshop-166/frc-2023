@@ -60,7 +60,7 @@ public class Arm extends SmartSubsystemBase {
             // Extend
             data.setPoint = limit(extendMap.pid.calculate(data.distanceInches, distance));
 
-        }).runsUntil(() -> false).onEnd(() -> {
+        }).runsUntil(() -> extendMap.pid.atSetpoint()).onEnd(() -> {
             data.setPoint = 0;
         });
     }

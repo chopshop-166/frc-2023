@@ -33,10 +33,10 @@ public class Robot extends CommandRobot {
     private Led led = new Led(map.getLedMap());
     private ArmRotate armRotate = new ArmRotate(map.getArmRotateMap());
 
-    private Auto auto = new Auto(drive);
+    private Auto auto = new Auto(drive, arm, armRotate, intake);
 
     @Autonomous(defaultAuto = true)
-    public CommandBase exampleAuto = auto.exampleAuto();
+    public CommandBase exampleAuto = auto.oneConeAuto();
 
     @Override
     public void robotInit() {

@@ -61,7 +61,7 @@ public class FrostBiteMap extends RobotMap {
 
         // Configuration for MK4i with L2 speeds
         Configuration MK4i_L2 = new Configuration(SDSSwerveModule.MK4_V2.gearRatio,
-                SDSSwerveModule.MK4_V2.wheelDiameter, new PIDValues(0.008, 0.00, 0.0001));
+                SDSSwerveModule.MK4_V2.wheelDiameter, new PIDValues(0.009, 0.00, 0.0001));
 
         // All Distances are in Meters
         // Front Left Module
@@ -103,7 +103,7 @@ public class FrostBiteMap extends RobotMap {
 
         final double maxRotationRadianPerSecond = Math.PI;
 
-        final DrivePID pid = new DrivePID(0.8, 0, 0, 0.01 * 0, 0, 0);
+        final DrivePID pid = new DrivePID(0.8, 0, 0, 0.01, 0, 0);
 
         final Transform3d cameraPosition = new Transform3d(
                 new Translation3d(0, 0, 0),
@@ -152,7 +152,7 @@ public class FrostBiteMap extends RobotMap {
         motor.getEncoder().setPositionScaleFactor((1.273 * Math.PI) / 10);
         motor.getEncoder().setVelocityScaleFactor((1.273 * Math.PI) / 10);
         PIDController pid = new PIDController(0.06, 0.05, 0.0);
-        pid.setTolerance(0.0);
+        pid.setTolerance(0.5);
         return new ArmMap(motor, 18.5, 3, 19.8, 0.3, pid, 46.654, 42.3);
     }
 
