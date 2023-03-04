@@ -11,6 +11,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -147,8 +148,7 @@ public class Drive extends SmartSubsystemBase {
         return run(() -> deadbandMove(xSpeed.getAsDouble(), ySpeed.getAsDouble(), rotation.getAsDouble()));
     }
 
-    // Use DrivePID to drive to a target pose on the field
-    public CommandBase driveTo(Pose2d targetPose) {
+    public CommandBase driveTo(Pose2d targetPose, double tolerance) {
         return cmd().onExecute(() -> {
             Transform2d fb = drivePID.calculate(pose, targetPose);
             move(fb.getX(), fb.getY(), fb.getRotation().getDegrees());
@@ -156,7 +156,31 @@ public class Drive extends SmartSubsystemBase {
             double debugPose[] = new double[] { targetPose.getX(), targetPose.getY(),
                     targetPose.getRotation().getDegrees() };
             SmartDashboard.putNumberArray("Target Pose", debugPose);
-        }).runsUntil(() -> drivePID.isFinished(pose, targetPose, 0.1)).onEnd(this::safeState);
+        }).runsUntil(() -> drivePID.isFinished(pose, targetPose, tolerance)).onEnd(this::safeState);
+    }
+
+    // Use DrivePID to drive to a target pose on the field
+    public CommandBase driveTo(Pose2d targetPose) {
+        return driveTo(targetPose, 0.1);
+    }
+
+    public CommandBase driveTowards(Pose2d targetPose) {
+        double moveSpeed = 0.5;
+        double rotationSpeed = 0.5;
+        double tolerance = 0.1;
+        return cmd().onExecute(() -> {
+            Transform2d fb = new Transform2d(new Translation2d(
+                    moveSpeed * Math.signum(pose.getX() - targetPose.getX()),
+                    moveSpeed * Math.signum(pose.getY() - targetPose.getY())),
+                    Rotation2d.fromDegrees(
+                            rotationSpeed * Math
+                                    .signum(pose.getRotation().getDegrees() - targetPose.getRotation().getDegrees())));
+            move(fb.getX(), fb.getY(), fb.getRotation().getDegrees());
+
+            double debugPose[] = new double[] { targetPose.getX(), targetPose.getY(),
+                    targetPose.getRotation().getDegrees() };
+            SmartDashboard.putNumberArray("Target Pose", debugPose);
+        }).runsUntil(() -> drivePID.isFinished(pose, targetPose, tolerance)).onEnd(this::safeState);
     }
 
     public void resetTag() {
@@ -165,7 +189,7 @@ public class Drive extends SmartSubsystemBase {
 
     // Drive to a pre-determined grid position
     public CommandBase driveTo(GridPosition gridPose) {
-        return driveTo(gridPose.getPose());
+        return driveTo(gridPose.getPose(), 0.05);
     }
 
     // Find the nearest grid position and line up with it
