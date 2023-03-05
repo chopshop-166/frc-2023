@@ -78,6 +78,8 @@ public class Vision {
                 double distance = 0;
                 if (sawTag) {
                     distance = prevPose.getTranslation().getDistance(pose.getTranslation());
+                } else {
+                    driveMap.gyro().setAngle(pose.getRotation().getDegrees());
                 }
                 if (distance < 2 && tagDistance < 4) {
                     setPose(pose);

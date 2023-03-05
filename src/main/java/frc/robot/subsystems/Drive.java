@@ -24,6 +24,7 @@ import frc.robot.Vision;
 import frc.robot.maps.subsystems.SwerveDriveMap;
 import frc.robot.maps.subsystems.SwerveDriveMap.Data;
 import frc.robot.util.DrivePID;
+import frc.robot.util.RotationPIDController;
 
 public class Drive extends SmartSubsystemBase {
 
@@ -37,7 +38,9 @@ public class Drive extends SmartSubsystemBase {
 
     public enum GridPosition {
 
-        TEST(new Pose2d(14.83, 1.42, Rotation2d.fromDegrees(0)));
+        BLUE_CONE_4(new Pose2d(1.536, 1.807, Rotation2d.fromDegrees(162.722)));
+        // BLUE_CONE_3(new Pose2d(1.708, 3.369, Rotation2d.fromDegrees(188.314))),
+        // BLUE_CONE_2(new Pose2d(1.605, 3.905, Rotation2d.fromDegrees(166.823)));
 
         private Pose2d pose;
 
@@ -56,9 +59,9 @@ public class Drive extends SmartSubsystemBase {
     private Field2d field = new Field2d();
 
     // Used for automatic alignment while driving
-    private final PIDController rotationPID;
+    private final RotationPIDController rotationPID;
     // Used for rotation correction while driving
-    private final PIDController correctionPID;
+    private final RotationPIDController correctionPID;
 
     private double latestAngle = 0;
 
@@ -107,9 +110,14 @@ public class Drive extends SmartSubsystemBase {
 
         if (Math.abs(rotationInput) < 0.1) {
             rotationInput = correctionPID.calculate(latestAngle, map.gyro().getAngle());
+            rotationInput = (Math.abs(rotationInput) > 0.02) ? rotationInput : 0;
+            Logger.getInstance().recordOutput("pidOutput", rotationInput);
+            Logger.getInstance().recordOutput("pidError", correctionPID.getError());
         } else {
             latestAngle = map.gyro().getAngle();
         }
+        Logger.getInstance().recordOutput("latestAngle", latestAngle);
+        Logger.getInstance().recordOutput("robotAngle", map.gyro().getAngle());
 
         final double translateXSpeed = deadband.applyAsDouble(xSpeed)
                 * maxDriveSpeedMetersPerSecond * speedCoef;

@@ -31,16 +31,24 @@ public class Auto {
 
     public enum Path {
 
+        // 1.913324824060518,1.8401481550095398,202.15111118447658
+        // 1.536021824789258,1.8071871015354626,162.72159242120003
+
         BEFORE_CONE_STATION(0.1,
-                new Pose2d(14.56, 1.48, Rotation2d.fromDegrees(0))),
+                new Pose2d(1.913, 1.840, Rotation2d.fromDegrees(202.151))),
 
         UP_TO_CONE_STATION(0.05,
-                new Pose2d(14.83, 1.42, Rotation2d.fromDegrees(0))),
-        OUT_OF_COMMUNITY(0.1,
-                new Pose2d(14.04, 3.86, Rotation2d.fromDegrees(0)),
-                new Pose2d(10.58, 3.92, Rotation2d.fromDegrees(0))
+                new Pose2d(1.536, 1.807, Rotation2d.fromDegrees(162.722))),
+
+        OUT_OF_COMMUNITY(0.2,
+                new Pose2d(1.787, 0.621, Rotation2d.fromDegrees(172.156)),
+                new Pose2d(5.903, 0.621, Rotation2d.fromDegrees(173.884))
 
         ),
+        BALANCE(0.1,
+                new Pose2d(2.008, 2.354, Rotation2d.fromDegrees(182.885)),
+                new Pose2d(3.836, 2.000, Rotation2d.fromDegrees(
+                        203.851))),
 
         TEST(0.1,
                 new Pose2d(14.38, 3.45, Rotation2d.fromDegrees(90)),
@@ -73,7 +81,6 @@ public class Auto {
 
     public CommandBase oneConeAuto() {
         return sequence(
-
                 // armRotate.zeroVelocityCheck(),
                 armExtend.zeroVelocityCheck(),
 
