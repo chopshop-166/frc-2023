@@ -8,7 +8,11 @@ public enum EnumLevel {
     // 41 7/8 in.
     HIGH_SCORE(18.5, 92),
 
-    // Need to measure values 
+    MEDIUM_SCORE_ACTUAL(4, 67),
+
+    HIGH_SCORE_ACTUAL(18.5, 80),
+
+    // Need to measure values
     FLOOR_PICKUP(0, 0),
     // Human Player Station = HPS
     HPS_PICKUP(0, 76),

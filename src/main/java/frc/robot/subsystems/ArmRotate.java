@@ -89,7 +89,7 @@ public class ArmRotate extends SmartSubsystemBase {
         });
     }
 
-    public CommandBase resetZero(DoubleSupplier speed) {
+    public CommandBase resetZero() {
         return cmd().onExecute(() -> {
             data.setPoint = DESCEND_SPEED;
         }).onEnd(() -> {
