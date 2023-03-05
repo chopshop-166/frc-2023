@@ -42,24 +42,28 @@ public class Led extends SmartSubsystemBase {
     }
 
     public void setColor(int r, int g, int b, ledSection section) {
-        if (section == ledSection.Top) {
-            for (var i = 0; i < ledBuffer.getLength() / 2; i++) {
-                // Sets the specified LED to the RGB values for red
-                ledBuffer.setRGB(i, r, g, b);
-            }
-            led.setData(ledBuffer);
-        } else if (section == ledSection.Bottom) {
-            for (var i = ledBuffer.getLength() / 2; i < ledBuffer.getLength(); i++) {
-                // Sets the specified LED to the RGB values for red
-                ledBuffer.setRGB(i, r, g, b);
-            }
-            led.setData(ledBuffer);
-        } else if (section == ledSection.All) {
-            for (var i = 0; i < ledBuffer.getLength(); i++) {
-                // Sets the specified LED to the RGB values for red
-                ledBuffer.setRGB(i, r, g, b);
-            }
-            led.setData(ledBuffer);
+        switch (section) {
+            case Top:
+                for (var i = 0; i < ledBuffer.getLength() / 2; i++) {
+                    // Sets the specified LED to the RGB values for red, green, and blue for top
+                    // half of LEDs
+                    ledBuffer.setRGB(i, r, g, b);
+                }
+                led.setData(ledBuffer);
+            case Bottom:
+                for (var i = ledBuffer.getLength() / 2; i < ledBuffer.getLength(); i++) {
+                    // Sets the specified LED to the RGB values for red, green, and blue for bottom
+                    // half of LEDs
+                    ledBuffer.setRGB(i, r, g, b);
+                }
+                led.setData(ledBuffer);
+            case All:
+                for (var i = 0; i < ledBuffer.getLength(); i++) {
+                    // Sets the specified LED to the RGB values for red, green, and blue for all
+                    // LEDs
+                    ledBuffer.setRGB(i, r, g, b);
+                }
+                led.setData(ledBuffer);
         }
     }
 
