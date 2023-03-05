@@ -22,6 +22,12 @@ public class Led extends SmartSubsystemBase {
     // Length is expensive to set, so only set it once, then just update data
     AddressableLEDBuffer ledBuffer;
 
+    enum ledSection {
+        Top,
+        Bottom,
+        All
+    }
+
     public Led(LedMap map) {
         led = map.led;
         ledBuffer = map.ledBuffer;
@@ -35,29 +41,44 @@ public class Led extends SmartSubsystemBase {
 
     }
 
-    public void setColor(int r, int g, int b) {
-        for (var i = 0; i < ledBuffer.getLength(); i++) {
-            // Sets the specified LED to the RGB values for red
-            ledBuffer.setRGB(i, r, g, b);
+    public void setColor(int r, int g, int b, ledSection section) {
+        if (section == ledSection.Top) {
+            for (var i = 0; i < ledBuffer.getLength() / 2; i++) {
+                // Sets the specified LED to the RGB values for red
+                ledBuffer.setRGB(i, r, g, b);
+            }
+            led.setData(ledBuffer);
+        } else if (section == ledSection.Bottom) {
+            for (var i = ledBuffer.getLength() / 2; i < ledBuffer.getLength(); i++) {
+                // Sets the specified LED to the RGB values for red
+                ledBuffer.setRGB(i, r, g, b);
+            }
+            led.setData(ledBuffer);
+        } else if (section == ledSection.All) {
+            for (var i = 0; i < ledBuffer.getLength(); i++) {
+                // Sets the specified LED to the RGB values for red
+                ledBuffer.setRGB(i, r, g, b);
+            }
+            led.setData(ledBuffer);
         }
-        led.setData(ledBuffer);
     }
 
-    // } public CommandBase colorAlliance() {
-    // return cmd("Set to Alliance Color").onExecute(() -> {
-    // Alliance alliance = DriverStation.getAlliance();
-    // if (alliance == Alliance.Blue) {
-    // setColor(2, 15, 250);
-    // Logger.getInstance().recordOutput("IndicateLEDs", "Blue");
-    // } else {
-    // setColor(250, 2, 2);
-    // Logger.getInstance().recordOutput("IndicateLEDs", "Red");
-    // }
-    // });
+    public CommandBase colorAlliance() {
+        return cmd("Set to Alliance Color").onExecute(() -> {
+            Alliance alliance = DriverStation.getAlliance();
+            if (alliance == Alliance.Blue) {
+                setColor(2, 15, 250, ledSection.Top);
+                Logger.getInstance().recordOutput("IndicateLEDs", "Blue");
+            } else {
+                setColor(250, 2, 2, ledSection.Top);
+                Logger.getInstance().recordOutput("IndicateLEDs", "Red");
+            }
+        });
+    }
 
     public CommandBase resetColor() {
         return runOnce(() -> {
-            setColor(201, 198, 204);
+            setColor(201, 198, 204, ledSection.All);
             Logger.getInstance().recordOutput("IndicateLEDs", "White");
 
         });
@@ -65,7 +86,7 @@ public class Led extends SmartSubsystemBase {
 
     public CommandBase setYellow() {
         return runOnce(() -> {
-            setColor(222, 218, 11);
+            setColor(222, 218, 11, ledSection.Bottom);
             Logger.getInstance().recordOutput("IndicateLEDs", "Yellow");
 
         });
@@ -73,7 +94,7 @@ public class Led extends SmartSubsystemBase {
 
     public CommandBase setPurple() {
         return runOnce(() -> {
-            setColor(133, 7, 168);
+            setColor(133, 7, 168, ledSection.Bottom);
             Logger.getInstance().recordOutput("IndicateLEDs", "Purple");
         });
     }
