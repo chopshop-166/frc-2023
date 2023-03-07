@@ -50,6 +50,7 @@ public class Led extends SmartSubsystemBase {
                     ledBuffer.setRGB(i, r, g, b);
                 }
                 led.setData(ledBuffer);
+                break;
             case Bottom:
                 for (var i = ledBuffer.getLength() / 2; i < ledBuffer.getLength(); i++) {
                     // Sets the specified LED to the RGB values for red, green, and blue for bottom
@@ -57,6 +58,7 @@ public class Led extends SmartSubsystemBase {
                     ledBuffer.setRGB(i, r, g, b);
                 }
                 led.setData(ledBuffer);
+                break;
             case All:
                 for (var i = 0; i < ledBuffer.getLength(); i++) {
                     // Sets the specified LED to the RGB values for red, green, and blue for all
@@ -64,6 +66,7 @@ public class Led extends SmartSubsystemBase {
                     ledBuffer.setRGB(i, r, g, b);
                 }
                 led.setData(ledBuffer);
+                break;
         }
     }
 
