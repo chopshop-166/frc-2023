@@ -42,33 +42,19 @@ public class Led extends SmartSubsystemBase {
     }
 
     public void setColor(int r, int g, int b, LedSection section) {
-        
-        switch (section) {
-            case Top:
-                for (var i = 0; i < ledBuffer.getLength() / 2; i++) {
-                    // Sets the specified LED to the RGB values for red, green, and blue for top
-                    // half of LEDs
-                    ledBuffer.setRGB(i, r, g, b);
-                }
-                led.setData(ledBuffer);
-                break;
-            case Bottom:
-                for (var i = ledBuffer.getLength() / 2; i < ledBuffer.getLength(); i++) {
-                    // Sets the specified LED to the RGB values for red, green, and blue for bottom
-                    // half of LEDs
-                    ledBuffer.setRGB(i, r, g, b);
-                }
-                led.setData(ledBuffer);
-                break;
-            case All:
-                for (var i = 0; i < ledBuffer.getLength(); i++) {
-                    // Sets the specified LED to the RGB values for red, green, and blue for all
-                    // LEDs
-                    ledBuffer.setRGB(i, r, g, b);
-                }
-                led.setData(ledBuffer);
-                break;
+        int ledBufferStartValue = 0;
+        int ledBufferEndValue = ledBuffer.getLength();
+
+        if (section == LedSection.Top) {
+            ledBufferEndValue = ledBuffer.getLength() / 2;
+        } else if (section == LedSection.Bottom) {
+            ledBufferStartValue = ledBuffer.getLength() / 2;
         }
+
+        for (var i = ledBufferStartValue; i < ledBufferEndValue; i++) {
+            ledBuffer.setRGB(i, r, g, b);
+        }
+        led.setData(ledBuffer);
     }
 
     public CommandBase colorAlliance() {
