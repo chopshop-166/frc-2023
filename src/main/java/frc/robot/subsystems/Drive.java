@@ -203,6 +203,10 @@ public class Drive extends SmartSubsystemBase {
         latestAngle = 0;
     }
 
+    public CommandBase setPose(Pose2d pose) {
+        return runOnce(() -> vision.setPose(pose));
+    }
+
     @Override
     public void reset() {
         // Nothing to reset here
