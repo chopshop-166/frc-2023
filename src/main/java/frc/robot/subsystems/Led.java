@@ -22,7 +22,7 @@ public class Led extends SmartSubsystemBase {
     // Length is expensive to set, so only set it once, then just update data
     AddressableLEDBuffer ledBuffer;
 
-    enum ledSection {
+    enum LedSection {
         Top,
         Bottom,
         All
@@ -41,7 +41,8 @@ public class Led extends SmartSubsystemBase {
 
     }
 
-    public void setColor(int r, int g, int b, ledSection section) {
+    public void setColor(int r, int g, int b, LedSection section) {
+        
         switch (section) {
             case Top:
                 for (var i = 0; i < ledBuffer.getLength() / 2; i++) {
@@ -74,10 +75,10 @@ public class Led extends SmartSubsystemBase {
         return cmd("Set to Alliance Color").onExecute(() -> {
             Alliance alliance = DriverStation.getAlliance();
             if (alliance == Alliance.Blue) {
-                setColor(2, 15, 250, ledSection.Top);
+                setColor(2, 15, 250, LedSection.Top);
                 Logger.getInstance().recordOutput("IndicateLEDs", "Blue");
             } else {
-                setColor(250, 2, 2, ledSection.Top);
+                setColor(250, 2, 2, LedSection.Top);
                 Logger.getInstance().recordOutput("IndicateLEDs", "Red");
             }
         });
@@ -85,7 +86,7 @@ public class Led extends SmartSubsystemBase {
 
     public CommandBase resetColor() {
         return runOnce(() -> {
-            setColor(201, 198, 204, ledSection.All);
+            setColor(201, 198, 204, LedSection.All);
             Logger.getInstance().recordOutput("IndicateLEDs", "White");
 
         });
@@ -93,7 +94,7 @@ public class Led extends SmartSubsystemBase {
 
     public CommandBase setYellow() {
         return runOnce(() -> {
-            setColor(222, 218, 11, ledSection.Bottom);
+            setColor(222, 218, 11, LedSection.Bottom);
             Logger.getInstance().recordOutput("IndicateLEDs", "Yellow");
 
         });
@@ -101,7 +102,7 @@ public class Led extends SmartSubsystemBase {
 
     public CommandBase setPurple() {
         return runOnce(() -> {
-            setColor(133, 7, 168, ledSection.Bottom);
+            setColor(133, 7, 168, LedSection.Bottom);
             Logger.getInstance().recordOutput("IndicateLEDs", "Purple");
         });
     }
@@ -112,6 +113,7 @@ public class Led extends SmartSubsystemBase {
                 Color color = new Color(FireLeds.heat[i] / 255.0, 0, 0);
                 ledBuffer.setLED(i, color);
             }
+            led.setData(ledBuffer);
         });
     }
 
