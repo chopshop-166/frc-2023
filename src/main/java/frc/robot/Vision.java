@@ -75,13 +75,16 @@ public class Vision {
 
                 double tagDistance = cameraToTarget.getTranslation().getDistance(new Translation3d());
 
+                boolean poseInField = (pose.getX() > 0 && pose.getX() < Field.LENGTH)
+                        && (pose.getY() > 0 && pose.getY() < Field.WIDTH);
+
                 double distance = 0;
                 if (sawTag) {
                     distance = prevPose.getTranslation().getDistance(pose.getTranslation());
                 } else {
                     driveMap.gyro().setAngle(pose.getRotation().getDegrees());
                 }
-                if (distance < 2 && tagDistance < 4) {
+                if (distance < 2 && tagDistance < 4 && poseInField) {
                     setPose(pose);
                 }
                 sawTag = true;

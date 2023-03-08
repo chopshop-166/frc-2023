@@ -14,6 +14,8 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -34,6 +36,18 @@ public class Drive extends SmartSubsystemBase {
     double maxRotationRadiansPerSecond;
     double speedCoef = 1;
     double rotationCoef = 1;
+
+    boolean isBlue = false;
+
+    private Pose2d invertSide(Pose2d bluePose) {
+        if (isBlue) {
+            return bluePose;
+        }
+        return new Pose2d(
+                Field.LENGTH - bluePose.getX(),
+                bluePose.getY(),
+                Rotation2d.fromDegrees(bluePose.getRotation().getDegrees() + 180));
+    }
 
     public enum GridPosition {
 
@@ -158,13 +172,14 @@ public class Drive extends SmartSubsystemBase {
 
     public CommandBase driveTo(Pose2d targetPose, double tolerance) {
         return cmd().onExecute(() -> {
-            Transform2d fb = drivePID.calculate(pose, targetPose);
+            Pose2d flipped = invertSide(targetPose);
+            Transform2d fb = drivePID.calculate(pose, flipped);
             move(fb.getX(), fb.getY(), fb.getRotation().getDegrees());
 
-            double debugPose[] = new double[] { targetPose.getX(), targetPose.getY(),
-                    targetPose.getRotation().getDegrees() };
+            double debugPose[] = new double[] { flipped.getX(), flipped.getY(),
+                    flipped.getRotation().getDegrees() };
             SmartDashboard.putNumberArray("Target Pose", debugPose);
-        }).runsUntil(() -> drivePID.isFinished(pose, targetPose, tolerance)).onEnd(this::safeState);
+        }).runsUntil(() -> drivePID.isFinished(pose, invertSide(targetPose), tolerance)).onEnd(this::safeState);
     }
 
     // Use DrivePID to drive to a target pose on the field
@@ -185,10 +200,13 @@ public class Drive extends SmartSubsystemBase {
     public CommandBase driveToNearest() {
         return new ProxyCommand(
                 () -> {
-                    Pose2d closestPose = GridPosition.values()[0].getPose();
+                    Pose2d closestPose = invertSide(GridPosition.values()[0].getPose());
                     for (GridPosition position : GridPosition.values()) {
-                        if (position.getPose().getTranslation().getDistance(pose.getTranslation()) < closestPose
-                                .getTranslation().getDistance(pose.getTranslation())) {
+                        // Only flip for the distance check, isn't needed for the actual driveTo since
+                        // that also flips it
+                        if (invertSide(position.getPose()).getTranslation()
+                                .getDistance(pose.getTranslation()) < invertSide(closestPose)
+                                        .getTranslation().getDistance(pose.getTranslation())) {
                             closestPose = position.getPose();
                         }
                     }
@@ -210,6 +228,7 @@ public class Drive extends SmartSubsystemBase {
     @Override
     public void reset() {
         // Nothing to reset here
+        isBlue = DriverStation.getAlliance() == Alliance.Blue;
     }
 
     @Override
