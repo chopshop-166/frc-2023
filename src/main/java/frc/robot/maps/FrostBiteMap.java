@@ -106,7 +106,14 @@ public class FrostBiteMap extends RobotMap {
         final DrivePID pid = new DrivePID(0.8, 0, 0, 0.01, 0, 0.001);
 
         final Transform3d cameraPosition = new Transform3d(
-                new Translation3d(0, 0, 0),
+                // These probably need to be refined
+                new Translation3d(
+                        Units.inchesToMeters(
+                                2.44),
+                        Units.inchesToMeters(
+                                7.25),
+                        Units.inchesToMeters(
+                                25)),
                 new Rotation3d());
 
         return new SwerveDriveMap(frontLeft, frontRight, rearLeft, rearRight,
