@@ -108,7 +108,8 @@ public class Drive extends SmartSubsystemBase {
 
         SmartDashboard.putNumber("Rotation Correction Error", latestAngle - map.gyro().getAngle());
 
-        if (Math.abs(rotationInput) < 0.1) {
+        if (Math.abs(rotationInput) < 0.1
+                && !(deadband.applyAsDouble(xSpeed) < 0.1 && deadband.applyAsDouble(ySpeed) < 0.1)) {
             rotationInput = correctionPID.calculate(latestAngle, map.gyro().getAngle());
             rotationInput = (Math.abs(rotationInput) > 0.02) ? rotationInput : 0;
             Logger.getInstance().recordOutput("pidOutput", rotationInput);
