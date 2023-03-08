@@ -126,7 +126,7 @@ public class FrostBiteMap extends RobotMap {
     public IntakeData.Map getIntakeMap() {
         CSTalonSRX intakeMotor = new CSTalonSRX(9);
         intakeMotor.setInverted(true);
-        RevDSolenoid intakeSolenoid = new RevDSolenoid(8, 9);
+        RevDSolenoid intakeSolenoid = new RevDSolenoid(6, 7);
         intakeMotor.getMotorController().configContinuousCurrentLimit(35);
         intakeMotor.getMotorController().configPeakCurrentLimit(35);
 
