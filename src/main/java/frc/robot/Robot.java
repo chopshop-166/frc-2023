@@ -8,13 +8,11 @@ import org.littletonrobotics.junction.Logger;
 import com.chopshop166.chopshoplib.Autonomous;
 import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.commands.CommandRobot;
-import com.chopshop166.chopshoplib.commands.FunctionalWaitCommand;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.networktables.StringSubscriber;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import frc.robot.maps.RobotMap;
@@ -123,23 +121,23 @@ public class Robot extends CommandRobot {
         // extend and rotate are in default commands
         copilotController.start().onTrue(arm.zeroVelocityCheck());
         copilotController.back().whileTrue(armRotate.resetZero());
+
+        // Automatic
         copilotController.rightBumper().onTrue(grabCube());
         copilotController.leftBumper().onTrue(grabCone());
-        // will need buttons for the scoring positions
+        // will need buttons for the enums
+        copilotController.y().whileTrue(armRotate.moveTo(EnumLevel.HPS_PICKUP));
         copilotController.povUp()
                 .whileTrue(scoreHighNode);
         copilotController.povRight()
                 .whileTrue(scoreMidNode);
-        copilotController.y().whileTrue(armRotate.moveTo(EnumLevel.HPS_PICKUP));
         copilotController.povLeft()
                 .whileTrue(arm.moveTo(EnumLevel.ARM_STOWED).andThen(armRotate.moveTo(EnumLevel.ARM_STOWED)));
         // Led
-
     }
 
     @Override
     public void populateDashboard() {
-
     }
 
     @Override
