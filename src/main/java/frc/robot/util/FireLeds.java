@@ -29,30 +29,7 @@ public class FireLeds {
             heat[y] = (byte) (heat[y] + (int) (Math.random() * (160 - 255 + 1) + 160));
         }
 
-        // Convert heat to LED colors
-        for (int j = 0; j < NUM_LEDS; j++) {
-            setPixelHeatColor(j, heat[j]);
-        }
-
         // TODO: Add code to show LED colors
         // TODO: Add code to add delay
-    }
-
-    private static void setPixelHeatColor(int pixel, byte temperature) {
-        // Rescale heat from 0-255 to 0-191
-        byte t192 = (byte) Math.round((temperature / 255.0) * 191);
-
-        // Calculate ramp up from
-        byte heatramp = (byte) (t192 & 0x3F); // 0...63
-        heatramp <<= 2; // scale up to 0...252
-
-        // Figure out which third of the spectrum we're in:
-        if (t192 > (byte) 0x80) { // hottest
-            // TODO: Add code to set RGB color of the LED
-        } else if (t192 > (byte) 0x40) { // middle
-            // TODO: Add code to set RGB color of the LED
-        } else { // coolest
-            // TODO: Add code to set RGB color of the LED
-        }
     }
 }
