@@ -23,6 +23,7 @@ import frc.robot.Vision;
 import frc.robot.maps.subsystems.SwerveDriveMap;
 import frc.robot.maps.subsystems.SwerveDriveMap.Data;
 import frc.robot.util.DrivePID;
+import frc.robot.util.RotationPIDController;
 
 public class Drive extends SmartSubsystemBase {
 
@@ -32,10 +33,13 @@ public class Drive extends SmartSubsystemBase {
     double maxDriveSpeedMetersPerSecond;
     double maxRotationRadiansPerSecond;
     double speedCoef = 1;
+    double rotationCoef = 1;
 
     public enum GridPosition {
 
-        TEST(new Pose2d());
+        BLUE_CONE_4(new Pose2d(1.536, 1.807, Rotation2d.fromDegrees(162.722)));
+        // BLUE_CONE_3(new Pose2d(1.708, 3.369, Rotation2d.fromDegrees(188.314))),
+        // BLUE_CONE_2(new Pose2d(1.605, 3.905, Rotation2d.fromDegrees(166.823)));
 
         private Pose2d pose;
 
@@ -53,10 +57,16 @@ public class Drive extends SmartSubsystemBase {
     private final DrivePID drivePID;
     private Field2d field = new Field2d();
 
-    private final PIDController rotationPID;
+    // Used for automatic alignment while driving
+    private final RotationPIDController rotationPID;
+    // Used for rotation correction while driving
+    private final RotationPIDController correctionPID;
+
+    private double latestAngle = 0;
 
     public Drive(SwerveDriveMap map) {
         this.map = map;
+        this.map.gyro().reset();
         io = new Data();
         kinematics = new SwerveDriveKinematics(map.frontLeft().getLocation(), map.frontRight().getLocation(),
                 map.rearLeft().getLocation(), map.rearRight().getLocation());
@@ -67,7 +77,7 @@ public class Drive extends SmartSubsystemBase {
                 map.cameraName(), Field.getApriltagLayout(),
                 map.cameraPosition(),
                 this.map);
-
+        correctionPID = drivePID.copyRotationPidController();
         rotationPID = drivePID.copyRotationPidController();
     }
 
@@ -80,26 +90,50 @@ public class Drive extends SmartSubsystemBase {
 
     }
 
-    public CommandBase setSpeedCoef(double fac) {
+    public CommandBase setSpeedCoef(double fac, double rotationfac) {
         return runOnce(() -> {
             speedCoef = fac;
+            rotationCoef = rotationfac;
+
         });
+    }
+
+    private void deadbandMove(final double xSpeed, final double ySpeed,
+            final double rotation) {
+
+        final Modifier deadband = Modifier.deadband(0.15);
+
+        double rotationInput = deadband.applyAsDouble(rotation);
+
+        SmartDashboard.putNumber("Rotation Correction Error", latestAngle - map.gyro().getAngle());
+
+        if (Math.abs(rotationInput) < 0.1
+                && !(deadband.applyAsDouble(xSpeed) < 0.1 && deadband.applyAsDouble(ySpeed) < 0.1)) {
+            rotationInput = correctionPID.calculate(latestAngle, map.gyro().getAngle());
+            rotationInput = (Math.abs(rotationInput) > 0.02) ? rotationInput : 0;
+            Logger.getInstance().recordOutput("pidOutput", rotationInput);
+            Logger.getInstance().recordOutput("pidError", correctionPID.getError());
+        } else {
+            latestAngle = map.gyro().getAngle();
+        }
+        Logger.getInstance().recordOutput("latestAngle", latestAngle);
+        Logger.getInstance().recordOutput("robotAngle", map.gyro().getAngle());
+
+        final double translateXSpeed = deadband.applyAsDouble(xSpeed)
+                * maxDriveSpeedMetersPerSecond * speedCoef;
+        final double translateYSpeed = deadband.applyAsDouble(ySpeed)
+                * maxDriveSpeedMetersPerSecond * speedCoef;
+        final double rotationSpeed = rotationInput
+                * maxRotationRadiansPerSecond * rotationCoef;
+        move(translateXSpeed, translateYSpeed, rotationSpeed);
     }
 
     private void move(final double xSpeed, final double ySpeed,
             final double rotation) {
 
-        final Modifier deadband = Modifier.deadband(0.15);
-        final double translateXSpeed = deadband.applyAsDouble(xSpeed)
-                * maxDriveSpeedMetersPerSecond * speedCoef;
-        final double translateYSpeed = deadband.applyAsDouble(ySpeed)
-                * maxDriveSpeedMetersPerSecond * speedCoef;
-        final double rotationSpeed = deadband.applyAsDouble(rotation)
-                * maxRotationRadiansPerSecond * speedCoef;
-
         // rotationOffset is temporary and startingRotation is set at the start
-        final ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(translateYSpeed, translateXSpeed,
-                rotationSpeed,
+        final ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(ySpeed, xSpeed,
+                rotation,
                 Rotation2d.fromDegrees(io.gyroYawPositionDegrees));
 
         // Now use this in our kinematics
@@ -119,20 +153,32 @@ public class Drive extends SmartSubsystemBase {
     }
 
     public CommandBase drive(DoubleSupplier xSpeed, DoubleSupplier ySpeed, DoubleSupplier rotation) {
-        return run(() -> move(xSpeed.getAsDouble(), ySpeed.getAsDouble(), rotation.getAsDouble()));
+        return run(() -> deadbandMove(xSpeed.getAsDouble(), ySpeed.getAsDouble(), rotation.getAsDouble()));
+    }
+
+    public CommandBase driveTo(Pose2d targetPose, double tolerance) {
+        return cmd().onExecute(() -> {
+            Transform2d fb = drivePID.calculate(pose, targetPose);
+            move(fb.getX(), fb.getY(), fb.getRotation().getDegrees());
+
+            double debugPose[] = new double[] { targetPose.getX(), targetPose.getY(),
+                    targetPose.getRotation().getDegrees() };
+            SmartDashboard.putNumberArray("Target Pose", debugPose);
+        }).runsUntil(() -> drivePID.isFinished(pose, targetPose, tolerance)).onEnd(this::safeState);
     }
 
     // Use DrivePID to drive to a target pose on the field
     public CommandBase driveTo(Pose2d targetPose) {
-        return cmd().onExecute(() -> {
-            Transform2d fb = drivePID.calculate(pose, targetPose);
-            move(fb.getX(), fb.getY(), fb.getRotation().getDegrees());
-        }).runsUntil(() -> drivePID.isFinished(pose, targetPose, 0.005)).onEnd(this::safeState);
+        return driveTo(targetPose, 0.1);
+    }
+
+    public void resetTag() {
+        vision.sawTag = false;
     }
 
     // Drive to a pre-determined grid position
     public CommandBase driveTo(GridPosition gridPose) {
-        return driveTo(gridPose.getPose());
+        return driveTo(gridPose.getPose(), 0.05);
     }
 
     // Find the nearest grid position and line up with it
@@ -150,6 +196,11 @@ public class Drive extends SmartSubsystemBase {
                     return driveTo(closestPose);
                 });
 
+    }
+
+    public void resetGyro() {
+        map.gyro().reset();
+        latestAngle = 0;
     }
 
     @Override

@@ -11,11 +11,11 @@ import com.chopshop166.chopshoplib.motors.CSSparkMax;
 import com.chopshop166.chopshoplib.motors.CSTalonSRX;
 import com.chopshop166.chopshoplib.pneumatics.RevDSolenoid;
 import com.chopshop166.chopshoplib.sensors.MockColorSensor;
-import com.chopshop166.chopshoplib.sensors.gyro.PigeonGyro;
+import com.chopshop166.chopshoplib.sensors.gyro.PigeonGyro2;
 import com.chopshop166.chopshoplib.states.PIDValues;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
-import com.ctre.phoenix.sensors.PigeonIMU;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
@@ -42,7 +42,7 @@ public class FrostBiteMap extends RobotMap {
         // of the robot
 
         final double MODULE_OFFSET_XY = Units.inchesToMeters(8.89);
-        final PigeonGyro pigeonGyro = new PigeonGyro(new PigeonIMU(1));
+        final PigeonGyro2 pigeonGyro = new PigeonGyro2(1);
 
         final CSSparkMax frontLeftSteer = new CSSparkMax(8, MotorType.kBrushless);
         final CSSparkMax frontRightSteer = new CSSparkMax(6, MotorType.kBrushless);
@@ -61,7 +61,7 @@ public class FrostBiteMap extends RobotMap {
 
         // Configuration for MK4i with L2 speeds
         Configuration MK4i_L2 = new Configuration(SDSSwerveModule.MK4_V2.gearRatio,
-                SDSSwerveModule.MK4_V2.wheelDiameter, new PIDValues(0.008, 0.00, 0.0001));
+                SDSSwerveModule.MK4_V2.wheelDiameter, new PIDValues(0.009, 0.00, 0.0001));
 
         // All Distances are in Meters
         // Front Left Module
@@ -74,7 +74,7 @@ public class FrostBiteMap extends RobotMap {
 
         // Front Right Module
         final CANCoder encoderFR = new CANCoder(3);
-        encoderFR.configMagnetOffset(-18.720703125);
+        encoderFR.configMagnetOffset(180 - 18.720703125);
         encoderFR.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
         final SDSSwerveModule frontRight = new SDSSwerveModule(new Translation2d(MODULE_OFFSET_XY, -MODULE_OFFSET_XY),
                 encoderFR, frontRightSteer, new CSSparkMax(5,
@@ -92,7 +92,7 @@ public class FrostBiteMap extends RobotMap {
 
         // Rear Right Module
         final CANCoder encoderRR = new CANCoder(1);
-        encoderRR.configMagnetOffset(-324.140625);
+        encoderRR.configMagnetOffset(180 - 324.140625);
         encoderRR.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
         final SDSSwerveModule rearRight = new SDSSwerveModule(new Translation2d(-MODULE_OFFSET_XY, -MODULE_OFFSET_XY),
                 encoderRR, rearRightSteer, new CSSparkMax(1,
@@ -103,9 +103,10 @@ public class FrostBiteMap extends RobotMap {
 
         final double maxRotationRadianPerSecond = Math.PI;
 
-        final DrivePID pid = new DrivePID(0.2, 0, 0.05, 0.001, 0, 0);
+        final DrivePID pid = new DrivePID(0.8, 0, 0, 0.01, 0, 0.001);
 
         final Transform3d cameraPosition = new Transform3d(
+                // These probably need to be refined
                 new Translation3d(
                         Units.inchesToMeters(
                                 2.44),
@@ -119,13 +120,6 @@ public class FrostBiteMap extends RobotMap {
                 maxDriveSpeedMetersPerSecond,
                 maxRotationRadianPerSecond, pigeonGyro, pid, cameraPosition, "eyes");
 
-        // return new SwerveDriveMap(
-        // new MockSwerveModule(frontLeft.getLocation()),
-        // frontRight,
-        // new MockSwerveModule(rearLeft.getLocation()),
-        // new MockSwerveModule(rearRight.getLocation()),
-        // maxDriveSpeedMetersPerSecond, maxRotationRadianPerSecond, pigeonGyro, pid,
-        // cameraPosition, "eyes");
     }
 
     @Override
@@ -133,6 +127,8 @@ public class FrostBiteMap extends RobotMap {
         CSTalonSRX intakeMotor = new CSTalonSRX(9);
         intakeMotor.setInverted(true);
         RevDSolenoid intakeSolenoid = new RevDSolenoid(8, 9);
+        intakeMotor.getMotorController().configContinuousCurrentLimit(35);
+        intakeMotor.getMotorController().configPeakCurrentLimit(35);
 
         return new IntakeData.Map(intakeMotor, intakeSolenoid, new MockColorSensor());
 
@@ -140,11 +136,28 @@ public class FrostBiteMap extends RobotMap {
 
     @Override
     public ArmRotateMap getArmRotateMap() {
-        CSSparkMax motor = new CSSparkMax(10, MotorType.kBrushless);
-        motor.getMotorController().setInverted(false);
-        motor.getEncoder().setPositionScaleFactor(1.125);
-        motor.getEncoder().setVelocityScaleFactor(1.125);
-        return new ArmRotateMap(motor, 85, 10, 115, 0, new PIDController(0, 0, 0));
+        CSSparkMax csmotor = new CSSparkMax(10, MotorType.kBrushless);
+        csmotor.getMotorController().setInverted(false);
+        csmotor.getMotorController().setIdleMode(IdleMode.kBrake);
+        csmotor.getMotorController().setSmartCurrentLimit(40);
+        csmotor.getMotorController().burnFlash();
+        csmotor.getMotorController().setIdleMode(IdleMode.kCoast);
+        csmotor.getEncoder().setPositionScaleFactor(1.125);
+        csmotor.getEncoder().setVelocityScaleFactor(1.125 / 60);
+        PIDController pid = new PIDController(0.06, 0, 0);
+        pid.setTolerance(0.5);
+        return new ArmRotateMap(csmotor, 85, 10, 115, 0, 15, pid, 46.654, 42.3) {
+            @Override
+            public void setBrake() {
+                csmotor.getMotorController().setIdleMode(IdleMode.kBrake);
+                System.out.println("Setting brake mode");
+            }
+
+            @Override
+            public void setCoast() {
+                csmotor.getMotorController().setIdleMode(IdleMode.kCoast);
+            }
+        };
 
     }
 
@@ -152,9 +165,14 @@ public class FrostBiteMap extends RobotMap {
     public ArmMap getArmMap() {
         CSSparkMax motor = new CSSparkMax(11, MotorType.kBrushless);
         motor.getMotorController().setInverted(true);
+        motor.getMotorController().setIdleMode(IdleMode.kBrake);
+        motor.getMotorController().setSmartCurrentLimit(30);
+        motor.getMotorController().burnFlash();
         motor.getEncoder().setPositionScaleFactor((1.273 * Math.PI) / 10);
         motor.getEncoder().setVelocityScaleFactor((1.273 * Math.PI) / 10);
-        return new ArmMap(motor, 19, 1, 19.9, 0, new PIDController(0, 0, 0), 46.654);
+        PIDController pid = new PIDController(0.06, 0.05, 0.0);
+        pid.setTolerance(0.5);
+        return new ArmMap(motor, 18.5, 3, 19.8, 0.3, pid, 46.654, 42.3);
     }
 
     @Override

@@ -1,12 +1,20 @@
 package frc.robot;
 
+import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
+import static edu.wpi.first.wpilibj2.command.Commands.sequence;
+
 import org.littletonrobotics.junction.Logger;
 
 import com.chopshop166.chopshoplib.Autonomous;
+import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StringPublisher;
+import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import frc.robot.maps.RobotMap;
 import frc.robot.subsystems.Drive;
 // $Imports$
@@ -21,6 +29,11 @@ public class Robot extends CommandRobot {
     private ButtonXboxController driveController = new ButtonXboxController(0);
     private ButtonXboxController copilotController = new ButtonXboxController(1);
 
+    NetworkTableInstance ntinst = NetworkTableInstance.getDefault();
+
+    StringPublisher gamePiece = ntinst.getStringTopic("Game Piece").publish();
+    StringSubscriber gamePieceSub = ntinst.getStringTopic("Game Piece").subscribe("Cone");
+
     // $Subsystems$
     private Arm arm = new Arm(map.getArmMap());
 
@@ -30,13 +43,39 @@ public class Robot extends CommandRobot {
     private Led led = new Led(map.getLedMap());
     private ArmRotate armRotate = new ArmRotate(map.getArmRotateMap());
 
-    private Auto auto = new Auto(drive);
+    private Auto auto = new Auto(drive, arm, armRotate, intake);
 
     @Autonomous(defaultAuto = true)
-    public CommandBase exampleAuto = auto.exampleAuto();
+    public CommandBase exampleAuto = auto.oneConeAuto();
 
-    @Override
-    public void teleopInit() {
+    private CommandBase scoreHigh = sequence(
+            armRotate.moveTo(EnumLevel.HIGH_SCORE), drive.driveToNearest(), arm.moveTo(EnumLevel.HIGH_SCORE),
+            intake.coneRelease());
+
+    private CommandBase scoreHighNode = sequence(
+            armRotate.moveTo(EnumLevel.HIGH_SCORE), drive.driveToNearest(),
+            new ConditionalCommand(arm.moveTo(EnumLevel.HIGH_SCORE), runOnce(() -> {
+            }), () -> {
+                return gamePieceSub.get() == "Cone";
+            }));
+
+    public CommandBase scoreMidNode = sequence(
+            armRotate.moveTo(EnumLevel.MEDIUM_SCORE), drive.driveToNearest(),
+            new ConditionalCommand(arm.moveTo(EnumLevel.MEDIUM_SCORE), runOnce(() -> {
+            }), () -> {
+                return gamePieceSub.get() == "Cone";
+            }));
+
+    public CommandBase grabCube() {
+        return sequence(runOnce(() -> {
+            gamePiece.set("Cube");
+        }), led.setPurple());
+    }
+
+    public CommandBase grabCone() {
+        return sequence(runOnce(() -> {
+            gamePiece.set("Cone");
+        }), led.setYellow());
     }
 
     @Override
@@ -54,33 +93,51 @@ public class Robot extends CommandRobot {
     }
 
     @Override
+    public void teleopInit() {
+        super.teleopInit();
+        armRotate.brakeMode().schedule();
+    }
+
+    @Override
     public void configureButtonBindings() {
         // DRIVE CONTROLLER
         // Drive
-        driveController.rightBumper().onTrue(drive.setSpeedCoef(0.5)).onFalse(drive.setSpeedCoef(1));
-        driveController.a().onTrue(drive.driveToNearest());
+        driveController.rightBumper().onTrue(drive.setSpeedCoef(0.25, 0.35)).onFalse(drive.setSpeedCoef(1, 1));
+        driveController.x().whileTrue(scoreHigh);
+        driveController.back().onTrue(runOnce(() -> {
+            drive.resetGyro();
+            drive.resetTag();
+        }));
+
+        // Arm
 
         // COPILOT CONTROLLER
         // Intake
-        copilotController.a().onTrue(intake.sensorControl());
-        copilotController.b().whileTrue(intake.cubeGrab());
-        copilotController.rightBumper().whileTrue(intake.cubeRelease());
-        copilotController.x().onTrue(intake.coneGrab());
-        copilotController.leftBumper().onTrue(intake.coneRelease());
+        copilotController.a().onTrue(intake.grab());
+        copilotController.b().onTrue(intake.toggle());
+        copilotController.x().whileTrue(intake.cubeRelease());
+
         // Arm
         // extend and rotate are in default commands
-        // will need buttons for the scoring positions
-        copilotController.start().onTrue(arm.resetCmd());
-        copilotController.back().onTrue(armRotate.resetCmd());
+        copilotController.start().onTrue(arm.zeroVelocityCheck());
+        copilotController.back().whileTrue(armRotate.resetZero());
 
+        // Automatic
+        copilotController.rightBumper().onTrue(grabCube());
+        copilotController.leftBumper().onTrue(grabCone());
+        // will need buttons for the enums
+        copilotController.y().whileTrue(armRotate.moveTo(EnumLevel.HPS_PICKUP));
+        copilotController.povUp()
+                .whileTrue(scoreHighNode);
+        copilotController.povRight()
+                .whileTrue(scoreMidNode);
+        copilotController.povLeft()
+                .whileTrue(arm.moveTo(EnumLevel.ARM_STOWED).andThen(armRotate.moveTo(EnumLevel.ARM_STOWED)));
         // Led
-        copilotController.povUp().whileTrue(led.setYellow());
-        copilotController.povDown().whileTrue(led.setPurple());
     }
 
     @Override
     public void populateDashboard() {
-
     }
 
     @Override
@@ -90,7 +147,7 @@ public class Robot extends CommandRobot {
 
         led.setDefaultCommand(led.colorAlliance());
         arm.setDefaultCommand(arm.manual(copilotController::getTriggers));
-        armRotate.setDefaultCommand(armRotate.move(() -> -copilotController.getLeftY()));
+        armRotate.setDefaultCommand(armRotate.move(RobotUtils.deadbandAxis(.1, () -> -copilotController.getLeftY())));
 
     }
 }

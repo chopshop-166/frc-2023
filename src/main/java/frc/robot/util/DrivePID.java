@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class DrivePID {
     private PIDController xPid;
     private PIDController yPid;
-    private PIDController anglePid;
+    private RotationPIDController anglePid;
 
     public DrivePID() {
         this(0, 0, 0, 0, 0, 0);
@@ -30,7 +30,7 @@ public class DrivePID {
     public DrivePID(double positionP, double positionI, double positionD, double angleP, double angleI, double angleD) {
         xPid = new PIDController(positionP, positionI, positionD);
         yPid = new PIDController(positionP, positionI, positionD);
-        anglePid = new PIDController(angleP, angleI, angleD);
+        anglePid = new RotationPIDController(angleP, angleI, angleD);
     }
 
     /**
@@ -41,13 +41,14 @@ public class DrivePID {
      * @return The transformation needed to move in the direction of the target pose
      */
     public Transform2d calculate(Pose2d currentPose, Pose2d targetPose) {
+
         return new Transform2d(
                 new Translation2d(
                         // X and Y need to be swapped here for some reason
                         yPid.calculate(targetPose.getY(), currentPose.getY()),
                         xPid.calculate(targetPose.getX(), currentPose.getX())),
-                Rotation2d.fromDegrees(anglePid.calculate(currentPose.getRotation().getDegrees(),
-                        targetPose.getRotation().getDegrees())));
+                Rotation2d.fromDegrees(anglePid.calculate(
+                        targetPose.getRotation().getDegrees(), currentPose.getRotation().getDegrees())));
     }
 
     /**
@@ -65,7 +66,8 @@ public class DrivePID {
         SmartDashboard.putNumberArray("PID Error",
                 new double[] { error.getX(), error.getY(), error.getRotation().getRadians() });
 
-        return (error.getX() < deadband) && (error.getY() < deadband) && error.getRotation().getRadians() < deadband;
+        return (Math.abs(error.getX()) < deadband) && (Math.abs(error.getY()) < deadband)
+                && Math.abs(error.getRotation().getRadians()) < deadband;
     }
 
     /**
@@ -82,8 +84,8 @@ public class DrivePID {
      * 
      * @return the rotation PID Controller
      */
-    public PIDController copyRotationPidController() {
-        return new PIDController(anglePid.getP(), anglePid.getI(), anglePid.getD());
+    public RotationPIDController copyRotationPidController() {
+        return new RotationPIDController(anglePid.getP(), anglePid.getI(), anglePid.getD());
     }
 
 }

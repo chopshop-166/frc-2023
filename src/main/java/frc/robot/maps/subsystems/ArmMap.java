@@ -14,24 +14,27 @@ public class ArmMap {
     public double softMinDistance;
     public double hardMaxDistance;
     public double hardMinDistance;
-    public double armPivotHight;
+    public double armStartLength;
+    public double pivotHeight;
 
     public ArmMap() {
         this.pid = new PIDController(0, 0, 0);
         this.extendMotor = new SmartMotorController();
         this.softMaxDistance = 20;
         this.softMinDistance = 1;
+        this.pivotHeight = 46.654;
     }
 
     public ArmMap(SmartMotorController motor, double softMaxDistance, double softMinDistance, double hardMaxDistance,
-            double hardMinDistance, PIDController pid, double armPivotHight) {
+            double hardMinDistance, PIDController pid, double armPivotHeight, double armStartLength) {
         this.extendMotor = motor;
         this.softMaxDistance = softMaxDistance;
         this.softMinDistance = softMinDistance;
         this.hardMaxDistance = hardMaxDistance;
         this.hardMinDistance = hardMinDistance;
         this.pid = pid;
-        this.armPivotHight = armPivotHight;
+        this.pivotHeight = armPivotHeight;
+        this.armStartLength = armStartLength;
     }
 
     public void updateData(Data data) {
