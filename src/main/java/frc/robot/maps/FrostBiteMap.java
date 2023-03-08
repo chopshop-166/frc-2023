@@ -25,11 +25,14 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import frc.robot.maps.subsystems.ArmMap;
 import frc.robot.maps.subsystems.ArmRotateMap;
 import frc.robot.maps.subsystems.IntakeData;
+import frc.robot.maps.subsystems.LedMap;
 import frc.robot.maps.subsystems.SwerveDriveMap;
 import frc.robot.util.DrivePID;
 
@@ -173,6 +176,14 @@ public class FrostBiteMap extends RobotMap {
         PIDController pid = new PIDController(0.06, 0.05, 0.0);
         pid.setTolerance(0.5);
         return new ArmMap(motor, 18.5, 3, 19.8, 0.3, pid, 46.654, 42.3);
+    }
+
+    @Override
+    public LedMap getLedMap() {
+        new AddressableLED(0);
+        new AddressableLEDBuffer(30);
+
+        return new LedMap();
     }
 
     @Override
