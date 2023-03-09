@@ -20,6 +20,7 @@ public class Led extends SmartSubsystemBase {
     // Default to a length of 60, start empty output
     // Length is expensive to set, so only set it once, then just update data
     AddressableLEDBuffer ledBuffer;
+    public final byte[] heat;
 
     enum LedSection {
         Top,
@@ -37,6 +38,8 @@ public class Led extends SmartSubsystemBase {
 
         led.setLength(ledBuffer.getLength());
         led.start();
+
+        heat = new byte[ledBuffer.getLength()];
 
     }
 
@@ -94,15 +97,12 @@ public class Led extends SmartSubsystemBase {
         });
     }
 
-    private final int NUM_LEDS = ledBuffer.getLength();
-    public final byte[] heat = new byte[NUM_LEDS];
-
     public void fire(int flameHeight, int sparks, int delayDuration) {
         int cooldown;
 
         // Cool down each cell a little
-        for (int i = 0; i < NUM_LEDS; i++) {
-            cooldown = (int) (Math.random() * ((flameHeight * 10) / NUM_LEDS + 2));
+        for (int i = 0; i < ledBuffer.getLength(); i++) {
+            cooldown = (int) (Math.random() * ((flameHeight * 10) / ledBuffer.getLength() + 2));
 
             if (cooldown > heat[i]) {
                 heat[i] = 0;
@@ -112,7 +112,7 @@ public class Led extends SmartSubsystemBase {
         }
 
         // Heat from each cell drifts up and diffuses slightly
-        for (int k = NUM_LEDS - 1; k >= 2; k--) {
+        for (int k = ledBuffer.getLength() - 1; k >= 2; k--) {
             heat[k] = (byte) ((heat[k - 1] + heat[k - 2] + heat[k - 2]) / 3);
         }
 
