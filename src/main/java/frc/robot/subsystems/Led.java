@@ -43,16 +43,18 @@ public class Led extends SmartSubsystemBase {
 
     public void setColor(int r, int g, int b, LedSection section) {
         int ledBufferStartValue = 0;
-        int ledBufferEndValue = ledBuffer.getLength();
+        int ledBufferEndValue = (ledBuffer.getLength() * 3) / 4;
 
         if (section == LedSection.Top) {
+            ledBufferStartValue = ledBuffer.getLength() / 4;
             ledBufferEndValue = ledBuffer.getLength() / 2;
         } else if (section == LedSection.Bottom) {
-            ledBufferStartValue = ledBuffer.getLength() / 2;
+            ledBufferEndValue = ledBuffer.getLength() / 4;
         }
 
         for (var i = ledBufferStartValue; i < ledBufferEndValue; i++) {
             ledBuffer.setRGB(i, r, g, b);
+            ledBuffer.setRGB(ledBuffer.getLength() - i, r, g, b);
         }
         led.setData(ledBuffer);
     }
