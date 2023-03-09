@@ -1,6 +1,7 @@
 package frc.robot.util;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.util.Units;
 
 public class RotationPIDController {
     private PIDController pid;
@@ -9,13 +10,22 @@ public class RotationPIDController {
         pid = new PIDController(kP, kI, kD);
     }
 
-    public double calculate(double measurementDegrees, double setpointDegrees) {
+    private double getError(double measurementDegrees, double setpointDegrees) {
         double angleError = -(setpointDegrees - measurementDegrees);
 
         if (Math.abs(angleError) > 180.0) {
             angleError = Math.signum(-angleError) * (360.0 - Math.abs(angleError));
         }
-        return pid.calculate(angleError);
+        return angleError;
+    }
+
+    public double calculate(double measurementDegrees, double setpointDegrees) {
+
+        return pid.calculate(getError(measurementDegrees, setpointDegrees));
+    }
+
+    public boolean atSetpoint(double tolerance, double measurementDegrees, double setpointDegrees) {
+        return Units.degreesToRadians(Math.abs(getError(measurementDegrees, setpointDegrees))) < tolerance;
     }
 
     public double getError() {

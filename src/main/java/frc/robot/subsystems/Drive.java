@@ -228,7 +228,6 @@ public class Drive extends SmartSubsystemBase {
     @Override
     public void reset() {
         // Nothing to reset here
-        isBlue = DriverStation.getAlliance() == Alliance.Blue;
     }
 
     @Override
@@ -238,6 +237,7 @@ public class Drive extends SmartSubsystemBase {
 
     @Override
     public void periodic() {
+        isBlue = DriverStation.getAlliance() == Alliance.Blue;
         // This method will be called once per scheduler run
         // Use this for any background processing
         map.updateInputs(io);

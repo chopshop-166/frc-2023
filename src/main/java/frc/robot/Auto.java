@@ -31,28 +31,17 @@ public class Auto {
 
     public enum Path {
 
-        // 1.913324824060518,1.8401481550095398,202.15111118447658
-        // 1.536021824789258,1.8071871015354626,162.72159242120003
-
-        BEFORE_CONE_STATION(0.1,
-                new Pose2d(1.913, 1.840, Rotation2d.fromDegrees(202.151))),
-
         UP_TO_CONE_STATION(0.05,
-                new Pose2d(1.536, 1.807, Rotation2d.fromDegrees(162.722))),
+                new Pose2d(1.7539,
+                        5.0123, Rotation2d.fromDegrees(180))),
+
+        BACKED_UP(0.05,
+                new Pose2d(2.1,
+                        5.0123, Rotation2d.fromDegrees(180))),
 
         OUT_OF_COMMUNITY(0.2,
-                new Pose2d(1.787, 0.621, Rotation2d.fromDegrees(172.156)),
-                new Pose2d(5.903, 0.621, Rotation2d.fromDegrees(173.884))
-
-        ),
-        BALANCE(0.1,
-                new Pose2d(2.008, 2.354, Rotation2d.fromDegrees(182.885)),
-                new Pose2d(3.836, 2.000, Rotation2d.fromDegrees(
-                        203.851))),
-
-        TEST(0.1,
-                new Pose2d(14.38, 3.45, Rotation2d.fromDegrees(90)),
-                new Pose2d(12.38, 3.45, Rotation2d.fromDegrees(180))
+                new Pose2d(2.1877, 4.7327, Rotation2d.fromDegrees(180)),
+                new Pose2d(5.1150, 4.7327, Rotation2d.fromDegrees(0))
 
         );
 
@@ -74,24 +63,18 @@ public class Auto {
         }
     }
 
-    public CommandBase exampleAuto() {
-        return sequence(Path.TEST.getPath(drive))
-                .withName("Test Auto");
-    }
-
     public CommandBase oneConeAuto() {
         return sequence(
                 // armRotate.zeroVelocityCheck(),
                 armExtend.zeroVelocityCheck(),
 
-                Path.BEFORE_CONE_STATION.getPath(drive),
                 armRotate.moveTo(EnumLevel.HIGH_SCORE),
                 Path.UP_TO_CONE_STATION.getPath(drive),
                 armExtend.moveTo(EnumLevel.HIGH_SCORE),
                 new FunctionalWaitCommand(() -> 0.25),
                 intake.coneRelease(),
                 new FunctionalWaitCommand(() -> 0.25),
-                Path.BEFORE_CONE_STATION.getPath(drive),
+                Path.BACKED_UP.getPath(drive),
                 armExtend.moveTo(EnumLevel.ARM_STOWED),
                 intake.coneGrab(),
                 armRotate.moveTo(EnumLevel.ARM_STOWED),
