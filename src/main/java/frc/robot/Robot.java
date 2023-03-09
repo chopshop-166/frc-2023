@@ -48,34 +48,44 @@ public class Robot extends CommandRobot {
     @Autonomous(defaultAuto = true)
     public CommandBase exampleAuto = auto.oneConeAuto();
 
-    private CommandBase scoreHigh = sequence(
+    private CommandBase driveScoreHigh = sequence(
             armRotate.moveTo(EnumLevel.HIGH_SCORE), drive.driveToNearest(), arm.moveTo(EnumLevel.HIGH_SCORE),
             intake.coneRelease());
 
-    private CommandBase scoreHighNode = sequence(
+    private CommandBase driveScoreHighNode = sequence(
             armRotate.moveTo(EnumLevel.HIGH_SCORE), drive.driveToNearest(),
             new ConditionalCommand(arm.moveTo(EnumLevel.HIGH_SCORE), runOnce(() -> {
             }), () -> {
                 return gamePieceSub.get() == "Cone";
             }));
 
-    public CommandBase scoreMidNode = sequence(
+    public CommandBase driveScoreMidNode = sequence(
             armRotate.moveTo(EnumLevel.MEDIUM_SCORE), drive.driveToNearest(),
             new ConditionalCommand(arm.moveTo(EnumLevel.MEDIUM_SCORE), runOnce(() -> {
             }), () -> {
                 return gamePieceSub.get() == "Cone";
             }));
 
+    public CommandBase scoreMidNode = sequence(
+            armRotate.moveTo(EnumLevel.MEDIUM_SCORE), (arm.moveTo(EnumLevel.MEDIUM_SCORE)),
+            (armRotate.moveTo(EnumLevel.MEDIUM_SCORE_ACTUAL)));
+
+    public CommandBase scoreHighNode = sequence(
+            armRotate.moveTo(EnumLevel.HIGH_SCORE), (arm.moveTo(EnumLevel.HIGH_SCORE)),
+            (armRotate.moveTo(EnumLevel.HIGH_SCORE_ACTUAL)));
+
     public CommandBase grabCube() {
         return sequence(runOnce(() -> {
             gamePiece.set("Cube");
-        }), led.setPurple());
+        }));
+        // led.setPurple());
     }
 
     public CommandBase grabCone() {
         return sequence(runOnce(() -> {
             gamePiece.set("Cone");
-        }), led.setYellow());
+        }));
+        // led.setYellow());
     }
 
     @Override
@@ -103,7 +113,7 @@ public class Robot extends CommandRobot {
         // DRIVE CONTROLLER
         // Drive
         driveController.rightBumper().onTrue(drive.setSpeedCoef(0.25, 0.35)).onFalse(drive.setSpeedCoef(1, 1));
-        driveController.x().whileTrue(scoreHigh);
+        driveController.x().whileTrue(driveScoreHigh);
         driveController.back().onTrue(runOnce(() -> {
             drive.resetGyro();
             drive.resetTag();
@@ -127,8 +137,12 @@ public class Robot extends CommandRobot {
         copilotController.leftBumper().onTrue(grabCone());
         // will need buttons for the enums
         copilotController.y().whileTrue(armRotate.moveTo(EnumLevel.HPS_PICKUP));
+        // copilotController.povUp()
+        // .whileTrue(scoreHighNode);
         copilotController.povUp()
                 .whileTrue(scoreHighNode);
+        // copilotController.povRight()
+        // .whileTrue(scoreMidNode);
         copilotController.povRight()
                 .whileTrue(scoreMidNode);
         copilotController.povLeft()
