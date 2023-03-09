@@ -69,7 +69,7 @@ public class Led extends SmartSubsystemBase {
                 setColor(250, 2, 2, LedSection.Top);
                 Logger.getInstance().recordOutput("IndicateLEDs", "Red");
             }
-        });
+        }).runsWhenDisabled(true);
     }
 
     public CommandBase resetColor() {
@@ -102,7 +102,7 @@ public class Led extends SmartSubsystemBase {
                 ledBuffer.setLED(i, color);
             }
             led.setData(ledBuffer);
-        });
+        }).runsWhenDisabled(true);
     }
 
     @Override

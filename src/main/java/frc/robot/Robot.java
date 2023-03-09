@@ -108,6 +108,8 @@ public class Robot extends CommandRobot {
             drive.resetGyro();
             drive.resetTag();
         }));
+        driveController.povRight().whileTrue(led.setPurple());
+        driveController.povLeft().whileTrue(led.setYellow());
 
         // Arm
 
@@ -134,6 +136,7 @@ public class Robot extends CommandRobot {
         copilotController.povLeft()
                 .whileTrue(arm.moveTo(EnumLevel.ARM_STOWED).andThen(armRotate.moveTo(EnumLevel.ARM_STOWED)));
         // Led
+
     }
 
     @Override

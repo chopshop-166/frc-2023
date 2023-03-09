@@ -180,11 +180,8 @@ public class FrostBiteMap extends RobotMap {
 
     @Override
     public LedMap getLedMap() {
-        new AddressableLED(0);
-        new AddressableLEDBuffer(54);
         // length is 27 * 2; there are two strips of LEDs
-
-        return new LedMap();
+        return new LedMap(0, 54);
     }
 
     @Override
