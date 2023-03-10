@@ -67,24 +67,22 @@ public class Robot extends CommandRobot {
 
     public CommandBase scoreMidNode = sequence(
             armRotate.moveTo(EnumLevel.MEDIUM_SCORE), (arm.moveTo(EnumLevel.MEDIUM_SCORE)),
-            (armRotate.moveTo(EnumLevel.MEDIUM_SCORE_ACTUAL)));
+            (armRotate.moveTo(EnumLevel.MEDIUM_SCORE_ACTUAL)), (arm.moveTo(EnumLevel.ARM_STOWED)));
 
     public CommandBase scoreHighNode = sequence(
             armRotate.moveTo(EnumLevel.HIGH_SCORE), (arm.moveTo(EnumLevel.HIGH_SCORE)),
-            (armRotate.moveTo(EnumLevel.HIGH_SCORE_ACTUAL)));
+            (armRotate.moveTo(EnumLevel.HIGH_SCORE_ACTUAL)), (arm.moveTo(EnumLevel.ARM_STOWED)));
 
     public CommandBase grabCube() {
         return sequence(runOnce(() -> {
             gamePiece.set("Cube");
-        }));
-        // led.setPurple());
+        }), led.setPurple());
     }
 
     public CommandBase grabCone() {
         return sequence(runOnce(() -> {
             gamePiece.set("Cone");
-        }));
-        // led.setYellow());
+        }), led.setYellow());
     }
 
     @Override
@@ -139,12 +137,8 @@ public class Robot extends CommandRobot {
         copilotController.leftBumper().onTrue(grabCone());
         // will need buttons for the enums
         copilotController.y().whileTrue(armRotate.moveTo(EnumLevel.HPS_PICKUP));
-        // copilotController.povUp()
-        // .whileTrue(scoreHighNode);
         copilotController.povUp()
                 .whileTrue(scoreHighNode);
-        // copilotController.povRight()
-        // .whileTrue(scoreMidNode);
         copilotController.povRight()
                 .whileTrue(scoreMidNode);
         copilotController.povLeft()
