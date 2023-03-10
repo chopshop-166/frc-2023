@@ -115,9 +115,6 @@ public class Robot extends CommandRobot {
             drive.resetGyro();
             drive.resetTag();
         }));
-        driveController.povRight().whileTrue(led.setPurple());
-        driveController.povLeft().whileTrue(led.setYellow());
-        driveController.povUp().whileTrue(drive.driveRaw(() -> 0.25, () -> 0.0, () -> 0.0));
 
         // Arm
 
