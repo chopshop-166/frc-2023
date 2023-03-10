@@ -120,6 +120,7 @@ public class Robot extends CommandRobot {
         }));
         driveController.povRight().whileTrue(led.setPurple());
         driveController.povLeft().whileTrue(led.setYellow());
+        driveController.povUp().whileTrue(drive.driveRaw(() -> 0.25, () -> 0.0, () -> 0.0));
 
         // Arm
 
@@ -165,7 +166,7 @@ public class Robot extends CommandRobot {
         // led.setDefaultCommand(led.colorAlliance());
         arm.setDefaultCommand(arm.manual(copilotController::getTriggers));
         armRotate.setDefaultCommand(armRotate.move(() -> -copilotController.getLeftY()));
-        led.setDefaultCommand(led.Fire());
+        led.setDefaultCommand(led.ColdFire());
 
     }
 }

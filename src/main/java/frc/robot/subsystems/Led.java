@@ -39,7 +39,7 @@ public class Led extends SmartSubsystemBase {
         led.setLength(ledBuffer.getLength());
         led.start();
 
-        heat = new byte[ledBuffer.getLength()];
+        heat = new byte[ledBuffer.getLength() / 2];
 
     }
 
@@ -56,7 +56,7 @@ public class Led extends SmartSubsystemBase {
 
         for (var i = ledBufferStartValue; i < ledBufferEndValue; i++) {
             ledBuffer.setRGB(i, r, g, b);
-            ledBuffer.setRGB(ledBuffer.getLength() - i, r, g, b);
+            ledBuffer.setRGB(ledBuffer.getLength() - i - 1, r, g, b);
         }
         led.setData(ledBuffer);
     }
@@ -97,12 +97,10 @@ public class Led extends SmartSubsystemBase {
         });
     }
 
-    public void fire(int flameHeight, int sparks, int delayDuration) {
-        int cooldown;
-
+    public void coldFire(int flameHeight, int sparks) {
         // Cool down each cell a little
-        for (int i = 0; i < ledBuffer.getLength(); i++) {
-            cooldown = (int) (Math.random() * ((flameHeight * 10) / ledBuffer.getLength() + 2));
+        for (int i = 0; i < heat.length; i++) {
+            int cooldown = (int) (Math.random() * ((flameHeight * 10) / heat.length + 2));
 
             if (cooldown > heat[i]) {
                 heat[i] = 0;
@@ -112,7 +110,7 @@ public class Led extends SmartSubsystemBase {
         }
 
         // Heat from each cell drifts up and diffuses slightly
-        for (int k = ledBuffer.getLength() - 1; k >= 2; k--) {
+        for (int k = heat.length - 1; k >= 2; k--) {
             heat[k] = (byte) ((heat[k - 1] + heat[k - 2] + heat[k - 2]) / 3);
         }
 
@@ -123,11 +121,13 @@ public class Led extends SmartSubsystemBase {
         }
     }
 
-    public CommandBase Fire() {
-        return cmd("Make leds fire").onExecute(() -> {
+    public CommandBase ColdFire() {
+        return cmd("Make leds cold fire").onExecute(() -> {
+            coldFire(heat.length, 25);
             for (int i = 0; i < heat.length; i++) {
-                Color color = new Color(heat[i] / 255.0, 0, 0);
+                Color color = new Color(heat[i] / 135.0, 206 / 255.0, 250 / 255.0);
                 ledBuffer.setLED(i, color);
+                ledBuffer.setLED(ledBuffer.getLength() - i - 1, color);
             }
             led.setData(ledBuffer);
         }).runsWhenDisabled(true);

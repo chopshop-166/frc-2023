@@ -69,7 +69,7 @@ public class FrostBiteMap extends RobotMap {
         // All Distances are in Meters
         // Front Left Module
         final CANCoder encoderFL = new CANCoder(4);
-        encoderFL.configMagnetOffset(-29.8828125);
+        encoderFL.configMagnetOffset(-19.8828125);
         encoderFL.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
         final SDSSwerveModule frontLeft = new SDSSwerveModule(new Translation2d(MODULE_OFFSET_XY, MODULE_OFFSET_XY),
                 encoderFL, frontLeftSteer, new CSSparkMax(7, MotorType.kBrushless),
@@ -86,7 +86,7 @@ public class FrostBiteMap extends RobotMap {
 
         // Rear Left Module
         final CANCoder encoderRL = new CANCoder(2);
-        encoderRL.configMagnetOffset(-31.376953125);
+        encoderRL.configMagnetOffset(-21.376953125);
         encoderRL.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
         final SDSSwerveModule rearLeft = new SDSSwerveModule(new Translation2d(-MODULE_OFFSET_XY, MODULE_OFFSET_XY),
                 encoderRL, rearLeftSteer, new CSSparkMax(3,
@@ -106,7 +106,7 @@ public class FrostBiteMap extends RobotMap {
 
         final double maxRotationRadianPerSecond = Math.PI;
 
-        final DrivePID pid = new DrivePID(0.8, 0, 0, 0.01, 0, 0.001);
+        final DrivePID pid = new DrivePID(0.8, 0, 0, 0.02, 0, 0.001);
 
         final Transform3d cameraPosition = new Transform3d(
                 // These probably need to be refined
