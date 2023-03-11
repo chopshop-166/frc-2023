@@ -17,7 +17,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
@@ -50,11 +49,29 @@ public class Drive extends SmartSubsystemBase {
                 Rotation2d.fromDegrees(bluePose.getRotation().getDegrees() + 180));
     }
 
+    private static final double blueX = 1.8;
+    private static final Rotation2d rotation0 = Rotation2d.fromDegrees(0);
+    private static final Rotation2d rotation180 = Rotation2d.fromDegrees(180);
+
     public enum GridPosition {
 
-        BLUE_CONE_4(new Pose2d(1.536, 1.807, Rotation2d.fromDegrees(162.722)));
-        // BLUE_CONE_3(new Pose2d(1.708, 3.369, Rotation2d.fromDegrees(188.314))),
-        // BLUE_CONE_2(new Pose2d(1.605, 3.905, Rotation2d.fromDegrees(166.823)));
+        CONE_5(
+                new Pose2d(blueX, 5.42, rotation0)),
+
+        CONE_4(
+                new Pose2d(blueX, 2.95, rotation0)),
+
+        CONE_3(
+                new Pose2d(blueX, 3.56, rotation0)),
+
+        CONE_2(
+                new Pose2d(blueX, 2.36, rotation0)),
+
+        CONE_1(
+                new Pose2d(blueX, 1.82, rotation0)),
+
+        CONE_0(
+                new Pose2d(blueX, 0.6, rotation0));
 
         private Pose2d pose;
 
@@ -70,7 +87,6 @@ public class Drive extends SmartSubsystemBase {
     private Vision vision;
     private Pose2d pose = new Pose2d();
     private final DrivePID drivePID;
-    private Field2d field = new Field2d();
 
     // Used for automatic alignment while driving
     private final RotationPIDController rotationPID;
@@ -111,6 +127,21 @@ public class Drive extends SmartSubsystemBase {
             rotationCoef = rotationfac;
 
         });
+    }
+
+    Pose2d initialPose;
+
+    public CommandBase driveDistance(double distance, double speed, Rotation2d angle) {
+        return cmd().onInitialize(() -> {
+            initialPose = pose;
+        }).onExecute(
+                () -> {
+                    move(angle.getSin() * speed, angle.getCos() * speed, 0);
+                }).runsUntil(() -> pose.getTranslation().getDistance(initialPose.getTranslation()) > distance)
+                .onEnd(() -> {
+                    move(0, 0, 0);
+                });
+
     }
 
     double targetComponent = 0;
@@ -204,7 +235,13 @@ public class Drive extends SmartSubsystemBase {
         return cmd().onExecute(() -> {
             Pose2d flipped = invertSide(targetPose);
             Transform2d fb = drivePID.calculate(pose, flipped);
-            move(fb.getX(), fb.getY(), fb.getRotation().getDegrees());
+
+            if (isBlue) {
+                move(fb.getX(), fb.getY(), fb.getRotation().getDegrees());
+            } else {
+
+                move(-fb.getX(), -fb.getY(), -fb.getRotation().getDegrees());
+            }
 
             double debugPose[] = new double[] { flipped.getX(), flipped.getY(),
                     flipped.getRotation().getDegrees() };
@@ -241,14 +278,27 @@ public class Drive extends SmartSubsystemBase {
                         }
                     }
 
-                    return driveTo(closestPose);
+                    return driveTo(closestPose, 0.05);
                 });
 
+    }
+
+    public CommandBase resetGyroCommand() {
+        return cmd().onInitialize(() -> {
+            resetGyro();
+            resetTag();
+        }).runsWhenDisabled(true);
     }
 
     public void resetGyro() {
         map.gyro().reset();
         latestAngle = 0;
+    }
+
+    public CommandBase setGyro180() {
+        return runOnce(() -> {
+            map.gyro().setAngle(180);
+        });
     }
 
     public CommandBase setPose(Pose2d pose) {
@@ -273,8 +323,6 @@ public class Drive extends SmartSubsystemBase {
         map.updateInputs(io);
         Logger.getInstance().processInputs(getName(), io);
 
-        pose = vision.update(isBlue);
-        field.setRobotPose(pose);
-        SmartDashboard.putData(field);
+        Logger.getInstance().recordOutput("robotPose", pose);
     }
 }

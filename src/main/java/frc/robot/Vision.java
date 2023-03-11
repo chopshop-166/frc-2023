@@ -2,6 +2,7 @@ package frc.robot;
 
 import java.util.Optional;
 
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
@@ -85,7 +86,8 @@ public class Vision {
                     driveMap.gyro().setAngle(pose.getRotation().getDegrees() + (isBlue ? 0 : 180));
                 }
                 if (distance < 2 && tagDistance < 4 && poseInField) {
-                    setPose(pose);
+                    // setPose(pose);
+                    Logger.getInstance().recordOutput("visionPose", pose);
                 }
                 sawTag = true;
             }

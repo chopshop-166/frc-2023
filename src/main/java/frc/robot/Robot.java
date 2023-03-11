@@ -8,7 +8,6 @@ import org.littletonrobotics.junction.Logger;
 import com.chopshop166.chopshoplib.Autonomous;
 import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
-import com.chopshop166.chopshoplib.controls.ButtonXboxController.POVDirection;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
@@ -48,8 +47,15 @@ public class Robot extends CommandRobot {
     @Autonomous(defaultAuto = true)
     public CommandBase noAuto = runOnce(() -> {
     }).withName("No Auto");
+
     @Autonomous
-    public CommandBase oneConeAuto = auto.oneConeAuto();
+    public CommandBase simpleAuto = auto.oneSimpleConeTest();
+
+    @Autonomous
+    public CommandBase simpleTaxiAuto = auto.oneConeTaxiTest();
+
+    @Autonomous
+    public CommandBase simpleTaxiWireAuto = auto.oneConeTaxiWire();
 
     private CommandBase driveScoreHigh = sequence(
             armRotate.moveTo(EnumLevel.HIGH_SCORE), drive.driveToNearest(), arm.moveTo(EnumLevel.HIGH_SCORE),
@@ -114,10 +120,7 @@ public class Robot extends CommandRobot {
         // DRIVE CONTROLLER
         // Drive
         driveController.rightBumper().onTrue(drive.setSpeedCoef(0.25, 0.35)).onFalse(drive.setSpeedCoef(1, 1));
-        driveController.back().onTrue(runOnce(() -> {
-            drive.resetGyro();
-            drive.resetTag();
-        }));
+        driveController.back().onTrue(drive.resetGyroCommand());
 
         // Arm
 
