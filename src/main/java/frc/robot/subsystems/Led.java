@@ -4,10 +4,14 @@ import org.littletonrobotics.junction.Logger;
 
 import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
 
+import edu.wpi.first.networktables.BooleanSubscriber;
+import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.maps.subsystems.LedMap;
@@ -44,7 +48,7 @@ public class Led extends SmartSubsystemBase {
     }
 
     public void setColor(int r, int g, int b, LedSection section) {
-        int ledBufferStartValue = 0;
+        int ledBufferStartValue = 1;
         int ledBufferEndValue = (ledBuffer.getLength() * 3) / 4;
 
         if (section == LedSection.Top) {
@@ -75,7 +79,7 @@ public class Led extends SmartSubsystemBase {
     }
 
     public CommandBase resetColor() {
-        return runOnce(() -> {
+        return run(() -> {
             setColor(201, 198, 204, LedSection.All);
             Logger.getInstance().recordOutput("IndicateLEDs", "White");
 
@@ -83,7 +87,7 @@ public class Led extends SmartSubsystemBase {
     }
 
     public CommandBase setYellow() {
-        return runOnce(() -> {
+        return run(() -> {
             setColor(222, 218, 11, LedSection.Bottom);
             Logger.getInstance().recordOutput("IndicateLEDs", "Yellow");
 
@@ -99,7 +103,7 @@ public class Led extends SmartSubsystemBase {
 
     public void coldFire(int flameHeight, int sparks) {
         // Cool down each cell a little
-        for (int i = 0; i < heat.length; i++) {
+        for (int i = 1; i < heat.length; i++) {
             int cooldown = (int) (Math.random() * ((flameHeight * 10) / heat.length + 2));
 
             if (cooldown > heat[i]) {
@@ -124,7 +128,7 @@ public class Led extends SmartSubsystemBase {
     public CommandBase ColdFire() {
         return cmd("Make leds cold fire").onExecute(() -> {
             coldFire(heat.length, 25);
-            for (int i = 0; i < heat.length; i++) {
+            for (int i = 1; i < heat.length; i++) {
                 Color color = new Color(heat[i] / 209.0, 244 / 255.0, 247 / 255.0);
                 ledBuffer.setLED(i, color);
                 ledBuffer.setLED(ledBuffer.getLength() - i - 1, color);
@@ -143,10 +147,20 @@ public class Led extends SmartSubsystemBase {
 
     }
 
+    NetworkTableInstance ntinst = NetworkTableInstance.getDefault();
+    BooleanSubscriber groundSub = ntinst.getBooleanTopic("Arm/Below Ground").subscribe(false);
+
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
         // Use this for any background processing
 
+        boolean seesTag = SmartDashboard.getBoolean("Saw Tag", false);
+        Color ledColor = (seesTag) ? (new Color(0, 255, 0)) : (new Color(255, 0, 0));
+        if (groundSub.get()) {
+            setColor(255, 0, 0, LedSection.Top);
+        }
+        ledBuffer.setLED(0, ledColor);
+        led.setData(ledBuffer);
     }
 }
