@@ -56,7 +56,7 @@ public class Vision {
     }
 
     // Estimated pose from a combination of vision and odometry
-    public Pose2d update() {
+    public Pose2d update(boolean isBlue) {
         PhotonPipelineResult result = camera.getLatestResult();
 
         // Sees an apriltag
@@ -82,7 +82,7 @@ public class Vision {
                 if (sawTag) {
                     distance = prevPose.getTranslation().getDistance(pose.getTranslation());
                 } else {
-                    driveMap.gyro().setAngle(pose.getRotation().getDegrees());
+                    driveMap.gyro().setAngle(pose.getRotation().getDegrees() + (isBlue ? 0 : 180));
                 }
                 if (distance < 2 && tagDistance < 4 && poseInField) {
                     setPose(pose);

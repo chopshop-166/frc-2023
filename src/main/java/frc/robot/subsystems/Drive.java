@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import java.lang.annotation.Target;
 import java.util.function.DoubleSupplier;
 
 import org.littletonrobotics.junction.Logger;
@@ -7,6 +8,7 @@ import org.littletonrobotics.junction.Logger;
 import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
 import com.chopshop166.chopshoplib.motors.Modifier;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -109,6 +111,31 @@ public class Drive extends SmartSubsystemBase {
             rotationCoef = rotationfac;
 
         });
+    }
+
+    double targetComponent = 0;
+    PIDController componentPID = new PIDController(0, 0, 0);
+
+    public CommandBase driveX(double distanceMeters) {
+        return cmd().onInitialize(() -> {
+            componentPID = drivePID.copyTranslationPidController();
+            componentPID.setTolerance(0.02);
+            targetComponent = pose.getY() + distanceMeters;
+            Logger.getInstance().recordOutput("targetX", targetComponent);
+        }).onExecute(() -> {
+            move(componentPID.calculate(pose.getY(), targetComponent), 0, 0);
+            Logger.getInstance().recordOutput("poseX", pose.getY());
+        }).runsUntil(componentPID::atSetpoint).onEnd(() -> move(0, 0, 0));
+    }
+
+    public CommandBase driveY(double distanceMeters) {
+        return cmd().onInitialize(() -> {
+            componentPID = drivePID.copyTranslationPidController();
+            componentPID.setTolerance(0.02);
+            targetComponent = pose.getX() + distanceMeters;
+        }).onExecute(() -> {
+            move(0, componentPID.calculate(pose.getX(), targetComponent), 0);
+        }).runsUntil(componentPID::atSetpoint).onEnd(() -> move(0, 0, 0));
     }
 
     private void deadbandMove(final double xSpeed, final double ySpeed,
@@ -246,7 +273,7 @@ public class Drive extends SmartSubsystemBase {
         map.updateInputs(io);
         Logger.getInstance().processInputs(getName(), io);
 
-        pose = vision.update();
+        pose = vision.update(isBlue);
         field.setRobotPose(pose);
         SmartDashboard.putData(field);
     }
