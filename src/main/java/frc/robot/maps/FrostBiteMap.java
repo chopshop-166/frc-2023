@@ -62,7 +62,7 @@ public class FrostBiteMap extends RobotMap {
 
         // Configuration for MK4i with L2 speeds
         Configuration MK4i_L2 = new Configuration(SDSSwerveModule.MK4_V2.gearRatio,
-                SDSSwerveModule.MK4_V2.wheelDiameter, new PIDValues(0.009, 0.00, 0.0001));
+                SDSSwerveModule.MK4_V2.wheelDiameter, new PIDValues(0.011, 0.00, 0.0002));
 
         // All Distances are in Meters
         // Front Left Module
