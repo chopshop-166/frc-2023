@@ -113,7 +113,6 @@ public class Robot extends CommandRobot {
         // DRIVE CONTROLLER
         // Drive
         driveController.rightBumper().onTrue(drive.setSpeedCoef(0.25, 0.35)).onFalse(drive.setSpeedCoef(1, 1));
-        driveController.x().whileTrue(driveScoreHigh);
         driveController.back().onTrue(runOnce(() -> {
             drive.resetGyro();
             drive.resetTag();
