@@ -125,7 +125,7 @@ public class Led extends SmartSubsystemBase {
         return cmd("Make leds cold fire").onExecute(() -> {
             coldFire(heat.length, 25);
             for (int i = 0; i < heat.length; i++) {
-                Color color = new Color(heat[i] / 135.0, 206 / 255.0, 250 / 255.0);
+                Color color = new Color(heat[i] / 209.0, 244 / 255.0, 247 / 255.0);
                 ledBuffer.setLED(i, color);
                 ledBuffer.setLED(ledBuffer.getLength() - i - 1, color);
             }
