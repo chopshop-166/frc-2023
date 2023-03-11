@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import frc.robot.maps.subsystems.ArmMap;
 import frc.robot.maps.subsystems.ArmRotateMap;
 import frc.robot.maps.subsystems.IntakeData;
+import frc.robot.maps.subsystems.LedMap;
 import frc.robot.maps.subsystems.SwerveDriveMap;
 import frc.robot.util.DrivePID;
 
@@ -66,7 +67,7 @@ public class FrostBiteMap extends RobotMap {
         // All Distances are in Meters
         // Front Left Module
         final CANCoder encoderFL = new CANCoder(4);
-        encoderFL.configMagnetOffset(-29.8828125);
+        encoderFL.configMagnetOffset(-19.8828125);
         encoderFL.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
         final SDSSwerveModule frontLeft = new SDSSwerveModule(new Translation2d(MODULE_OFFSET_XY, MODULE_OFFSET_XY),
                 encoderFL, frontLeftSteer, new CSSparkMax(7, MotorType.kBrushless),
@@ -83,7 +84,7 @@ public class FrostBiteMap extends RobotMap {
 
         // Rear Left Module
         final CANCoder encoderRL = new CANCoder(2);
-        encoderRL.configMagnetOffset(-31.376953125);
+        encoderRL.configMagnetOffset(-21.376953125);
         encoderRL.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
         final SDSSwerveModule rearLeft = new SDSSwerveModule(new Translation2d(-MODULE_OFFSET_XY, MODULE_OFFSET_XY),
                 encoderRL, rearLeftSteer, new CSSparkMax(3,
@@ -173,6 +174,12 @@ public class FrostBiteMap extends RobotMap {
         PIDController pid = new PIDController(0.06, 0.05, 0.0);
         pid.setTolerance(0.5);
         return new ArmMap(motor, 18.5, 3, 19.8, 0.3, pid, 46.654, 42.3);
+    }
+
+    @Override
+    public LedMap getLedMap() {
+        // length is 27 * 2; there are two strips of LEDs
+        return new LedMap(0, 54);
     }
 
     @Override

@@ -6,7 +6,6 @@ import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 import org.littletonrobotics.junction.Logger;
 
 import com.chopshop166.chopshoplib.Autonomous;
-import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 
@@ -48,23 +47,31 @@ public class Robot extends CommandRobot {
     @Autonomous(defaultAuto = true)
     public CommandBase exampleAuto = auto.oneConeAuto();
 
-    private CommandBase scoreHigh = sequence(
+    private CommandBase driveScoreHigh = sequence(
             armRotate.moveTo(EnumLevel.HIGH_SCORE), drive.driveToNearest(), arm.moveTo(EnumLevel.HIGH_SCORE),
             intake.coneRelease());
 
-    private CommandBase scoreHighNode = sequence(
+    private CommandBase driveScoreHighNode = sequence(
             armRotate.moveTo(EnumLevel.HIGH_SCORE), drive.driveToNearest(),
             new ConditionalCommand(arm.moveTo(EnumLevel.HIGH_SCORE), runOnce(() -> {
             }), () -> {
                 return gamePieceSub.get() == "Cone";
             }));
 
-    public CommandBase scoreMidNode = sequence(
+    public CommandBase driveScoreMidNode = sequence(
             armRotate.moveTo(EnumLevel.MEDIUM_SCORE), drive.driveToNearest(),
             new ConditionalCommand(arm.moveTo(EnumLevel.MEDIUM_SCORE), runOnce(() -> {
             }), () -> {
                 return gamePieceSub.get() == "Cone";
             }));
+
+    public CommandBase scoreMidNode = sequence(
+            armRotate.moveTo(EnumLevel.MEDIUM_SCORE), (arm.moveTo(EnumLevel.MEDIUM_SCORE)),
+            (armRotate.moveTo(EnumLevel.MEDIUM_SCORE_ACTUAL)), (arm.moveTo(EnumLevel.ARM_STOWED)));
+
+    public CommandBase scoreHighNode = sequence(
+            armRotate.moveTo(EnumLevel.HIGH_SCORE), (arm.moveTo(EnumLevel.HIGH_SCORE)),
+            (armRotate.moveTo(EnumLevel.HIGH_SCORE_ACTUAL)), (arm.moveTo(EnumLevel.ARM_STOWED)));
 
     public CommandBase grabCube() {
         return sequence(runOnce(() -> {
@@ -103,7 +110,7 @@ public class Robot extends CommandRobot {
         // DRIVE CONTROLLER
         // Drive
         driveController.rightBumper().onTrue(drive.setSpeedCoef(0.25, 0.35)).onFalse(drive.setSpeedCoef(1, 1));
-        driveController.x().whileTrue(scoreHigh);
+        driveController.x().whileTrue(driveScoreHigh);
         driveController.back().onTrue(runOnce(() -> {
             drive.resetGyro();
             drive.resetTag();
@@ -134,6 +141,7 @@ public class Robot extends CommandRobot {
         copilotController.povLeft()
                 .whileTrue(arm.moveTo(EnumLevel.ARM_STOWED).andThen(armRotate.moveTo(EnumLevel.ARM_STOWED)));
         // Led
+
     }
 
     @Override
@@ -148,7 +156,7 @@ public class Robot extends CommandRobot {
         // led.setDefaultCommand(led.colorAlliance());
         arm.setDefaultCommand(arm.manual(copilotController::getTriggers));
         armRotate.setDefaultCommand(armRotate.move(() -> -copilotController.getLeftY()));
-        // led.setDefaultCommand(led.Fire());
+        led.setDefaultCommand(led.ColdFire());
 
     }
 }
