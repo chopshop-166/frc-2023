@@ -81,7 +81,7 @@ public class Auto {
                 Path.OUT_OF_COMMUNITY.getPath(drive)
 
         )
-                .withName("Test Auto");
+                .withName("One Cone Auto");
     }
 
 }

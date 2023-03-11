@@ -15,10 +15,10 @@ import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import frc.robot.maps.RobotMap;
-import frc.robot.subsystems.Drive;
 // $Imports$
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.ArmRotate;
+import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Led;
 
@@ -45,7 +45,10 @@ public class Robot extends CommandRobot {
     private Auto auto = new Auto(drive, arm, armRotate, intake);
 
     @Autonomous(defaultAuto = true)
-    public CommandBase exampleAuto = auto.oneConeAuto();
+    public CommandBase noAuto = runOnce(() -> {
+    }).withName("No Auto");
+    @Autonomous
+    public CommandBase oneConeAuto = auto.oneConeAuto();
 
     private CommandBase driveScoreHigh = sequence(
             armRotate.moveTo(EnumLevel.HIGH_SCORE), drive.driveToNearest(), arm.moveTo(EnumLevel.HIGH_SCORE),
