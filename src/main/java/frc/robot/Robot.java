@@ -146,6 +146,8 @@ public class Robot extends CommandRobot {
                 .whileTrue(scoreMidNode);
         copilotController.povLeft()
                 .whileTrue(arm.moveTo(EnumLevel.ARM_STOWED).andThen(armRotate.moveTo(EnumLevel.ARM_STOWED)));
+        copilotController.povDown()
+                .whileTrue(arm.moveTo(EnumLevel.CUBE_PICKUP).andThen(armRotate.moveTo(EnumLevel.CUBE_PICKUP)));
 
         // Led
 
