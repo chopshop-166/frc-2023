@@ -79,7 +79,7 @@ public class Led extends SmartSubsystemBase {
     }
 
     public CommandBase resetColor() {
-        return run(() -> {
+        return runOnce(() -> {
             setColor(201, 198, 204, LedSection.All);
             Logger.getInstance().recordOutput("IndicateLEDs", "White");
 
@@ -95,9 +95,16 @@ public class Led extends SmartSubsystemBase {
     }
 
     public CommandBase setPurple() {
-        return runOnce(() -> {
+        return run(() -> {
             setColor(133, 7, 168, LedSection.Bottom);
             Logger.getInstance().recordOutput("IndicateLEDs", "Purple");
+        });
+    }
+
+    public CommandBase setGreen() {
+        return run(() -> {
+            setColor(0, 219, 80, LedSection.Bottom);
+            Logger.getInstance().recordOutput("IndicateLEDs", "Green");
         });
     }
 

@@ -132,7 +132,7 @@ public class Auto {
     }
 
     public CommandBase scoreConeSimple() {
-        return race(new FunctionalWaitCommand(() -> 5),
+        return race(new FunctionalWaitCommand(() -> 8),
                 sequence(
                         armRotate.moveTo(EnumLevel.HIGH_SCORE),
                         backUp(-1.0, 1.5),
@@ -163,7 +163,8 @@ public class Auto {
                 drive.setGyro180(),
                 scoreConeSimple(),
                 backUp(0.5, 0.5),
-                armRotate.moveTo(EnumLevel.ARM_STOWED),
+                race(new FunctionalWaitCommand(() -> 3),
+                        armRotate.moveTo(EnumLevel.ARM_STOWED)),
                 backUp(1.5, 3.5))
                 .withName("(MAIN) One Cone Mobolity");
     }
