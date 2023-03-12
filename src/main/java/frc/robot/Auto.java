@@ -146,7 +146,7 @@ public class Auto {
                 armExtend.zeroVelocityCheck(),
 
                 // armRotate.moveTo(EnumLevel.HIGH_SCORE),
-                Path.BACKED_UP.getPath(drive),
+                backUp(0.5, 0.5),
                 armRotate.moveTo(EnumLevel.HIGH_SCORE),
                 Path.UP_TO_CONE_STATION.getPath(drive),
                 armExtend.moveTo(EnumLevel.HIGH_SCORE),
