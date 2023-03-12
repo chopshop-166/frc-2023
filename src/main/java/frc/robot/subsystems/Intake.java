@@ -19,7 +19,7 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
 
     // Motor speed variables
     private final double GRAB_SPEED = 0.75;
-    private final double RELEASE_SPEED = -0.5;
+    private final double RELEASE_SPEED = -0.45;
 
     NetworkTableInstance ntinst = NetworkTableInstance.getDefault();
     DoubleSubscriber angleSub = ntinst.getDoubleTopic("Arm/Angle").subscribe(0);

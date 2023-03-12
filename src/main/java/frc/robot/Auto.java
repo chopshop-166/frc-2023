@@ -140,6 +140,29 @@ public class Auto {
 
     }
 
+    public CommandBase startGridScoreCone() {
+        return sequence(
+                // armRotate.zeroVelocityCheck(),
+                armExtend.zeroVelocityCheck(),
+
+                // armRotate.moveTo(EnumLevel.HIGH_SCORE),
+                Path.BACKED_UP.getPath(drive),
+                armRotate.moveTo(EnumLevel.HIGH_SCORE),
+                Path.UP_TO_CONE_STATION.getPath(drive),
+                armExtend.moveTo(EnumLevel.HIGH_SCORE),
+                new FunctionalWaitCommand(() -> 0.25),
+                intake.coneRelease(),
+                new FunctionalWaitCommand(() -> 0.25),
+                Path.BACKED_UP.getPath(drive),
+                armExtend.moveTo(EnumLevel.ARM_STOWED),
+                intake.coneGrab(),
+                armRotate.moveTo(EnumLevel.ARM_STOWED),
+                Path.OUT_OF_COMMUNITY.getPath(drive)
+
+        )
+                .withName("Start Grid Score Cone");
+    }
+
     public CommandBase oneConeTest() {
         return sequence(
                 armExtend.zeroVelocityCheck(),
