@@ -52,6 +52,9 @@ public class Robot extends CommandRobot {
     public CommandBase simpleAuto = auto.oneSimpleConeTest();
 
     @Autonomous
+    public CommandBase mobilityAuto = auto.axisConeMobility();
+
+    @Autonomous
     public CommandBase simpleTaxiAuto = auto.oneConeTaxiTest();
 
     @Autonomous

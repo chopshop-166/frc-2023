@@ -192,6 +192,19 @@ public class Auto {
                 .withName("(MAIN) One Cone Mobolity");
     }
 
+    public CommandBase axisConeMobility() {
+        return sequence(
+                drive.setGyro180(),
+                drive.driveAxis(0.5),
+                armRotate.moveTo(EnumLevel.HIGH_SCORE),
+                drive.driveAxis(-0.5),
+                armScore(EnumLevel.HIGH_SCORE, EnumLevel.HIGH_SCORE_ACTUAL),
+                drive.driveAxis(0.5),
+                armRotate.moveTo(EnumLevel.ARM_STOWED),
+                drive.driveAxis(3))
+                .withName("(TEST) One Cone Mobolity");
+    }
+
     public CommandBase moveDistanceTest() {
         return sequence(
                 drive.setGyro180(),

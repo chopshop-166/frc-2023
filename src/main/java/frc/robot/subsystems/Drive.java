@@ -144,6 +144,20 @@ public class Drive extends SmartSubsystemBase {
 
     }
 
+    double startAxis = 0;
+
+    public CommandBase driveAxis(double distance) {
+        return cmd().onInitialize(() -> {
+            startAxis = pose.getX();
+        }).onExecute(() -> {
+            Transform2d fb = drivePID.calculate(pose,
+                    new Pose2d(startAxis + distance, 0, rotation180));
+            move(fb.getX(), fb.getY(), fb.getRotation().getDegrees());
+        }).runsUntil(() -> Math.abs(pose.getX() - (startAxis + distance)) < 0.1).onEnd(() -> {
+            move(0, 0, 0);
+        });
+    }
+
     double targetComponent = 0;
     PIDController componentPID = new PIDController(0, 0, 0);
 
