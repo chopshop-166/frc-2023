@@ -103,7 +103,7 @@ public class Led extends SmartSubsystemBase {
 
     public CommandBase setGreen() {
         return run(() -> {
-            setColor(0, 219, 80, LedSection.Bottom);
+            setColor(0, 255, 0, LedSection.Bottom);
             Logger.getInstance().recordOutput("IndicateLEDs", "Green");
         });
     }
@@ -136,7 +136,7 @@ public class Led extends SmartSubsystemBase {
         return cmd("Make leds cold fire").onExecute(() -> {
             coldFire(heat.length, 25);
             for (int i = 1; i < heat.length; i++) {
-                Color color = new Color(heat[i] / 209.0, 244 / 255.0, 247 / 255.0);
+                Color color = new Color(heat[i] / 29.0, 42 / 255.0, 235 / 255.0);
                 ledBuffer.setLED(i, color);
                 ledBuffer.setLED(ledBuffer.getLength() - i - 1, color);
             }

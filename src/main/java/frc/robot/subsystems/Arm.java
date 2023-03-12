@@ -133,7 +133,7 @@ public class Arm extends SmartSubsystemBase {
         }
         if ((data.distanceInches > extendMap.softMaxDistance && speed > 0)
                 || (data.distanceInches < extendMap.softMinDistance && speed < 0)) {
-            return speed * 0.3;
+            return speed;
         }
         return speed;
     }

@@ -123,6 +123,7 @@ public class Robot extends CommandRobot {
         // DRIVE CONTROLLER
         // Drive
         driveController.rightBumper().onTrue(drive.setSpeedCoef(0.25, 0.35)).onFalse(drive.setSpeedCoef(1, 1));
+        driveController.leftBumper().onTrue(drive.setSpeedCoef(0.4000000001, 0.5)).onFalse(drive.setSpeedCoef(1, 1));
         driveController.back().onTrue(drive.resetGyroCommand());
 
         // Arm
@@ -139,8 +140,8 @@ public class Robot extends CommandRobot {
         copilotController.back().whileTrue(armRotate.resetZero());
 
         // Automatic
-        copilotController.rightBumper().onTrue(grabCube());
-        copilotController.leftBumper().onTrue(grabCone());
+        copilotController.rightBumper().onTrue(grabCone());
+        copilotController.leftBumper().onTrue(grabCube());
         // will need buttons for the enums
         copilotController.y().whileTrue(armRotate.moveTo(EnumLevel.HPS_PICKUP));
         copilotController.povUp()
@@ -149,8 +150,8 @@ public class Robot extends CommandRobot {
                 .whileTrue(scoreMidNode);
         copilotController.povLeft()
                 .whileTrue(arm.moveTo(EnumLevel.ARM_STOWED).andThen(armRotate.moveTo(EnumLevel.ARM_STOWED)));
-        copilotController.povDown()
-                .whileTrue(arm.moveTo(EnumLevel.CUBE_PICKUP).andThen(armRotate.moveTo(EnumLevel.CUBE_PICKUP)));
+        // copilotController.povDown()
+        // .whileTrue(arm.moveTo(EnumLevel.CUBE_PICKUP).andThen(armRotate.moveTo(EnumLevel.CUBE_PICKUP)));
 
         // Led
 

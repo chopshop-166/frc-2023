@@ -151,10 +151,12 @@ public class Drive extends SmartSubsystemBase {
             startAxis = pose.getX();
         }).onExecute(() -> {
             Transform2d fb = drivePID.calculate(pose,
-                    new Pose2d(startAxis + distance, 0, rotation180));
-            move(fb.getX(), fb.getY(), fb.getRotation().getDegrees());
-        }).runsUntil(() -> Math.abs(pose.getX() - (startAxis + distance)) < 0.1).onEnd(() -> {
+                    new Pose2d(startAxis + distance, 0, rotation0));
+            move(fb.getX(), fb.getY(), 0 * fb.getRotation().getDegrees());
+            Logger.getInstance().recordOutput("Drive Ended", false);
+        }).runsUntil(() -> Math.abs(pose.getX() - (startAxis + distance)) < 0.05).onEnd(() -> {
             move(0, 0, 0);
+            System.out.println("Drive Command Stopped");
         });
     }
 

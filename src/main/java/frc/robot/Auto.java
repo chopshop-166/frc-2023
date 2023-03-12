@@ -11,6 +11,7 @@ import com.chopshop166.chopshoplib.commands.FunctionalWaitCommand;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.ArmRotate;
@@ -140,6 +141,15 @@ public class Auto {
 
     }
 
+    public CommandBase scoreConeSimpleSlow() {
+        return race(new FunctionalWaitCommand(() -> 8),
+                sequence(
+                        armRotate.moveTo(EnumLevel.HIGH_SCORE),
+                        backUp(-1.0, 0.3),
+                        armScore(EnumLevel.HIGH_SCORE, EnumLevel.HIGH_SCORE_ACTUAL)));
+
+    }
+
     public CommandBase startGridScoreCone() {
         return sequence(
                 // armRotate.zeroVelocityCheck(),
@@ -195,13 +205,13 @@ public class Auto {
     public CommandBase axisConeMobility() {
         return sequence(
                 drive.setGyro180(),
-                drive.driveAxis(0.5),
-                armRotate.moveTo(EnumLevel.HIGH_SCORE),
-                drive.driveAxis(-0.5),
-                armScore(EnumLevel.HIGH_SCORE, EnumLevel.HIGH_SCORE_ACTUAL),
-                drive.driveAxis(0.5),
-                armRotate.moveTo(EnumLevel.ARM_STOWED),
-                drive.driveAxis(3))
+                backUp(1, 0.3),
+                scoreConeSimpleSlow(),
+                backUp(1, 0.3),
+                race(new FunctionalWaitCommand(() -> 3),
+                        armRotate.moveTo(EnumLevel.ARM_STOWED)),
+                backUp(1.5, 3.5))
+
                 .withName("(TEST) One Cone Mobolity");
     }
 
