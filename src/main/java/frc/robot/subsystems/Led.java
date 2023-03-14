@@ -25,6 +25,7 @@ public class Led extends SmartSubsystemBase {
     // Length is expensive to set, so only set it once, then just update data
     AddressableLEDBuffer ledBuffer;
     public final byte[] heat;
+    int rainbowFirstPixelHue = 0;
 
     enum LedSection {
         Top,
@@ -144,6 +145,17 @@ public class Led extends SmartSubsystemBase {
         }).runsWhenDisabled(true);
     }
 
+    private void starPower() {
+        for (var i = 0; i < ledBuffer.getLength(); i++) {
+            final var hue = (rainbowFirstPixelHue + (i * 180 / ledBuffer.getLength())) % 180;
+            ledBuffer.setHSV(i, (int) hue, 255, 128);
+
+        }
+        rainbowFirstPixelHue += 3;
+        rainbowFirstPixelHue %= 180;
+
+    }
+
     @Override
     public void reset() {
         // Nothing to reset here
@@ -164,9 +176,9 @@ public class Led extends SmartSubsystemBase {
 
         boolean seesTag = SmartDashboard.getBoolean("Saw Tag", false);
         Color ledColor = (seesTag) ? (new Color(0, 255, 0)) : (new Color(255, 0, 0));
-        if (groundSub.get()) {
-            setColor(255, 0, 0, LedSection.Top);
-        }
+        // if (groundSub.get()) {
+        // setColor(255, 0, 0, LedSection.Top);
+        // }
         ledBuffer.setLED(0, ledColor);
         led.setData(ledBuffer);
     }
