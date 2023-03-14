@@ -1,5 +1,6 @@
 package frc.robot;
 
+import static edu.wpi.first.wpilibj2.command.Commands.race;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 
@@ -7,6 +8,7 @@ import org.littletonrobotics.junction.Logger;
 
 import com.chopshop166.chopshoplib.Autonomous;
 import com.chopshop166.chopshoplib.commands.CommandRobot;
+import com.chopshop166.chopshoplib.commands.FunctionalWaitCommand;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -130,7 +132,9 @@ public class Robot extends CommandRobot {
 
         // COPILOT CONTROLLER
         // Intake
-        copilotController.a().onTrue(intake.grab().andThen(led.setGreen()));
+        copilotController.a().onTrue(intake.grab().andThen(
+                race(new FunctionalWaitCommand(() -> 2),
+                        led.setGreen())));
         copilotController.b().onTrue(intake.toggle());
         copilotController.x().whileTrue(intake.cubeRelease());
 
