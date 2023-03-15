@@ -67,7 +67,8 @@ public class DrivePID {
                 new double[] { error.getX(), error.getY(), error.getRotation().getRadians() });
 
         return (Math.abs(error.getX()) < deadband) && (Math.abs(error.getY()) < deadband)
-                && Math.abs(error.getRotation().getRadians()) < deadband;
+                && anglePid.atSetpoint(deadband, currentPose.getRotation().getDegrees(),
+                        targetPose.getRotation().getDegrees());
     }
 
     /**

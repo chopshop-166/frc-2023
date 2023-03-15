@@ -1,13 +1,14 @@
 package frc.robot;
 
+import static edu.wpi.first.wpilibj2.command.Commands.race;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 
 import org.littletonrobotics.junction.Logger;
 
 import com.chopshop166.chopshoplib.Autonomous;
-import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.commands.CommandRobot;
+import com.chopshop166.chopshoplib.commands.FunctionalWaitCommand;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -16,10 +17,10 @@ import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import frc.robot.maps.RobotMap;
-import frc.robot.subsystems.Drive;
 // $Imports$
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.ArmRotate;
+import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Led;
 
@@ -46,25 +47,46 @@ public class Robot extends CommandRobot {
     private Auto auto = new Auto(drive, arm, armRotate, intake);
 
     @Autonomous(defaultAuto = true)
-    public CommandBase exampleAuto = auto.oneConeAuto();
+    public CommandBase noAuto = runOnce(() -> {
+    }).withName("No Auto");
 
-    private CommandBase scoreHigh = sequence(
+    @Autonomous
+    public CommandBase simpleAuto = auto.oneSimpleConeTest();
+
+    @Autonomous
+    public CommandBase mobilityAuto = auto.axisConeMobility();
+
+    @Autonomous
+    public CommandBase simpleTaxiAuto = auto.oneConeTaxiTest();
+
+    @Autonomous
+    public CommandBase simpleTaxiWireAuto = auto.oneConeTaxiWire();
+
+    private CommandBase driveScoreHigh = sequence(
             armRotate.moveTo(EnumLevel.HIGH_SCORE), drive.driveToNearest(), arm.moveTo(EnumLevel.HIGH_SCORE),
             intake.coneRelease());
 
-    private CommandBase scoreHighNode = sequence(
+    private CommandBase driveScoreHighNode = sequence(
             armRotate.moveTo(EnumLevel.HIGH_SCORE), drive.driveToNearest(),
             new ConditionalCommand(arm.moveTo(EnumLevel.HIGH_SCORE), runOnce(() -> {
             }), () -> {
                 return gamePieceSub.get() == "Cone";
             }));
 
-    public CommandBase scoreMidNode = sequence(
+    public CommandBase driveScoreMidNode = sequence(
             armRotate.moveTo(EnumLevel.MEDIUM_SCORE), drive.driveToNearest(),
             new ConditionalCommand(arm.moveTo(EnumLevel.MEDIUM_SCORE), runOnce(() -> {
             }), () -> {
                 return gamePieceSub.get() == "Cone";
             }));
+
+    public CommandBase scoreMidNode = sequence(
+            armRotate.moveTo(EnumLevel.MEDIUM_SCORE), (arm.moveTo(EnumLevel.MEDIUM_SCORE)),
+            (armRotate.moveTo(EnumLevel.MEDIUM_SCORE_ACTUAL)), (arm.moveTo(EnumLevel.ARM_STOWED)));
+
+    public CommandBase scoreHighNode = sequence(
+            armRotate.moveTo(EnumLevel.HIGH_SCORE), (arm.moveTo(EnumLevel.HIGH_SCORE)),
+            (armRotate.moveTo(EnumLevel.HIGH_SCORE_ACTUAL)), (arm.moveTo(EnumLevel.ARM_STOWED)));
 
     public CommandBase grabCube() {
         return sequence(runOnce(() -> {
@@ -103,17 +125,16 @@ public class Robot extends CommandRobot {
         // DRIVE CONTROLLER
         // Drive
         driveController.rightBumper().onTrue(drive.setSpeedCoef(0.25, 0.35)).onFalse(drive.setSpeedCoef(1, 1));
-        driveController.x().whileTrue(scoreHigh);
-        driveController.back().onTrue(runOnce(() -> {
-            drive.resetGyro();
-            drive.resetTag();
-        }));
+        driveController.leftBumper().onTrue(drive.setSpeedCoef(0.4000000001, 0.5)).onFalse(drive.setSpeedCoef(1, 1));
+        driveController.back().onTrue(drive.resetGyroCommand());
 
         // Arm
 
         // COPILOT CONTROLLER
         // Intake
-        copilotController.a().onTrue(intake.grab());
+        copilotController.a().onTrue(intake.grab().andThen(
+                race(new FunctionalWaitCommand(() -> 2),
+                        led.setGreen())));
         copilotController.b().onTrue(intake.toggle());
         copilotController.x().whileTrue(intake.cubeRelease());
 
@@ -123,8 +144,8 @@ public class Robot extends CommandRobot {
         copilotController.back().whileTrue(armRotate.resetZero());
 
         // Automatic
-        copilotController.rightBumper().onTrue(grabCube());
-        copilotController.leftBumper().onTrue(grabCone());
+        copilotController.rightBumper().onTrue(grabCone());
+        copilotController.leftBumper().onTrue(grabCube());
         // will need buttons for the enums
         copilotController.y().whileTrue(armRotate.moveTo(EnumLevel.HPS_PICKUP));
         copilotController.povUp()
@@ -133,7 +154,11 @@ public class Robot extends CommandRobot {
                 .whileTrue(scoreMidNode);
         copilotController.povLeft()
                 .whileTrue(arm.moveTo(EnumLevel.ARM_STOWED).andThen(armRotate.moveTo(EnumLevel.ARM_STOWED)));
+        // copilotController.povDown()
+        // .whileTrue(arm.moveTo(EnumLevel.CUBE_PICKUP).andThen(armRotate.moveTo(EnumLevel.CUBE_PICKUP)));
+
         // Led
+
     }
 
     @Override
@@ -148,7 +173,7 @@ public class Robot extends CommandRobot {
         // led.setDefaultCommand(led.colorAlliance());
         arm.setDefaultCommand(arm.manual(copilotController::getTriggers));
         armRotate.setDefaultCommand(armRotate.move(() -> -copilotController.getLeftY()));
-        led.setDefaultCommand(led.Fire());
+        led.setDefaultCommand(led.ColdFire());
 
     }
 }

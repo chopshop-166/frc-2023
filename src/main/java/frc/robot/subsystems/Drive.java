@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import java.lang.annotation.Target;
 import java.util.function.DoubleSupplier;
 
 import org.littletonrobotics.junction.Logger;
@@ -14,7 +15,8 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
@@ -35,11 +37,41 @@ public class Drive extends SmartSubsystemBase {
     double speedCoef = 1;
     double rotationCoef = 1;
 
+    boolean isBlue = false;
+
+    private Pose2d invertSide(Pose2d bluePose) {
+        if (isBlue) {
+            return bluePose;
+        }
+        return new Pose2d(
+                Field.LENGTH - bluePose.getX(),
+                bluePose.getY(),
+                Rotation2d.fromDegrees(bluePose.getRotation().getDegrees() + 180));
+    }
+
+    private static final double blueX = 1.8;
+    private static final Rotation2d rotation0 = Rotation2d.fromDegrees(0);
+    private static final Rotation2d rotation180 = Rotation2d.fromDegrees(180);
+
     public enum GridPosition {
 
-        BLUE_CONE_4(new Pose2d(1.536, 1.807, Rotation2d.fromDegrees(162.722)));
-        // BLUE_CONE_3(new Pose2d(1.708, 3.369, Rotation2d.fromDegrees(188.314))),
-        // BLUE_CONE_2(new Pose2d(1.605, 3.905, Rotation2d.fromDegrees(166.823)));
+        CONE_5(
+                new Pose2d(blueX, 5.42, rotation0)),
+
+        CONE_4(
+                new Pose2d(blueX, 2.95, rotation0)),
+
+        CONE_3(
+                new Pose2d(blueX, 3.56, rotation0)),
+
+        CONE_2(
+                new Pose2d(blueX, 2.36, rotation0)),
+
+        CONE_1(
+                new Pose2d(blueX, 1.82, rotation0)),
+
+        CONE_0(
+                new Pose2d(blueX, 0.6, rotation0));
 
         private Pose2d pose;
 
@@ -55,7 +87,6 @@ public class Drive extends SmartSubsystemBase {
     private Vision vision;
     private Pose2d pose = new Pose2d();
     private final DrivePID drivePID;
-    private Field2d field = new Field2d();
 
     // Used for automatic alignment while driving
     private final RotationPIDController rotationPID;
@@ -96,6 +127,62 @@ public class Drive extends SmartSubsystemBase {
             rotationCoef = rotationfac;
 
         });
+    }
+
+    Pose2d initialPose;
+
+    public CommandBase driveDistance(double distance, double speed, Rotation2d angle) {
+        return cmd().onInitialize(() -> {
+            initialPose = pose;
+        }).onExecute(
+                () -> {
+                    move(angle.getSin() * speed, angle.getCos() * speed, 0);
+                }).runsUntil(() -> pose.getTranslation().getDistance(initialPose.getTranslation()) > distance)
+                .onEnd(() -> {
+                    move(0, 0, 0);
+                });
+
+    }
+
+    double startAxis = 0;
+
+    public CommandBase driveAxis(double distance) {
+        return cmd().onInitialize(() -> {
+            startAxis = pose.getX();
+        }).onExecute(() -> {
+            Transform2d fb = drivePID.calculate(pose,
+                    new Pose2d(startAxis + distance, 0, rotation0));
+            move(fb.getX(), fb.getY(), 0 * fb.getRotation().getDegrees());
+            Logger.getInstance().recordOutput("Drive Ended", false);
+        }).runsUntil(() -> Math.abs(pose.getX() - (startAxis + distance)) < 0.05).onEnd(() -> {
+            move(0, 0, 0);
+            System.out.println("Drive Command Stopped");
+        });
+    }
+
+    double targetComponent = 0;
+    PIDController componentPID = new PIDController(0, 0, 0);
+
+    public CommandBase driveX(double distanceMeters) {
+        return cmd().onInitialize(() -> {
+            componentPID = drivePID.copyTranslationPidController();
+            componentPID.setTolerance(0.02);
+            targetComponent = pose.getY() + distanceMeters;
+            Logger.getInstance().recordOutput("targetX", targetComponent);
+        }).onExecute(() -> {
+            move(componentPID.calculate(pose.getY(), targetComponent), 0, 0);
+            Logger.getInstance().recordOutput("poseX", pose.getY());
+        }).runsUntil(componentPID::atSetpoint).onEnd(() -> move(0, 0, 0));
+    }
+
+    public CommandBase driveY(double distanceMeters) {
+        return cmd().onInitialize(() -> {
+            componentPID = drivePID.copyTranslationPidController();
+            componentPID.setTolerance(0.02);
+            targetComponent = pose.getX() + distanceMeters;
+        }).onExecute(() -> {
+            move(0, componentPID.calculate(pose.getX(), targetComponent), 0);
+        }).runsUntil(componentPID::atSetpoint).onEnd(() -> move(0, 0, 0));
     }
 
     private void deadbandMove(final double xSpeed, final double ySpeed,
@@ -152,19 +239,30 @@ public class Drive extends SmartSubsystemBase {
         io.rearRight.desiredState = moduleStates[3];
     }
 
+    public CommandBase driveRaw(DoubleSupplier xSpeed, DoubleSupplier ySpeed, DoubleSupplier rotation) {
+        return run(() -> move(xSpeed.getAsDouble(), ySpeed.getAsDouble(), rotation.getAsDouble()));
+    }
+
     public CommandBase drive(DoubleSupplier xSpeed, DoubleSupplier ySpeed, DoubleSupplier rotation) {
         return run(() -> deadbandMove(xSpeed.getAsDouble(), ySpeed.getAsDouble(), rotation.getAsDouble()));
     }
 
     public CommandBase driveTo(Pose2d targetPose, double tolerance) {
         return cmd().onExecute(() -> {
-            Transform2d fb = drivePID.calculate(pose, targetPose);
-            move(fb.getX(), fb.getY(), fb.getRotation().getDegrees());
+            Pose2d flipped = invertSide(targetPose);
+            Transform2d fb = drivePID.calculate(pose, flipped);
 
-            double debugPose[] = new double[] { targetPose.getX(), targetPose.getY(),
-                    targetPose.getRotation().getDegrees() };
+            if (isBlue) {
+                move(fb.getX(), fb.getY(), fb.getRotation().getDegrees());
+            } else {
+
+                move(-fb.getX(), -fb.getY(), -fb.getRotation().getDegrees());
+            }
+
+            double debugPose[] = new double[] { flipped.getX(), flipped.getY(),
+                    flipped.getRotation().getDegrees() };
             SmartDashboard.putNumberArray("Target Pose", debugPose);
-        }).runsUntil(() -> drivePID.isFinished(pose, targetPose, tolerance)).onEnd(this::safeState);
+        }).runsUntil(() -> drivePID.isFinished(pose, invertSide(targetPose), tolerance)).onEnd(this::safeState);
     }
 
     // Use DrivePID to drive to a target pose on the field
@@ -185,22 +283,38 @@ public class Drive extends SmartSubsystemBase {
     public CommandBase driveToNearest() {
         return new ProxyCommand(
                 () -> {
-                    Pose2d closestPose = GridPosition.values()[0].getPose();
+                    Pose2d closestPose = invertSide(GridPosition.values()[0].getPose());
                     for (GridPosition position : GridPosition.values()) {
-                        if (position.getPose().getTranslation().getDistance(pose.getTranslation()) < closestPose
-                                .getTranslation().getDistance(pose.getTranslation())) {
+                        // Only flip for the distance check, isn't needed for the actual driveTo since
+                        // that also flips it
+                        if (invertSide(position.getPose()).getTranslation()
+                                .getDistance(pose.getTranslation()) < invertSide(closestPose)
+                                        .getTranslation().getDistance(pose.getTranslation())) {
                             closestPose = position.getPose();
                         }
                     }
 
-                    return driveTo(closestPose);
+                    return driveTo(closestPose, 0.05);
                 });
 
+    }
+
+    public CommandBase resetGyroCommand() {
+        return cmd().onInitialize(() -> {
+            resetGyro();
+            resetTag();
+        }).runsWhenDisabled(true);
     }
 
     public void resetGyro() {
         map.gyro().reset();
         latestAngle = 0;
+    }
+
+    public CommandBase setGyro180() {
+        return runOnce(() -> {
+            map.gyro().setAngle(180);
+        });
     }
 
     public CommandBase setPose(Pose2d pose) {
@@ -219,13 +333,12 @@ public class Drive extends SmartSubsystemBase {
 
     @Override
     public void periodic() {
+        isBlue = DriverStation.getAlliance() == Alliance.Blue;
         // This method will be called once per scheduler run
         // Use this for any background processing
         map.updateInputs(io);
         Logger.getInstance().processInputs(getName(), io);
-
-        pose = vision.update();
-        field.setRobotPose(pose);
-        SmartDashboard.putData(field);
+        pose = vision.update(isBlue);
+        Logger.getInstance().recordOutput("robotPose", pose);
     }
 }

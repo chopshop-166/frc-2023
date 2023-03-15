@@ -7,6 +7,7 @@ import org.littletonrobotics.junction.Logger;
 import com.chopshop166.chopshoplib.PersistenceCheck;
 import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
 
+import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -29,6 +30,7 @@ public class Arm extends SmartSubsystemBase {
     NetworkTableInstance inst = NetworkTableInstance.getDefault();
     DoublePublisher lengthPub = inst.getDoubleTopic("Arm/Length").publish();
     DoubleSubscriber angleSub = inst.getDoubleTopic("Arm/Angle").subscribe(0);
+    BooleanPublisher intakeBelowGroundPublish = inst.getBooleanTopic("Arm/Below Ground").publish();
 
     public Arm(ArmMap extendMap) {
         this.extendMap = extendMap;
@@ -115,6 +117,7 @@ public class Arm extends SmartSubsystemBase {
         Logger.getInstance().processInputs(getName(), data);
         lengthPub.set(data.distanceInches);
         armAngle = angleSub.get();
+        intakeBelowGroundPublish.set(intakeBelowGround());
     }
 
     // Adds limits to arm extension speed
@@ -130,7 +133,7 @@ public class Arm extends SmartSubsystemBase {
         }
         if ((data.distanceInches > extendMap.softMaxDistance && speed > 0)
                 || (data.distanceInches < extendMap.softMinDistance && speed < 0)) {
-            return speed * 0.3;
+            return speed;
         }
         return speed;
     }
