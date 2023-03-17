@@ -8,6 +8,8 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -31,6 +33,7 @@ public class Vision {
     PoseFilter filter = new PoseFilter(0.1);
     Pose2d prevPose = new Pose2d();
     public boolean sawTag = false;
+    SwerveDrivePoseEstimator estimator;
 
     public Vision(
             String cameraName, AprilTagFieldLayout aprilTags,
@@ -49,6 +52,10 @@ public class Vision {
 
         odometry = new SwerveDriveOdometry(kinematics, driveMap.gyro().getRotation2d(),
                 getModulePositions());
+
+        estimator = new SwerveDrivePoseEstimator(kinematics, driveMap.gyro(), getModulePositions(), setPose(prevPose),
+                VecBuilder.fill(0.02, 0.02, 0.01), // estimator
+                VecBuilder.fill(0.1, 0.1, 0.01)); // Vision (x, y, rotation) std-devs
 
     }
 
