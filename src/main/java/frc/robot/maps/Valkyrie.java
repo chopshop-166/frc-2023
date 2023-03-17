@@ -12,7 +12,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import frc.robot.maps.subsystems.ArmMap;
+import frc.robot.maps.subsystems.ArmExtendMap;
 import frc.robot.maps.subsystems.ArmRotateMap;
 import frc.robot.maps.subsystems.LedMap;
 
@@ -33,12 +33,12 @@ public class Valkyrie extends RobotMap {
     }
 
     @Override
-    public ArmMap getArmMap() {
+    public ArmExtendMap getArmMap() {
         CSSparkMax motor = new CSSparkMax(9, MotorType.kBrushless);
         motor.getMotorController().setIdleMode(IdleMode.kBrake);
         PIDController pidController = new PIDController(0, 0, 0);
         pidController.setTolerance(4);
-        return new ArmMap(motor, 400, 20, 400, 20, pidController, 46.654, 42.3);
+        return new ArmExtendMap(motor, 400, 20, 400, 20, pidController, 46.654, 42.3);
     }
 
     @Override

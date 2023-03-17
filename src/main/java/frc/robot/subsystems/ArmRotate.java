@@ -13,17 +13,15 @@ import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.EnumLevel;
+import frc.robot.ArmPresets;
 import frc.robot.maps.subsystems.ArmRotateMap;
 import frc.robot.maps.subsystems.ArmRotateMap.Data;
 
 public class ArmRotate extends SmartSubsystemBase {
 
     private ArmRotateMap map;
-    final double MOVE_SPEED = 0.5;
     final double RAISE_SPEED = 0.5;
     final double LOWER_SPEED = 0.4;
-    final double COMPARE_ANGLE = 5;
     final double SLOW_DOWN = 0.2;
     final double PIVOT_HEIGHT = 46.654;
     private final double INTAKE_DEPTH_LIMIT = 0;
@@ -97,7 +95,7 @@ public class ArmRotate extends SmartSubsystemBase {
         });
     }
 
-    public CommandBase moveTo(EnumLevel level) {
+    public CommandBase moveTo(ArmPresets level) {
         return moveToAngle(level.getAngle());
     }
 

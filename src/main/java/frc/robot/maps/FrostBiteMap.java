@@ -27,7 +27,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import frc.robot.maps.subsystems.ArmMap;
+import frc.robot.maps.subsystems.ArmExtendMap;
 import frc.robot.maps.subsystems.ArmRotateMap;
 import frc.robot.maps.subsystems.IntakeData;
 import frc.robot.maps.subsystems.LedMap;
@@ -104,7 +104,7 @@ public class FrostBiteMap extends RobotMap {
 
         final double maxRotationRadianPerSecond = Math.PI;
 
-        final DrivePID pid = new DrivePID(1.5, 0, 0, 0.01, 0, 0.001);
+        final DrivePID pid = new DrivePID(1.5, 0.001, 0, 0.01, 0.00001, 0);
 
         final Transform3d cameraPosition = new Transform3d(
                 // These probably need to be refined
@@ -163,7 +163,7 @@ public class FrostBiteMap extends RobotMap {
     }
 
     @Override
-    public ArmMap getArmMap() {
+    public ArmExtendMap getArmMap() {
         CSSparkMax motor = new CSSparkMax(11, MotorType.kBrushless);
         motor.getMotorController().setInverted(true);
         motor.getMotorController().setIdleMode(IdleMode.kBrake);
@@ -173,7 +173,7 @@ public class FrostBiteMap extends RobotMap {
         motor.getEncoder().setVelocityScaleFactor((1.273 * Math.PI) / 10);
         PIDController pid = new PIDController(0.06, 0.05, 0.0);
         pid.setTolerance(0.5);
-        return new ArmMap(motor, 18.5, 3, 19.8, 0.3, pid, 46.654, 42.3);
+        return new ArmExtendMap(motor, 18.5, 3, 19.8, 0.3, pid, 46.654, 42.3);
     }
 
     @Override

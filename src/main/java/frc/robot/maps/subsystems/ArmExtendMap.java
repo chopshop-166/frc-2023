@@ -7,7 +7,7 @@ import com.chopshop166.chopshoplib.motors.SmartMotorController;
 
 import edu.wpi.first.math.controller.PIDController;
 
-public class ArmMap {
+public class ArmExtendMap {
     public PIDController pid;
     public SmartMotorController extendMotor;
     public double softMaxDistance;
@@ -17,7 +17,7 @@ public class ArmMap {
     public double armStartLength;
     public double pivotHeight;
 
-    public ArmMap() {
+    public ArmExtendMap() {
         this.pid = new PIDController(0, 0, 0);
         this.extendMotor = new SmartMotorController();
         this.softMaxDistance = 20;
@@ -25,7 +25,8 @@ public class ArmMap {
         this.pivotHeight = 46.654;
     }
 
-    public ArmMap(SmartMotorController motor, double softMaxDistance, double softMinDistance, double hardMaxDistance,
+    public ArmExtendMap(SmartMotorController motor, double softMaxDistance, double softMinDistance,
+            double hardMaxDistance,
             double hardMinDistance, PIDController pid, double armPivotHeight, double armStartLength) {
         this.extendMotor = motor;
         this.softMaxDistance = softMaxDistance;
