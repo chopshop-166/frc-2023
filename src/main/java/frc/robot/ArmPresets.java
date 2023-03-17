@@ -13,7 +13,7 @@ public enum ArmPresets {
     // Human Player Station = HPS
     HPS_PICKUP(0, 76),
 
-    ARM_STOWED(1, 4),
+    ARM_STOWED(2, 4),
 
     CUBE_PICKUP(1, 4);
 

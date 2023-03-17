@@ -36,7 +36,7 @@ public class Robot extends CommandRobot {
     StringSubscriber gamePieceSub = ntinst.getStringTopic("Game Piece").subscribe("Cone");
 
     // $Subsystems$
-    private ArmExtend arm = new ArmExtend(map.getArmMap());
+    private ArmExtend armExtend = new ArmExtend(map.getArmMap());
 
     Intake intake = new Intake(map.getIntakeMap());
 
@@ -44,7 +44,7 @@ public class Robot extends CommandRobot {
     private Led led = new Led(map.getLedMap());
     private ArmRotate armRotate = new ArmRotate(map.getArmRotateMap());
 
-    private Auto auto = new Auto(drive, arm, armRotate, intake);
+    private Auto auto = new Auto(drive, armExtend, armRotate, intake);
 
     @Autonomous(defaultAuto = true)
     public CommandBase noAuto = runOnce(() -> {
@@ -63,30 +63,48 @@ public class Robot extends CommandRobot {
     public CommandBase simpleTaxiWireAuto = auto.oneConeTaxiWire();
 
     private CommandBase driveScoreHigh = sequence(
-            armRotate.moveTo(ArmPresets.HIGH_SCORE), drive.driveToNearest(), arm.moveTo(ArmPresets.HIGH_SCORE),
+            armRotate.moveTo(ArmPresets.HIGH_SCORE), drive.driveToNearest(), armExtend.moveTo(ArmPresets.HIGH_SCORE),
             intake.coneRelease());
 
     private CommandBase driveScoreHighNode = sequence(
             armRotate.moveTo(ArmPresets.HIGH_SCORE), drive.driveToNearest(),
-            new ConditionalCommand(arm.moveTo(ArmPresets.HIGH_SCORE), runOnce(() -> {
-            }), () -> {
-                return gamePieceSub.get() == "Cone";
-            }));
+            new ConditionalCommand(
+                    armExtend.moveTo(ArmPresets.HIGH_SCORE).andThen(armRotate.moveTo(ArmPresets.HIGH_SCORE_ACTUAL))
+                            .andThen(armExtend.moveTo(ArmPresets.ARM_STOWED)),
+                    runOnce(() -> {
+                    }), () -> {
+                        return gamePieceSub.get() == "Cone";
+                    }));
 
     public CommandBase driveScoreMidNode = sequence(
             armRotate.moveTo(ArmPresets.MEDIUM_SCORE), drive.driveToNearest(),
-            new ConditionalCommand(arm.moveTo(ArmPresets.MEDIUM_SCORE), runOnce(() -> {
-            }), () -> {
-                return gamePieceSub.get() == "Cone";
-            }));
+            new ConditionalCommand(
+                    armExtend.moveTo(ArmPresets.MEDIUM_SCORE).andThen(armRotate.moveTo(ArmPresets.MEDIUM_SCORE_ACTUAL))
+                            .andThen(armExtend.moveTo(ArmPresets.ARM_STOWED)),
+                    runOnce(() -> {
+                    }), () -> {
+                        return gamePieceSub.get() == "Cone";
+                    }));
 
     public CommandBase scoreMidNode = sequence(
-            armRotate.moveTo(ArmPresets.MEDIUM_SCORE), (arm.moveTo(ArmPresets.MEDIUM_SCORE)),
-            (armRotate.moveTo(ArmPresets.MEDIUM_SCORE_ACTUAL)), (arm.moveTo(ArmPresets.ARM_STOWED)));
+            armRotate.moveTo(ArmPresets.MEDIUM_SCORE),
+            new ConditionalCommand(
+                    armExtend.moveTo(ArmPresets.MEDIUM_SCORE).andThen(armRotate.moveTo(ArmPresets.MEDIUM_SCORE_ACTUAL))
+                            .andThen(armExtend.moveTo(ArmPresets.ARM_STOWED)),
+                    runOnce(() -> {
+                    }), () -> {
+                        return gamePieceSub.get() == "Cone";
+                    }));
 
     public CommandBase scoreHighNode = sequence(
-            armRotate.moveTo(ArmPresets.HIGH_SCORE), (arm.moveTo(ArmPresets.HIGH_SCORE)),
-            (armRotate.moveTo(ArmPresets.HIGH_SCORE_ACTUAL)), (arm.moveTo(ArmPresets.ARM_STOWED)));
+            armRotate.moveTo(ArmPresets.HIGH_SCORE),
+            new ConditionalCommand(
+                    armExtend.moveTo(ArmPresets.HIGH_SCORE).andThen(armRotate.moveTo(ArmPresets.HIGH_SCORE_ACTUAL))
+                            .andThen(armExtend.moveTo(ArmPresets.ARM_STOWED)),
+                    runOnce(() -> {
+                    }), () -> {
+                        return gamePieceSub.get() == "Cone";
+                    }));
 
     public CommandBase grabCube() {
         return sequence(runOnce(() -> {
@@ -140,7 +158,7 @@ public class Robot extends CommandRobot {
 
         // Arm
         // extend and rotate are in default commands
-        copilotController.start().onTrue(arm.zeroVelocityCheck());
+        copilotController.start().onTrue(armExtend.zeroVelocityCheck());
         copilotController.back().whileTrue(armRotate.resetZero());
 
         // Automatic
@@ -153,7 +171,8 @@ public class Robot extends CommandRobot {
         copilotController.povRight()
                 .whileTrue(scoreMidNode);
         copilotController.povLeft()
-                .whileTrue(arm.moveTo(ArmPresets.ARM_STOWED).andThen(armRotate.moveTo(ArmPresets.ARM_STOWED)));
+                .whileTrue(armExtend.moveTo(ArmPresets.ARM_STOWED).andThen(armExtend.zeroVelocityCheck())
+                        .andThen(armRotate.moveTo(ArmPresets.ARM_STOWED)));
         // copilotController.povDown()
         // .whileTrue(arm.moveTo(EnumLevel.CUBE_PICKUP).andThen(armRotate.moveTo(EnumLevel.CUBE_PICKUP)));
 
@@ -171,7 +190,7 @@ public class Robot extends CommandRobot {
                 drive.drive(driveController::getLeftX, driveController::getLeftY, driveController::getRightX));
 
         // led.setDefaultCommand(led.colorAlliance());
-        arm.setDefaultCommand(arm.manual(copilotController::getTriggers));
+        armExtend.setDefaultCommand(armExtend.manual(copilotController::getTriggers));
         armRotate.setDefaultCommand(armRotate.move(() -> -copilotController.getLeftY()));
         led.setDefaultCommand(led.ColdFire());
 

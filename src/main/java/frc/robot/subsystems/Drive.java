@@ -303,6 +303,8 @@ public class Drive extends SmartSubsystemBase {
         return cmd().onInitialize(() -> {
             resetGyro();
             resetTag();
+        }).runsUntil(() -> {
+            return true;
         }).runsWhenDisabled(true);
     }
 
