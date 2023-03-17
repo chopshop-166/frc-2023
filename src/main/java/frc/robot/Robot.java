@@ -134,7 +134,7 @@ public class Robot extends CommandRobot {
         // Intake
         copilotController.a().onTrue(intake.grab().andThen(
                 race(new FunctionalWaitCommand(() -> 2),
-                        led.setGreen())));
+                        led.GrabbedPiece())));
         copilotController.b().onTrue(intake.toggle());
         copilotController.x().whileTrue(intake.cubeRelease());
 

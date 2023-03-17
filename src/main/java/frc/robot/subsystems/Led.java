@@ -25,11 +25,20 @@ public class Led extends SmartSubsystemBase {
     // Length is expensive to set, so only set it once, then just update data
     AddressableLEDBuffer ledBuffer;
     public final byte[] heat;
+    public LedBehavior[] ledBehaviors = new LedBehavior[2];
 
     enum LedSection {
         Top,
         Bottom,
         All
+    }
+
+    enum LedBehavior {
+        Yellow,
+        Purple,
+        ColdFire,
+        ColorAlliance,
+        GrabedPiece
     }
 
     public Led(LedMap map) {
@@ -63,6 +72,41 @@ public class Led extends SmartSubsystemBase {
             ledBuffer.setRGB(ledBuffer.getLength() - i - 1, r, g, b);
         }
         led.setData(ledBuffer);
+    }
+
+    public CommandBase defualtCommand() {
+        return run(() -> {
+            switch (ledBehaviors[0]) {
+                case Yellow:
+                    setColor(222, 218, 11, LedSection.Bottom);
+                    Logger.getInstance().recordOutput("IndicateLEDs", "Yellow");
+                    break;
+                case Purple:
+                    setColor(133, 7, 168, LedSection.Bottom);
+                    Logger.getInstance().recordOutput("IndicateLEDs", "Purple");
+                case ColdFire:
+                    coldFire(heat.length, 25);
+                    for (int i = 1; i < heat.length; i++) {
+                        Color color = new Color(heat[i] / 29.0, 42 / 255.0, 235 / 255.0);
+                        ledBuffer.setLED(i, color);
+                        ledBuffer.setLED(ledBuffer.getLength() - i - 1, color);
+                    }
+                    led.setData(ledBuffer);
+                case ColorAlliance:
+                    Alliance alliance = DriverStation.getAlliance();
+                    if (alliance == Alliance.Blue) {
+                        setColor(2, 15, 250, LedSection.Top);
+                        Logger.getInstance().recordOutput("IndicateLEDs", "Blue");
+                    } else {
+                        setColor(250, 2, 2, LedSection.Top);
+                        Logger.getInstance().recordOutput("IndicateLEDs", "Red");
+                    }
+                case GrabedPiece:
+                    setColor(0, 255, 0, LedSection.Bottom);
+                    Logger.getInstance().recordOutput("IndicateLEDs", "Green");
+
+            }
+        });
     }
 
     public CommandBase colorAlliance() {
@@ -101,7 +145,7 @@ public class Led extends SmartSubsystemBase {
         });
     }
 
-    public CommandBase setGreen() {
+    public CommandBase GrabbedPiece() {
         return run(() -> {
             setColor(0, 255, 0, LedSection.Bottom);
             Logger.getInstance().recordOutput("IndicateLEDs", "Green");
