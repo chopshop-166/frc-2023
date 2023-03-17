@@ -338,7 +338,7 @@ public class Drive extends SmartSubsystemBase {
         // Use this for any background processing
         map.updateInputs(io);
         Logger.getInstance().processInputs(getName(), io);
-
+        pose = vision.update(isBlue);
         Logger.getInstance().recordOutput("robotPose", pose);
     }
 }
