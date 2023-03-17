@@ -11,7 +11,7 @@ import com.chopshop166.chopshoplib.commands.FunctionalWaitCommand;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.ArmExtend;
 import frc.robot.subsystems.ArmRotate;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
@@ -19,12 +19,12 @@ import frc.robot.subsystems.Intake;
 public class Auto {
     // Declare references to subsystems
     Drive drive;
-    Arm armExtend;
+    ArmExtend armExtend;
     ArmRotate armRotate;
     Intake intake;
 
     // Pass in all subsystems
-    public Auto(Drive drive, Arm armExtend, ArmRotate armRotate, Intake intake) {
+    public Auto(Drive drive, ArmExtend armExtend, ArmRotate armRotate, Intake intake) {
         this.drive = drive;
         this.armExtend = armExtend;
         this.armRotate = armRotate;
@@ -117,13 +117,13 @@ public class Auto {
         ;
     }
 
-    private CommandBase armScore(EnumLevel aboveLevel, EnumLevel scoreLevel) {
+    private CommandBase armScore(ArmPresets aboveLevel, ArmPresets scoreLevel) {
         return sequence(
                 armRotate.moveTo(aboveLevel), armExtend.moveTo(aboveLevel),
-                armRotate.moveTo(scoreLevel), armExtend.moveTo(EnumLevel.ARM_STOWED));
+                armRotate.moveTo(scoreLevel), armExtend.moveTo(ArmPresets.ARM_STOWED));
     }
 
-    public CommandBase scoreCone(EnumLevel aboveLevel, EnumLevel scoreLevel) {
+    public CommandBase scoreCone(ArmPresets aboveLevel, ArmPresets scoreLevel) {
         return sequence(
                 armRotate.moveTo(aboveLevel),
                 race(drive.driveToNearest(), new FunctionalWaitCommand(() -> 2)),
@@ -133,18 +133,18 @@ public class Auto {
     public CommandBase scoreConeSimple() {
         return race(new FunctionalWaitCommand(() -> 8),
                 sequence(
-                        armRotate.moveTo(EnumLevel.HIGH_SCORE),
+                        armRotate.moveTo(ArmPresets.HIGH_SCORE),
                         backUp(-1.0, 1.5),
-                        armScore(EnumLevel.HIGH_SCORE, EnumLevel.HIGH_SCORE_ACTUAL)));
+                        armScore(ArmPresets.HIGH_SCORE, ArmPresets.HIGH_SCORE_ACTUAL)));
 
     }
 
     public CommandBase scoreConeSimpleSlow() {
         return race(new FunctionalWaitCommand(() -> 8),
                 sequence(
-                        armRotate.moveTo(EnumLevel.HIGH_SCORE),
+                        armRotate.moveTo(ArmPresets.HIGH_SCORE),
                         backUp(-1.0, 0.3),
-                        armScore(EnumLevel.HIGH_SCORE, EnumLevel.HIGH_SCORE_ACTUAL)));
+                        armScore(ArmPresets.HIGH_SCORE, ArmPresets.HIGH_SCORE_ACTUAL)));
 
     }
 
@@ -155,16 +155,16 @@ public class Auto {
 
                 // armRotate.moveTo(EnumLevel.HIGH_SCORE),
                 backUp(0.5, 0.5),
-                armRotate.moveTo(EnumLevel.HIGH_SCORE),
+                armRotate.moveTo(ArmPresets.HIGH_SCORE),
                 Path.UP_TO_CONE_STATION.getPath(drive),
-                armExtend.moveTo(EnumLevel.HIGH_SCORE),
+                armExtend.moveTo(ArmPresets.HIGH_SCORE),
                 new FunctionalWaitCommand(() -> 0.25),
                 intake.coneRelease(),
                 new FunctionalWaitCommand(() -> 0.25),
                 Path.BACKED_UP.getPath(drive),
-                armExtend.moveTo(EnumLevel.ARM_STOWED),
+                armExtend.moveTo(ArmPresets.ARM_STOWED),
                 intake.coneGrab(),
-                armRotate.moveTo(EnumLevel.ARM_STOWED),
+                armRotate.moveTo(ArmPresets.ARM_STOWED),
                 Path.OUT_OF_COMMUNITY.getPath(drive)
 
         )
@@ -174,9 +174,9 @@ public class Auto {
     public CommandBase oneConeTest() {
         return sequence(
                 armExtend.zeroVelocityCheck(),
-                scoreCone(EnumLevel.HIGH_SCORE, EnumLevel.HIGH_SCORE_ACTUAL),
+                scoreCone(ArmPresets.HIGH_SCORE, ArmPresets.HIGH_SCORE_ACTUAL),
                 backUp(1.2, 0.5),
-                armRotate.moveTo(EnumLevel.ARM_STOWED))
+                armRotate.moveTo(ArmPresets.ARM_STOWED))
                 .withName("One Cone Test");
     }
 
@@ -185,7 +185,7 @@ public class Auto {
                 armExtend.zeroVelocityCheck(),
                 scoreConeSimple(),
                 backUp(0.5, 0.5),
-                armRotate.moveTo(EnumLevel.ARM_STOWED))
+                armRotate.moveTo(ArmPresets.ARM_STOWED))
                 .withName("Simple One Cone Test");
     }
 
@@ -195,7 +195,7 @@ public class Auto {
                 scoreConeSimple(),
                 backUp(0.5, 0.5),
                 race(new FunctionalWaitCommand(() -> 3),
-                        armRotate.moveTo(EnumLevel.ARM_STOWED)),
+                        armRotate.moveTo(ArmPresets.ARM_STOWED)),
                 backUp(1.5, 3.5))
                 .withName("(MAIN) One Cone Mobolity");
     }
@@ -207,7 +207,7 @@ public class Auto {
                 scoreConeSimpleSlow(),
                 backUp(1, 0.3),
                 race(new FunctionalWaitCommand(() -> 3),
-                        armRotate.moveTo(EnumLevel.ARM_STOWED)),
+                        armRotate.moveTo(ArmPresets.ARM_STOWED)),
                 backUp(1.5, 3.5))
 
                 .withName("(TEST) One Cone Mobolity");
@@ -218,7 +218,7 @@ public class Auto {
                 drive.setGyro180(),
                 scoreConeSimple(),
                 backUp(0.5, 0.5),
-                armRotate.moveTo(EnumLevel.ARM_STOWED),
+                armRotate.moveTo(ArmPresets.ARM_STOWED),
                 drive.driveDistance(3, 1, Rotation2d.fromDegrees(2)))
                 .withName("Move Distance Auto");
     }
@@ -228,7 +228,7 @@ public class Auto {
                 drive.setGyro180(),
                 scoreConeSimple(),
                 backUp(0.5, 0.5),
-                armRotate.moveTo(EnumLevel.ARM_STOWED),
+                armRotate.moveTo(ArmPresets.ARM_STOWED),
                 moveLeft(0.5, 0.25),
                 backUp(1.2, 4))
                 .withName("Wire Guard One Cone Mobolity");
@@ -239,16 +239,16 @@ public class Auto {
                 // armRotate.zeroVelocityCheck(),
                 armExtend.zeroVelocityCheck(),
 
-                armRotate.moveTo(EnumLevel.HIGH_SCORE),
+                armRotate.moveTo(ArmPresets.HIGH_SCORE),
                 Path.UP_TO_CONE_STATION.getPath(drive),
-                armExtend.moveTo(EnumLevel.HIGH_SCORE),
+                armExtend.moveTo(ArmPresets.HIGH_SCORE),
                 new FunctionalWaitCommand(() -> 0.25),
                 intake.coneRelease(),
                 new FunctionalWaitCommand(() -> 0.25),
                 Path.BACKED_UP.getPath(drive),
-                armExtend.moveTo(EnumLevel.ARM_STOWED),
+                armExtend.moveTo(ArmPresets.ARM_STOWED),
                 intake.coneGrab(),
-                armRotate.moveTo(EnumLevel.ARM_STOWED),
+                armRotate.moveTo(ArmPresets.ARM_STOWED),
                 Path.OUT_OF_COMMUNITY.getPath(drive)
 
         )

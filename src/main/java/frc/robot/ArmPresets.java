@@ -1,6 +1,6 @@
 package frc.robot;
 
-public enum EnumLevel {
+public enum ArmPresets {
     // Need to measure values
     MEDIUM_SCORE(3.8, 78),
 
@@ -20,7 +20,7 @@ public enum EnumLevel {
     private double length;
     private double angle;
 
-    private EnumLevel(double length, double angle) {
+    private ArmPresets(double length, double angle) {
         this.length = length;
         this.angle = angle;
     }

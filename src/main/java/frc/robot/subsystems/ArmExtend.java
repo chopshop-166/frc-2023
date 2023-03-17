@@ -12,14 +12,14 @@ import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.maps.subsystems.ArmMap;
-import frc.robot.maps.subsystems.ArmMap.Data;
-import frc.robot.EnumLevel;
+import frc.robot.maps.subsystems.ArmExtendMap;
+import frc.robot.maps.subsystems.ArmExtendMap.Data;
+import frc.robot.ArmPresets;
 
-public class Arm extends SmartSubsystemBase {
+public class ArmExtend extends SmartSubsystemBase {
 
     public Data data = new Data();
-    public ArmMap extendMap;
+    public ArmExtendMap extendMap;
     public final double SPEED = 0.4;
     private final double RETRACT_SPEED = -0.1;
     private final double INTAKE_DEPTH_LIMIT = 0;
@@ -31,7 +31,7 @@ public class Arm extends SmartSubsystemBase {
     DoubleSubscriber angleSub = inst.getDoubleTopic("Arm/Angle").subscribe(0);
     BooleanPublisher intakeBelowGroundPublish = inst.getBooleanTopic("Arm/Below Ground").publish();
 
-    public Arm(ArmMap extendMap) {
+    public ArmExtend(ArmExtendMap extendMap) {
         this.extendMap = extendMap;
     }
 
@@ -66,7 +66,7 @@ public class Arm extends SmartSubsystemBase {
         });
     }
 
-    public CommandBase moveTo(EnumLevel level) {
+    public CommandBase moveTo(ArmPresets level) {
         return moveToDistancePID(level.getLength());
     }
 
