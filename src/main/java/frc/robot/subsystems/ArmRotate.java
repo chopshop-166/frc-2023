@@ -20,10 +20,8 @@ import frc.robot.maps.subsystems.ArmRotateMap.Data;
 public class ArmRotate extends SmartSubsystemBase {
 
     private ArmRotateMap map;
-    final double MOVE_SPEED = 0.5;
     final double RAISE_SPEED = 0.5;
     final double LOWER_SPEED = 0.4;
-    final double COMPARE_ANGLE = 5;
     final double SLOW_DOWN = 0.2;
     final double PIVOT_HEIGHT = 46.654;
     private final double INTAKE_DEPTH_LIMIT = 0;
