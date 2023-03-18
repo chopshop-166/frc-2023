@@ -116,7 +116,7 @@ public class Vision {
                 getModulePositions());
         Logger.getInstance().recordOutput("kalman pose", estimator.getEstimatedPosition());
         Logger.getInstance().recordOutput("odometryPose", odometry.getPoseMeters());
-        return prevPose;
+        return estimator.getEstimatedPosition();
     }
 
     // Get every swerve module state
