@@ -81,12 +81,12 @@ public class Robot extends CommandRobot {
             }));
 
     public CommandBase scoreMidNode = sequence(
-            armRotate.moveTo(EnumLevel.MEDIUM_SCORE), (arm.moveTo(EnumLevel.MEDIUM_SCORE)),
-            (armRotate.moveTo(EnumLevel.MEDIUM_SCORE_ACTUAL)), (arm.moveTo(EnumLevel.ARM_STOWED)));
+            armRotate.moveTo(EnumLevel.MEDIUM_SCORE), arm.moveTo(EnumLevel.MEDIUM_SCORE),
+            armRotate.moveTo(EnumLevel.MEDIUM_SCORE_ACTUAL), led.colorAlliance(), arm.moveTo(EnumLevel.ARM_STOWED));
 
     public CommandBase scoreHighNode = sequence(
-            armRotate.moveTo(EnumLevel.HIGH_SCORE), (arm.moveTo(EnumLevel.HIGH_SCORE)),
-            (armRotate.moveTo(EnumLevel.HIGH_SCORE_ACTUAL)), (arm.moveTo(EnumLevel.ARM_STOWED)));
+            armRotate.moveTo(EnumLevel.HIGH_SCORE), arm.moveTo(EnumLevel.HIGH_SCORE),
+            armRotate.moveTo(EnumLevel.HIGH_SCORE_ACTUAL), led.colorAlliance(), arm.moveTo(EnumLevel.ARM_STOWED));
 
     public CommandBase grabCube() {
         return sequence(runOnce(() -> {
@@ -132,9 +132,7 @@ public class Robot extends CommandRobot {
 
         // COPILOT CONTROLLER
         // Intake
-        copilotController.a().onTrue(intake.grab().andThen(
-                race(new FunctionalWaitCommand(() -> 2),
-                        led.setGreen())));
+        copilotController.a().onTrue(led.intakeSpinning().andThen(intake.grab(), led.GrabbedPiece()));
         copilotController.b().onTrue(intake.toggle());
         copilotController.x().whileTrue(intake.cubeRelease());
 
@@ -173,7 +171,5 @@ public class Robot extends CommandRobot {
         // led.setDefaultCommand(led.colorAlliance());
         arm.setDefaultCommand(arm.manual(copilotController::getTriggers));
         armRotate.setDefaultCommand(armRotate.move(() -> -copilotController.getLeftY()));
-        led.setDefaultCommand(led.ColdFire());
-
     }
 }
