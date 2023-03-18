@@ -2,11 +2,7 @@ package frc.robot;
 
 import static edu.wpi.first.wpilibj2.command.Commands.race;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
-import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
-
 import java.util.Arrays;
-
-import org.littletonrobotics.junction.inputs.LoggableInputs;
 
 import com.chopshop166.chopshoplib.commands.FunctionalWaitCommand;
 

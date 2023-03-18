@@ -368,5 +368,7 @@ public class Drive extends SmartSubsystemBase {
         Logger.getInstance().processInputs(getName(), io);
         pose = vision.update(isBlue);
         Logger.getInstance().recordOutput("robotPose", pose);
+        Logger.getInstance().recordOutput("RobotPitch", pigeonGyro.getPitch());
+
     }
 }

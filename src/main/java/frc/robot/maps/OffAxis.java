@@ -7,10 +7,9 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import com.chopshop166.chopshoplib.drive.SDSSwerveModule;
 import com.chopshop166.chopshoplib.maps.RobotMapFor;
 import com.chopshop166.chopshoplib.motors.CSSparkMax;
-import com.chopshop166.chopshoplib.sensors.gyro.PigeonGyro;
+import com.chopshop166.chopshoplib.sensors.gyro.PigeonGyro2;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
-import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
@@ -32,7 +31,7 @@ public class OffAxis extends RobotMap {
         // Value taken from CAD as offset from center of module base pulley to center
         // of the robot
         final double MODULE_OFFSET_XY = 0.381;
-        final PigeonGyro pigeonGyro = new PigeonGyro(new PigeonIMU(5));
+        final PigeonGyro2 pigeonGyro2 = new PigeonGyro2(3);
 
         final CSSparkMax frontLeftSteer = new CSSparkMax(2, MotorType.kBrushless);
         final CSSparkMax frontRightSteer = new CSSparkMax(4, MotorType.kBrushless);
@@ -93,7 +92,7 @@ public class OffAxis extends RobotMap {
 
         return new SwerveDriveMap(frontLeft, frontRight, rearLeft, rearRight,
                 maxDriveSpeedMetersPerSecond,
-                maxRotationRadianPerSecond, pigeonGyro, pid, cameraPosition, "eyes");
+                maxRotationRadianPerSecond, pigeonGyro2, pid, cameraPosition, "eyes");
     }
 
     @Override
