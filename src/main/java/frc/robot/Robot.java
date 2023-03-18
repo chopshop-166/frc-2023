@@ -120,7 +120,7 @@ public class Robot extends CommandRobot {
     }
 
     public CommandBase stowArm = sequence(
-            intake.closeIntake(),
+            intake.coneGrab(),
             new ConditionalCommand(
                     (armExtend.moveTo(ArmPresets.ARM_STOWED)), runOnce(() -> {
                     }), () -> {

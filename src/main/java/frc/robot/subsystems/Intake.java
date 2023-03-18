@@ -80,12 +80,6 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
         }));
     }
 
-    public CommandBase closeIntake() {
-        return runOnce(() -> {
-            getData().solenoidSetPoint = Value.kForward;
-        });
-    }
-
     // Releases game piece Cube
     public CommandBase cubeRelease() {
         return runEnd(() -> {
