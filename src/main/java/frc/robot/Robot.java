@@ -86,7 +86,7 @@ public class Robot extends CommandRobot {
 
     public CommandBase scoreHighNode = sequence(
             armRotate.moveTo(EnumLevel.HIGH_SCORE), arm.moveTo(EnumLevel.HIGH_SCORE),
-            armRotate.moveTo(EnumLevel.HIGH_SCORE_ACTUAL), arm.moveTo(EnumLevel.ARM_STOWED), led.colorAlliance());
+            armRotate.moveTo(EnumLevel.HIGH_SCORE_ACTUAL), led.colorAlliance(), arm.moveTo(EnumLevel.ARM_STOWED));
 
     public CommandBase grabCube() {
         return sequence(runOnce(() -> {
