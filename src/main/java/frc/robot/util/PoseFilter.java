@@ -30,7 +30,7 @@ public class PoseFilter {
                 xFilter.calculate(input.getX()),
                 yFilter.calculate(input.getY()),
                 // Add back the 180 degrees
-                Rotation2d.fromDegrees(input.getRotation().getDegrees() + 180)
+                Rotation2d.fromDegrees(input.getRotation().getDegrees())
 
         );
     }
