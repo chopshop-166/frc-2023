@@ -268,13 +268,13 @@ public class Drive extends SmartSubsystemBase {
         }).runsUntil(() -> drivePID.isFinished(pose, invertSide(targetPose), tolerance)).onEnd(this::safeState);
     }
 
-    public CommandBase balancePID() {
-        double currentGryoPitch = pigeonGyro.getPitch();
-        PersistenceCheck balancedCheck = new PersistenceCheck(15, () -> Math.abs(currentGryoPitch) < 5);
+    public CommandBase balance() {
+        PersistenceCheck balancedCheck = new PersistenceCheck(15, () -> Math.abs(pigeonGyro.getPitch()) < 5);
         return cmd().onExecute(() -> {
-            if (currentGryoPitch > 5) {
+
+            if (pigeonGyro.getPitch() > 5) {
                 move(0.0, 0.2, 0.0);
-            } else if (currentGryoPitch < -5) {
+            } else if (pigeonGyro.getPitch() < -5) {
                 move(0.0, -0.2, 0.0);
 
             } else {
@@ -336,7 +336,7 @@ public class Drive extends SmartSubsystemBase {
     public CommandBase driveUntilTilted() {
         return cmd().onExecute(() -> {
             move(0.0, 0.3, 0);
-        }).runsUntil(() -> Math.abs(pigeonGyro.getPitch()) > 0);
+        }).runsUntil(() -> Math.abs(pigeonGyro.getPitch()) > 5);
     }
 
     public CommandBase setGyro180() {

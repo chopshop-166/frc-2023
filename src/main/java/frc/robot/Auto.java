@@ -311,7 +311,7 @@ public class Auto {
         return sequence(
                 armRotate.moveTo(ArmPresets.ARM_STOWED),
                 drive.driveUntilTilted(),
-                drive.balancePID()
+                drive.balance()
 
         );
     }
