@@ -1,5 +1,6 @@
 package frc.robot;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.littletonrobotics.junction.Logger;
@@ -71,37 +72,42 @@ public class Vision {
         // Sees an apriltag
 
         if (result.hasTargets()) {
-            PhotonTrackedTarget target = result.getBestTarget();
-            Transform3d cameraToTarget = target.getBestCameraToTarget();
-            int tagId = target.getFiducialId();
-            SmartDashboard.putNumber("Tag ID", tagId);
-            Optional<Pose3d> opt = aprilTags.getTagPose(tagId);
 
-            if (opt.isPresent() && target.getPoseAmbiguity() < 0.3) {
-                // Reverse the pose to determine the position on the field
-                Pose2d pose = opt.get().plus(cameraToTarget.inverse())
-                        .plus(cameraToRobot.inverse()).toPose2d();
+            List<PhotonTrackedTarget> allTargets = result.getTargets();
 
-                double tagDistance = cameraToTarget.getTranslation().getDistance(new Translation3d());
+            // PhotonTrackedTarget target = result.getBestTarget();
+            for (var target : allTargets) {
+                Transform3d cameraToTarget = target.getBestCameraToTarget();
+                int tagId = target.getFiducialId();
+                SmartDashboard.putNumber("Tag ID", tagId);
+                Optional<Pose3d> opt = aprilTags.getTagPose(tagId);
 
-                boolean poseInField = (pose.getX() > 0 && pose.getX() < Field.LENGTH)
-                        && (pose.getY() > 0 && pose.getY() < Field.WIDTH);
+                if (opt.isPresent() && target.getPoseAmbiguity() < 0.3) {
+                    // Reverse the pose to determine the position on the field
+                    Pose2d pose = opt.get().plus(cameraToTarget.inverse())
+                            .plus(cameraToRobot.inverse()).toPose2d();
 
-                double distance = 0;
-                if (sawTag) {
-                    distance = prevPose.getTranslation().getDistance(pose.getTranslation());
-                } else {
-                    driveMap.gyro().setAngle(pose.getRotation().getDegrees() + (isBlue ? 0 : 180));
-                    estimator.resetPosition(driveMap.gyro().getRotation2d(), getModulePositions(), pose);
-                    setPose(pose);
+                    double tagDistance = cameraToTarget.getTranslation().getDistance(new Translation3d());
+
+                    boolean poseInField = (pose.getX() > 0 && pose.getX() < Field.LENGTH)
+                            && (pose.getY() > 0 && pose.getY() < Field.WIDTH);
+
+                    double distance = 0;
+                    if (sawTag) {
+                        distance = prevPose.getTranslation().getDistance(pose.getTranslation());
+                    } else {
+                        driveMap.gyro().setAngle(pose.getRotation().getDegrees() + (isBlue ? 0 : 180));
+                        estimator.resetPosition(driveMap.gyro().getRotation2d(), getModulePositions(), pose);
+                        setPose(pose);
+                    }
+
+                    // Logger.getInstance().recordOutput("visionPose", pose);
+                    if (distance < 2 && tagDistance < 2 && poseInField) {
+                        estimator.addVisionMeasurement(pose, result.getTimestampSeconds());
+                    }
+                    sawTag = true;
+
                 }
-
-                Logger.getInstance().recordOutput("visionPose", pose);
-                if (distance < 2 && tagDistance < 2 && poseInField) {
-                    estimator.addVisionMeasurement(pose, result.getTimestampSeconds());
-                }
-                sawTag = true;
-
             }
         }
 
