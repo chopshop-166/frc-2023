@@ -18,6 +18,7 @@ import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import frc.robot.maps.RobotMap;
+import frc.robot.maps.subsystems.ArmExtendMap.Data;
 // $Imports$
 import frc.robot.subsystems.ArmExtend;
 import frc.robot.subsystems.ArmRotate;
@@ -119,6 +120,14 @@ public class Robot extends CommandRobot {
         }), led.setYellow());
     }
 
+    public CommandBase stowArm = sequence(
+            new ConditionalCommand(
+                    (armExtend.moveTo(ArmPresets.ARM_STOWED)), runOnce(() -> {
+                    }), () -> {
+                        return armExtend.data.distanceInches > 1;
+                    }),
+            (armExtend.zeroVelocityCheck()), (armRotate.moveTo(ArmPresets.ARM_STOWED)));
+
     @Override
     public void robotInit() {
         super.robotInit();
@@ -171,6 +180,7 @@ public class Robot extends CommandRobot {
                 .whileTrue(scoreHighNode);
         copilotController.povRight()
                 .whileTrue(scoreMidNode);
+        // stow arm when it is extended past 2 inches
         copilotController.povLeft()
                 .whileTrue(armExtend.moveTo(ArmPresets.ARM_STOWED).andThen(armExtend.zeroVelocityCheck())
                         .andThen(armRotate.moveTo(ArmPresets.ARM_STOWED)));
