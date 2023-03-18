@@ -44,7 +44,7 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
         });
     }
 
-    // Grabs game piece Cone
+    // Releases game piece Cone
     public CommandBase coneRelease() {
         return runOnce(() -> {
             getData().solenoidSetPoint = Value.kReverse;
@@ -78,6 +78,12 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
         return spinIn().andThen(new FunctionalWaitCommand(() -> 0.75), runOnce(() -> {
             getData().motorSetPoint = 0.05;
         }));
+    }
+
+    public CommandBase closeIntake() {
+        return runOnce(() -> {
+            getData().solenoidSetPoint = Value.kForward;
+        });
     }
 
     // Releases game piece Cube

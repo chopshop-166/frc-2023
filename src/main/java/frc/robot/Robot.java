@@ -18,7 +18,6 @@ import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import frc.robot.maps.RobotMap;
-import frc.robot.maps.subsystems.ArmExtendMap.Data;
 // $Imports$
 import frc.robot.subsystems.ArmExtend;
 import frc.robot.subsystems.ArmRotate;
@@ -121,12 +120,19 @@ public class Robot extends CommandRobot {
     }
 
     public CommandBase stowArm = sequence(
+            intake.closeIntake(),
             new ConditionalCommand(
                     (armExtend.moveTo(ArmPresets.ARM_STOWED)), runOnce(() -> {
                     }), () -> {
                         return armExtend.data.distanceInches > 1;
                     }),
             (armExtend.zeroVelocityCheck()), (armRotate.moveTo(ArmPresets.ARM_STOWED)));
+
+    public CommandBase pickUpGamePiece = sequence(
+            new ConditionalCommand(
+                    armRotate.moveTo(ArmPresets.CONE_PICKUP), armRotate.moveTo(ArmPresets.CUBE_PICKUP), () -> {
+                        return gamePieceSub.get() == "Cone";
+                    }));
 
     @Override
     public void robotInit() {
@@ -182,8 +188,8 @@ public class Robot extends CommandRobot {
                 .whileTrue(scoreMidNode);
         // stow arm when it is extended past 2 inches
         copilotController.povLeft()
-                .whileTrue(armExtend.moveTo(ArmPresets.ARM_STOWED).andThen(armExtend.zeroVelocityCheck())
-                        .andThen(armRotate.moveTo(ArmPresets.ARM_STOWED)));
+                .whileTrue(stowArm);
+
         // copilotController.povDown()
         // .whileTrue(arm.moveTo(EnumLevel.CUBE_PICKUP).andThen(armRotate.moveTo(EnumLevel.CUBE_PICKUP)));
 
