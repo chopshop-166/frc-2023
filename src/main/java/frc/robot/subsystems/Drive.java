@@ -5,8 +5,11 @@ import java.util.function.DoubleSupplier;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.chopshop166.chopshoplib.PersistenceCheck;
 import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
 import com.chopshop166.chopshoplib.motors.Modifier;
+import com.chopshop166.chopshoplib.sensors.gyro.PigeonGyro;
+import com.ctre.phoenix.sensors.Pigeon2;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -21,6 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import frc.robot.Field;
+import frc.robot.Robot;
 import frc.robot.Vision;
 import frc.robot.maps.subsystems.SwerveDriveMap;
 import frc.robot.maps.subsystems.SwerveDriveMap.Data;
@@ -30,6 +34,7 @@ import frc.robot.util.RotationPIDController;
 public class Drive extends SmartSubsystemBase {
 
     SwerveDriveMap map;
+    Pigeon2 pigeonGyro;
     Data io;
     private final SwerveDriveKinematics kinematics;
     double maxDriveSpeedMetersPerSecond;
@@ -99,6 +104,7 @@ public class Drive extends SmartSubsystemBase {
         this.map = map;
         this.map.gyro().reset();
         io = new Data();
+        pigeonGyro = this.map.gyro().getRaw();
         kinematics = new SwerveDriveKinematics(map.frontLeft().getLocation(), map.frontRight().getLocation(),
                 map.rearLeft().getLocation(), map.rearRight().getLocation());
         maxDriveSpeedMetersPerSecond = map.maxDriveSpeedMetersPerSecond();
@@ -263,6 +269,20 @@ public class Drive extends SmartSubsystemBase {
                     flipped.getRotation().getDegrees() };
             SmartDashboard.putNumberArray("Target Pose", debugPose);
         }).runsUntil(() -> drivePID.isFinished(pose, invertSide(targetPose), tolerance)).onEnd(this::safeState);
+    }
+
+    public CommandBase balancePID() {
+        double currentGryoPitch = pigeonGyro.getPitch();
+        PersistenceCheck balancedCheck = new PersistenceCheck(15, () -> Math.abs(currentGryoPitch) < 5);
+        return cmd().onExecute(() -> {
+            if (currentGryoPitch > 5) {
+                move(0.0, 0.2, 0.0);
+            } else if (currentGryoPitch < -5) {
+                move(0.0, -0.2, 0.0);
+            } else {
+                safeState();
+            }
+        }).runsUntil(balancedCheck);
     }
 
     // Use DrivePID to drive to a target pose on the field
