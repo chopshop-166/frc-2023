@@ -28,9 +28,20 @@ public class Led extends SmartSubsystemBase {
     public LedBehavior[] ledBehaviors = new LedBehavior[2];
 
     enum LedSection {
-        Top,
-        Bottom,
-        All
+        Top(1),
+        Bottom(0),
+        All(2);
+
+        private int section;
+
+        private LedSection(int section) {
+
+            this.section = section;
+        }
+
+        public int getSection() {
+            return section;
+        }
     }
 
     enum LedBehavior {
@@ -38,7 +49,7 @@ public class Led extends SmartSubsystemBase {
         Purple,
         ColdFire,
         ColorAlliance,
-        GrabedPiece
+        GrabbedPiece;
     }
 
     public Led(LedMap map) {
@@ -76,37 +87,42 @@ public class Led extends SmartSubsystemBase {
 
     public CommandBase defualtCommand() {
         return run(() -> {
-            switch (ledBehaviors[0]) {
-                case Yellow:
-                    setColor(222, 218, 11, LedSection.Bottom);
-                    Logger.getInstance().recordOutput("IndicateLEDs", "Yellow");
-                    break;
-                case Purple:
-                    setColor(133, 7, 168, LedSection.Bottom);
-                    Logger.getInstance().recordOutput("IndicateLEDs", "Purple");
-                case ColdFire:
-                    coldFire(heat.length, 25);
-                    for (int i = 1; i < heat.length; i++) {
-                        Color color = new Color(heat[i] / 29.0, 42 / 255.0, 235 / 255.0);
-                        ledBuffer.setLED(i, color);
-                        ledBuffer.setLED(ledBuffer.getLength() - i - 1, color);
-                    }
-                    led.setData(ledBuffer);
-                case ColorAlliance:
-                    Alliance alliance = DriverStation.getAlliance();
-                    if (alliance == Alliance.Blue) {
-                        setColor(2, 15, 250, LedSection.Top);
-                        Logger.getInstance().recordOutput("IndicateLEDs", "Blue");
-                    } else {
-                        setColor(250, 2, 2, LedSection.Top);
-                        Logger.getInstance().recordOutput("IndicateLEDs", "Red");
-                    }
-                case GrabedPiece:
-                    setColor(0, 255, 0, LedSection.Bottom);
-                    Logger.getInstance().recordOutput("IndicateLEDs", "Green");
 
-            }
         });
+    }
+
+    public void handleLeds(LedSection section) {
+
+        switch (ledBehaviors[section.getSection()]) {
+            case Yellow:
+                setColor(222, 218, 11, section);
+                Logger.getInstance().recordOutput("IndicateLEDs", "Yellow");
+                break;
+            case Purple:
+                setColor(133, 7, 168, section);
+                Logger.getInstance().recordOutput("IndicateLEDs", "Purple");
+            case ColdFire:
+                coldFire(heat.length, 25);
+                for (int i = 1; i < heat.length; i++) {
+                    Color color = new Color(heat[i] / 29.0, 42 / 255.0, 235 / 255.0);
+                    ledBuffer.setLED(i, color);
+                    ledBuffer.setLED(ledBuffer.getLength() - i - 1, color);
+                }
+                led.setData(ledBuffer);
+            case ColorAlliance:
+                Alliance alliance = DriverStation.getAlliance();
+                if (alliance == Alliance.Blue) {
+                    setColor(2, 15, 250, section);
+                    Logger.getInstance().recordOutput("IndicateLEDs", "Blue");
+                } else {
+                    setColor(250, 2, 2, section);
+                    Logger.getInstance().recordOutput("IndicateLEDs", "Red");
+                }
+            case GrabbedPiece:
+                setColor(0, 255, 0, section);
+                Logger.getInstance().recordOutput("IndicateLEDs", "Green");
+
+        }
     }
 
     public CommandBase colorAlliance() {
