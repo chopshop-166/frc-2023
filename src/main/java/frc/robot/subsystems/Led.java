@@ -5,7 +5,6 @@ import org.littletonrobotics.junction.Logger;
 import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
 
 import edu.wpi.first.networktables.BooleanSubscriber;
-import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
@@ -25,7 +24,7 @@ public class Led extends SmartSubsystemBase {
     // Length is expensive to set, so only set it once, then just update data
     AddressableLEDBuffer ledBuffer;
     public final byte[] heat;
-    public LedBehavior[] ledBehaviors = new LedBehavior[2];
+    public LedBehavior[] ledBehaviors = { LedBehavior.ColdFire, LedBehavior.ColdFire };
 
     enum LedSection {
         Top(1),
@@ -126,15 +125,8 @@ public class Led extends SmartSubsystemBase {
     }
 
     public CommandBase colorAlliance() {
-        return cmd("Set to Alliance Color").onExecute(() -> {
-            Alliance alliance = DriverStation.getAlliance();
-            if (alliance == Alliance.Blue) {
-                setColor(2, 15, 250, LedSection.Top);
-                Logger.getInstance().recordOutput("IndicateLEDs", "Blue");
-            } else {
-                setColor(250, 2, 2, LedSection.Top);
-                Logger.getInstance().recordOutput("IndicateLEDs", "Red");
-            }
+        return cmd("Set to Alliance Color").onInitialize(() -> {
+            ledBehaviors[LedSection.Top.getSection()] = LedBehavior.ColorAlliance;
         }).runsWhenDisabled(true);
     }
 
@@ -147,24 +139,20 @@ public class Led extends SmartSubsystemBase {
     }
 
     public CommandBase setYellow() {
-        return run(() -> {
-            setColor(222, 218, 11, LedSection.Bottom);
-            Logger.getInstance().recordOutput("IndicateLEDs", "Yellow");
-
+        return runOnce(() -> {
+            ledBehaviors[LedSection.Top.getSection()] = LedBehavior.Yellow;
         });
     }
 
     public CommandBase setPurple() {
-        return run(() -> {
-            setColor(133, 7, 168, LedSection.Bottom);
-            Logger.getInstance().recordOutput("IndicateLEDs", "Purple");
+        return runOnce(() -> {
+            ledBehaviors[LedSection.Top.getSection()] = LedBehavior.Purple;
         });
     }
 
     public CommandBase GrabbedPiece() {
-        return run(() -> {
-            setColor(0, 255, 0, LedSection.Bottom);
-            Logger.getInstance().recordOutput("IndicateLEDs", "Green");
+        return runOnce(() -> {
+            ledBehaviors[LedSection.Bottom.getSection()] = LedBehavior.GrabbedPiece;
         });
     }
 
@@ -193,15 +181,10 @@ public class Led extends SmartSubsystemBase {
     }
 
     public CommandBase ColdFire() {
-        return cmd("Make leds cold fire").onExecute(() -> {
-            coldFire(heat.length, 25);
-            for (int i = 1; i < heat.length; i++) {
-                Color color = new Color(heat[i] / 29.0, 42 / 255.0, 235 / 255.0);
-                ledBuffer.setLED(i, color);
-                ledBuffer.setLED(ledBuffer.getLength() - i - 1, color);
-            }
-            led.setData(ledBuffer);
+        return cmd("Make leds cold fire").onInitialize(() -> {
+            ledBehaviors[LedSection.Bottom.getSection()] = LedBehavior.ColdFire;
         }).runsWhenDisabled(true);
+
     }
 
     @Override
