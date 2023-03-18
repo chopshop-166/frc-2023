@@ -23,7 +23,6 @@ public class ArmExtend extends SmartSubsystemBase {
     public final double SPEED = 0.4;
     private final double RETRACT_SPEED = -0.1;
     private final double INTAKE_DEPTH_LIMIT = 0;
-    private final double EXTEND_SPEED = 0.3;
     private double armAngle;
 
     NetworkTableInstance inst = NetworkTableInstance.getDefault();
