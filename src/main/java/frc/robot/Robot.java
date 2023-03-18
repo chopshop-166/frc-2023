@@ -119,6 +119,21 @@ public class Robot extends CommandRobot {
         }), led.setYellow());
     }
 
+    public CommandBase stowArm = sequence(
+            intake.coneGrab(),
+            new ConditionalCommand(
+                    (armExtend.moveTo(ArmPresets.ARM_STOWED)), runOnce(() -> {
+                    }), () -> {
+                        return armExtend.data.distanceInches > 1;
+                    }),
+            (armExtend.zeroVelocityCheck()), (armRotate.moveTo(ArmPresets.ARM_STOWED)));
+
+    public CommandBase pickUpGamePiece = sequence(
+            new ConditionalCommand(
+                    armRotate.moveTo(ArmPresets.CONE_PICKUP), armRotate.moveTo(ArmPresets.CUBE_PICKUP), () -> {
+                        return gamePieceSub.get() == "Cone";
+                    }));
+
     @Override
     public void robotInit() {
         super.robotInit();
@@ -171,9 +186,10 @@ public class Robot extends CommandRobot {
                 .whileTrue(scoreHighNode);
         copilotController.povRight()
                 .whileTrue(scoreMidNode);
+        // stow arm when it is extended past 2 inches
         copilotController.povLeft()
-                .whileTrue(armExtend.moveTo(ArmPresets.ARM_STOWED).andThen(armExtend.zeroVelocityCheck())
-                        .andThen(armRotate.moveTo(ArmPresets.ARM_STOWED)));
+                .whileTrue(stowArm);
+
         // copilotController.povDown()
         // .whileTrue(arm.moveTo(EnumLevel.CUBE_PICKUP).andThen(armRotate.moveTo(EnumLevel.CUBE_PICKUP)));
 

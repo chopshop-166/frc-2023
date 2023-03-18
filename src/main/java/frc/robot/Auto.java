@@ -51,6 +51,12 @@ public class Auto {
 
         ),
 
+        READY_FOR_PICKUP(0.2,
+                new Pose2d()),
+
+        ON_CHARGE_STATION(0.2,
+                new Pose2d()),
+
         CONE_5(0.05,
                 new Pose2d(blueX, 5.27, rotation0)),
 
@@ -170,6 +176,105 @@ public class Auto {
         )
                 .withName("Start Grid Score Cone");
     }
+
+    // For position next to barrier - blue side
+    // Score cone and pickup a cube
+    public CommandBase scoreConePickupCube() {
+        return sequence(
+                // armRotate.zeroVelocityCheck(),
+                armExtend.zeroVelocityCheck(),
+
+                backUp(0.5, 0.5),
+                armRotate.moveTo(ArmPresets.HIGH_SCORE),
+                Path.UP_TO_CONE_STATION.getPath(drive),
+                armExtend.moveTo(ArmPresets.HIGH_SCORE),
+                new FunctionalWaitCommand(() -> 0.25),
+                intake.coneRelease(),
+                new FunctionalWaitCommand(() -> 0.25),
+                Path.BACKED_UP.getPath(drive),
+                armExtend.moveTo(ArmPresets.ARM_STOWED),
+                intake.coneGrab(),
+                armRotate.moveTo(ArmPresets.ARM_STOWED),
+                Path.OUT_OF_COMMUNITY.getPath(drive),
+                // rotate the robot here (180 degrees I would assume)
+                // need to get values for \/
+                Path.READY_FOR_PICKUP.getPath(drive),
+                armRotate.moveTo(ArmPresets.CUBE_PICKUP),
+                intake.grab(),
+                armExtend.moveTo(ArmPresets.CUBE_PICKUP)
+
+        )
+                .withName("Score Cone Pickup Cube");
+    }
+
+    // Score cone and back up onto charge station (from mid position) and then
+    // balance
+    public CommandBase scoreConeBalance() {
+        return sequence(
+                // armRotate.zeroVelocityCheck(),
+                armExtend.zeroVelocityCheck(),
+
+                backUp(0.5, 0.5),
+                armRotate.moveTo(ArmPresets.HIGH_SCORE),
+                Path.UP_TO_CONE_STATION.getPath(drive),
+                armExtend.moveTo(ArmPresets.HIGH_SCORE),
+                new FunctionalWaitCommand(() -> 0.25),
+                intake.coneRelease(),
+                new FunctionalWaitCommand(() -> 0.25),
+                Path.BACKED_UP.getPath(drive),
+                armExtend.moveTo(ArmPresets.ARM_STOWED),
+                intake.coneGrab(),
+                armRotate.moveTo(ArmPresets.ARM_STOWED),
+                Path.ON_CHARGE_STATION.getPath(drive)
+        // will need values for this ^
+        // add whatever balance command that we do
+
+        )
+                .withName("Score Cone Balance");
+    }
+
+    // For position next to barrier - blue side
+    // Score cone, pickup and score a cube
+    public CommandBase scoreConePickupScoreCube() {
+        return sequence(
+                // armRotate.zeroVelocityCheck(),
+                armExtend.zeroVelocityCheck(),
+
+                backUp(0.5, 0.5),
+                armRotate.moveTo(ArmPresets.HIGH_SCORE),
+                Path.UP_TO_CONE_STATION.getPath(drive),
+                armExtend.moveTo(ArmPresets.HIGH_SCORE),
+                new FunctionalWaitCommand(() -> 0.25),
+                intake.coneRelease(),
+                new FunctionalWaitCommand(() -> 0.25),
+                Path.BACKED_UP.getPath(drive),
+                armExtend.moveTo(ArmPresets.ARM_STOWED),
+                intake.coneGrab(),
+                armRotate.moveTo(ArmPresets.ARM_STOWED),
+                Path.OUT_OF_COMMUNITY.getPath(drive),
+                // rotate the robot here (180 degrees I would assume)
+                // need to get values for \/
+                Path.READY_FOR_PICKUP.getPath(drive),
+                armRotate.moveTo(ArmPresets.CUBE_PICKUP),
+                intake.grab(),
+                armExtend.moveTo(ArmPresets.CUBE_PICKUP),
+                // rotate the robot here (180 degrees again)
+                // move right
+                Path.BACKED_UP.getPath(drive),
+                armRotate.moveTo(ArmPresets.HIGH_SCORE),
+                new FunctionalWaitCommand(() -> 0.25),
+                intake.cubeRelease(),
+                new FunctionalWaitCommand(() -> 0.25)
+
+        )
+                .withName("Score Cone Pickup Score Cube");
+    }
+
+    // Need various auto sequences:
+    // Score -> balance
+    // Score -> out of community -> pickup
+    // Score -> over charge stration -> pickup -> balance
+    // Score -> pickup -> score
 
     public CommandBase oneConeTest() {
         return sequence(
