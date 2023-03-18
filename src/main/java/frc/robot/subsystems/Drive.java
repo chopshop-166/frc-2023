@@ -273,9 +273,9 @@ public class Drive extends SmartSubsystemBase {
         return cmd().onExecute(() -> {
 
             if (pigeonGyro.getPitch() > 5) {
-                move(0.0, -0.2, 0.0);
-            } else if (pigeonGyro.getPitch() < -5) {
                 move(0.0, 0.2, 0.0);
+            } else if (pigeonGyro.getPitch() < -5) {
+                move(0.0, -0.2, 0.0);
 
             } else {
                 safeState();

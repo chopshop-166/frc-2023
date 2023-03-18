@@ -305,8 +305,6 @@ public class Auto {
 
     public CommandBase mightBeDeadlyBalanceTest() {
         return sequence(
-                armRotate.moveTo(ArmPresets.ARM_STOWED),
-                drive.driveUntilTilted(),
                 drive.balance()
 
         );
