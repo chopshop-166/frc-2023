@@ -123,7 +123,7 @@ public class Led extends SmartSubsystemBase {
                 break;
             case IntakeSpinning:
                 spinCounter++;
-                if (spinCounter % 10 == 0) {
+                if (spinCounter % 6 == 0) {
                     ledPosition++;
                 }
                 if (ledPosition == ledBuffer.getLength() / 4) {
@@ -131,7 +131,8 @@ public class Led extends SmartSubsystemBase {
                 }
                 setColor(0, 0, 0, section);
                 ledBuffer.setRGB(ledPosition, 0, 255, 0);
-                Logger.getInstance().recordOutput("IndicateLEDs", "Orange");
+                ledBuffer.setRGB(ledBuffer.getLength() - ledPosition - 1, 0, 255, 0);
+                Logger.getInstance().recordOutput("IndicateLEDs", "Spinning");
                 break;
 
             case None:
@@ -142,7 +143,7 @@ public class Led extends SmartSubsystemBase {
 
     public CommandBase colorAlliance() {
         return cmd("Set to Alliance Color").onInitialize(() -> {
-            ledBehaviors[LedSection.Top.getSection()] = LedBehavior.ColorAlliance;
+            ledBehaviors[LedSection.Bottom.getSection()] = LedBehavior.ColorAlliance;
             ledBehaviors[LedSection.All.getSection()] = LedBehavior.None;
         }).runsWhenDisabled(true);
     }
