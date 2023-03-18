@@ -101,6 +101,7 @@ public class Vision {
                     estimator.addVisionMeasurement(pose, result.getTimestampSeconds());
                 }
                 sawTag = true;
+
             }
         }
 
@@ -109,7 +110,10 @@ public class Vision {
 
         prevPose = filter.calculate(odometry.update(
                 driveMap.gyro().getRotation2d(), getModulePositions()));
-        estimator.update(driveMap.gyro().getRotation2d(), getModulePositions());
+        estimator.update(
+                Rotation2d.fromDegrees(
+                        driveMap.gyro().getAngle() + 180),
+                getModulePositions());
         Logger.getInstance().recordOutput("kalman pose", estimator.getEstimatedPosition());
         Logger.getInstance().recordOutput("odometryPose", odometry.getPoseMeters());
         return prevPose;
