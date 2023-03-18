@@ -15,7 +15,7 @@ public enum ArmPresets {
 
     ARM_STOWED(2, 4),
 
-    CUBE_PICKUP(1, 4);
+    CUBE_PICKUP(3, 17);
 
     private double length;
     private double angle;

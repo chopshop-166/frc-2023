@@ -7,6 +7,7 @@ import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 import org.littletonrobotics.junction.Logger;
 
 import com.chopshop166.chopshoplib.Autonomous;
+import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.commands.FunctionalWaitCommand;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
@@ -191,7 +192,7 @@ public class Robot extends CommandRobot {
 
         // led.setDefaultCommand(led.colorAlliance());
         armExtend.setDefaultCommand(armExtend.manual(copilotController::getTriggers));
-        armRotate.setDefaultCommand(armRotate.move(() -> -copilotController.getLeftY()));
+        armRotate.setDefaultCommand(armRotate.move(RobotUtils.deadbandAxis(.1, () -> -copilotController.getLeftY())));
         led.setDefaultCommand(led.ColdFire());
 
     }
