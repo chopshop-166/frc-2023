@@ -158,7 +158,6 @@ public class Led extends SmartSubsystemBase {
 
     public CommandBase intakeSpinning() {
         return runOnce(() -> {
-            System.out.println("Intake Spinning");
             ledBehaviors[LedSection.Bottom.getSection()] = LedBehavior.IntakeSpinning;
             ledBehaviors[LedSection.All.getSection()] = LedBehavior.None;
         });
@@ -180,7 +179,6 @@ public class Led extends SmartSubsystemBase {
 
     public CommandBase GrabbedPiece() {
         return runOnce(() -> {
-            System.out.println("Grabbed piece");
             ledBehaviors[LedSection.Bottom.getSection()] = LedBehavior.GrabbedPiece;
             ledBehaviors[LedSection.All.getSection()] = LedBehavior.None;
         });
