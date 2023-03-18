@@ -6,6 +6,8 @@ import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 
 import java.util.Arrays;
 
+import org.littletonrobotics.junction.inputs.LoggableInputs;
+
 import com.chopshop166.chopshoplib.commands.FunctionalWaitCommand;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -303,6 +305,15 @@ public class Auto {
                         armRotate.moveTo(ArmPresets.ARM_STOWED)),
                 backUp(1.5, 3.5))
                 .withName("(MAIN) One Cone Mobolity");
+    }
+
+    public CommandBase mightBeDeadlyBalanceTest() {
+        return sequence(
+                armRotate.moveTo(ArmPresets.ARM_STOWED),
+                drive.driveUntilTilted(),
+                drive.balancePID()
+
+        );
     }
 
     public CommandBase axisConeMobility() {

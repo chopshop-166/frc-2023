@@ -7,7 +7,6 @@ import org.littletonrobotics.junction.Logger;
 import com.chopshop166.chopshoplib.PersistenceCheck;
 import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
 import com.chopshop166.chopshoplib.motors.Modifier;
-import com.chopshop166.chopshoplib.sensors.gyro.PigeonGyro;
 import com.ctre.phoenix.sensors.Pigeon2;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -23,7 +22,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import frc.robot.Field;
-import frc.robot.Robot;
 import frc.robot.Vision;
 import frc.robot.maps.subsystems.SwerveDriveMap;
 import frc.robot.maps.subsystems.SwerveDriveMap.Data;
@@ -278,10 +276,13 @@ public class Drive extends SmartSubsystemBase {
                 move(0.0, 0.2, 0.0);
             } else if (currentGryoPitch < -5) {
                 move(0.0, -0.2, 0.0);
+
             } else {
                 safeState();
             }
-        }).runsUntil(balancedCheck);
+            Logger.getInstance().recordOutput("Balanced yet?", false);
+
+        }).runsUntil(balancedCheck).onEnd(() -> Logger.getInstance().recordOutput("Balanced yet?", true));
     }
 
     // Use DrivePID to drive to a target pose on the field
@@ -330,6 +331,12 @@ public class Drive extends SmartSubsystemBase {
     public void resetGyro() {
         map.gyro().reset();
         latestAngle = 0;
+    }
+
+    public CommandBase driveUntilTilted() {
+        return cmd().onExecute(() -> {
+            move(0.0, 0.3, 0);
+        }).runsUntil(() -> Math.abs(pigeonGyro.getPitch()) > 0);
     }
 
     public CommandBase setGyro180() {
