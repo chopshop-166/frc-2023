@@ -132,9 +132,7 @@ public class Robot extends CommandRobot {
 
         // COPILOT CONTROLLER
         // Intake
-        copilotController.a().onTrue(intake.grab().andThen(
-                race(new FunctionalWaitCommand(() -> 2),
-                        led.GrabbedPiece())));
+        copilotController.a().onTrue(led.intakeSpinning().andThen(intake.grab(), led.GrabbedPiece()));
         copilotController.b().onTrue(intake.toggle());
         copilotController.x().whileTrue(intake.cubeRelease());
 
@@ -173,7 +171,5 @@ public class Robot extends CommandRobot {
         // led.setDefaultCommand(led.colorAlliance());
         arm.setDefaultCommand(arm.manual(copilotController::getTriggers));
         armRotate.setDefaultCommand(armRotate.move(() -> -copilotController.getLeftY()));
-        led.setDefaultCommand(led.defualtCommand());
-
     }
 }
