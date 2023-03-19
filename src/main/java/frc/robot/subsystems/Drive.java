@@ -269,17 +269,20 @@ public class Drive extends SmartSubsystemBase {
     }
 
     public CommandBase balance() {
-        PersistenceCheck balancedCheck = new PersistenceCheck(15, () -> Math.abs(pigeonGyro.getPitch()) < 5);
+
+        PersistenceCheck balancedCheck = new PersistenceCheck(15, () -> Math.abs(pigeonGyro.getPitch()) < 3);
         return cmd().onExecute(() -> {
-
-            if (pigeonGyro.getPitch() > 5) {
-                move(0.0, 0.2, 0.0);
-            } else if (pigeonGyro.getPitch() < -5) {
-                move(0.0, -0.2, 0.0);
-
+            double pitchDeriv = pigeonGyro.getPitch() - previousPitch;
+            if (pitchDeriv > 0.03) {
+                safeState();
+            } else if (pigeonGyro.getPitch() > 7) {
+                move(0.0, 0.25, 0.0);
+            } else if (pigeonGyro.getPitch() < -7) {
+                move(0.0, -0.25, 0.0);
             } else {
                 safeState();
             }
+
             Logger.getInstance().recordOutput("Balanced yet?", false);
 
         }).runsUntil(balancedCheck).onEnd(() -> Logger.getInstance().recordOutput("Balanced yet?", true));
@@ -359,8 +362,11 @@ public class Drive extends SmartSubsystemBase {
         move(0, 0, 0);
     }
 
+    double previousPitch = 0;
+
     @Override
     public void periodic() {
+        double deriv = pigeonGyro.getPitch() - previousPitch;
         isBlue = DriverStation.getAlliance() == Alliance.Blue;
         // This method will be called once per scheduler run
         // Use this for any background processing
@@ -369,6 +375,8 @@ public class Drive extends SmartSubsystemBase {
         pose = vision.update(isBlue);
         Logger.getInstance().recordOutput("robotPose", pose);
         Logger.getInstance().recordOutput("RobotPitch", pigeonGyro.getPitch());
+        Logger.getInstance().recordOutput("deriv", deriv);
+        previousPitch = pigeonGyro.getPitch();
 
     }
 }
