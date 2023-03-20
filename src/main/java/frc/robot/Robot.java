@@ -19,8 +19,10 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.maps.RobotMap;
 // $Imports$
@@ -31,6 +33,10 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Led;
 
 public class Robot extends CommandRobot {
+
+    SendableChooser<Integer> conePosChooser = new SendableChooser<>();
+    SendableChooser<Integer> cubePosChooser = new SendableChooser<>();
+    SendableChooser<Integer> cubeScorePosChooser = new SendableChooser<>();
 
     private RobotMap map = getMapForName("FrostBite", RobotMap.class, "frc.robot.maps");
     private ButtonXboxController driveController = new ButtonXboxController(0);
@@ -71,6 +77,14 @@ public class Robot extends CommandRobot {
 
     @Autonomous
     public CommandBase preTest = auto.preTest();
+
+    @Autonomous
+    public CommandBase buildCommand = new ProxyCommand(() -> {
+        int conePos = conePosChooser.getSelected();
+        int cubePos = cubePosChooser.getSelected();
+        int cubeScorePos = cubeScorePosChooser.getSelected();
+        return auto.combinedAuto(conePos, cubePos, cubeScorePos);
+    });
 
     private CommandBase driveScoreHigh = sequence(
             armRotate.moveTo(ArmPresets.HIGH_SCORE), drive.driveToNearest(), armExtend.moveTo(ArmPresets.HIGH_SCORE),
@@ -146,6 +160,25 @@ public class Robot extends CommandRobot {
     @Override
     public void robotInit() {
         super.robotInit();
+
+        conePosChooser.setDefaultOption("Don't Score Cone", 0);
+        conePosChooser.addOption("Cone Pos 1", 1);
+        conePosChooser.addOption("Cone Pos 2", 2);
+        conePosChooser.addOption("Cone Pos 3", 3);
+        conePosChooser.addOption("Cone Pos 4", 4);
+        conePosChooser.addOption("Cone Pos 5", 5);
+        conePosChooser.addOption("Cone Pos 6", 6);
+
+        cubePosChooser.setDefaultOption("Don't Pick Up Cube", 0);
+        cubePosChooser.addOption("Pick Up Cube 7", 7);
+        cubePosChooser.addOption("Pick Up Cube 8", 8);
+        cubePosChooser.addOption("Pick Up Cube 9", 9);
+        cubePosChooser.addOption("Pick Up Cube 10", 10);
+
+        cubeScorePosChooser.setDefaultOption("Don't Score Cube", 0);
+        cubeScorePosChooser.addOption("Score Cube 11", 11);
+        cubeScorePosChooser.addOption("Score Cube 12", 12);
+        cubeScorePosChooser.addOption("Score Cube 13", 13);
 
         Logger.getInstance().recordMetadata("ProjectName", "FRC-2023"); // Set a metadata value
         map.setupLogging();
