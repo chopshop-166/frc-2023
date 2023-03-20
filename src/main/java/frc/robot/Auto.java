@@ -114,17 +114,13 @@ public class Auto {
     }
 
     // SEQUENCES TO JUST SCORE A CONE - from starting positions
-    private CommandBase startGridScoreCone(AutoPath upToStation, AutoPath backedUp,
-            AutoPath outOfCommunity, int position) {
+    private CommandBase startGridScoreCone(AutoPath upToStation, AutoPath backedUp) {
         return sequence(
                 prepareToScoreCone(),
                 upToStation.getPath(drive),
                 scoreCone(),
                 backedUp.getPath(drive),
-                stowArmCloseIntake(),
-                outOfCommunity.getPath(drive)
-
-        ).withName("Start Grid Score Cone Pos " + position);
+                stowArmCloseIntake());
     }
 
     private CommandBase pickupCubeN(AutoPath readyForPickup, AutoPath goToPickup) {
@@ -137,17 +133,23 @@ public class Auto {
     public CommandBase scoreConePos(int conePos) {
         switch (conePos) {
             case 1:
-                return startGridScoreCone_1().withName("Score Cone (Pos 1)");
+                return startGridScoreCone(AutoPath.UP_TO_CONE_STATION_1, AutoPath.BACKED_UP_1)
+                        .withName("Score Cone (Pos 1)");
             case 2:
-                return startGridScoreCone_2().withName("Score Cone (Pos 2)");
+                return startGridScoreCone(AutoPath.UP_TO_CONE_STATION_2, AutoPath.BACKED_UP_2)
+                        .withName("Score Cone (Pos 2)");
             case 3:
-                return startGridScoreCone_3().withName("Score Cone (Pos 3)");
+                return startGridScoreCone(AutoPath.UP_TO_CONE_STATION_3, AutoPath.BACKED_UP_3)
+                        .withName("Score Cone (Pos 3)");
             case 4:
-                return startGridScoreCone_4().withName("Score Cone (Pos 4)");
+                return startGridScoreCone(AutoPath.UP_TO_CONE_STATION_4, AutoPath.BACKED_UP_4)
+                        .withName("Score Cone (Pos 4)");
             case 5:
-                return startGridScoreCone_5().withName("Score Cone (Pos 5)");
+                return startGridScoreCone(AutoPath.UP_TO_CONE_STATION_5, AutoPath.BACKED_UP_5)
+                        .withName("Score Cone (Pos 4)");
             case 6:
-                return startGridScoreCone_6().withName("Score Cone (Pos 6)");
+                return startGridScoreCone(AutoPath.UP_TO_CONE_STATION_6, AutoPath.BACKED_UP_6)
+                        .withName("Score Cone (Pos 4)");
             default:
                 return none().withName("None");
         }
@@ -156,15 +158,15 @@ public class Auto {
     public CommandBase pickupCubePos(int cubePos) {
         switch (cubePos) {
             case 7:
-                return pickupCube_7().withName("Pickup (Pos 7)");
+                return pickupCubeN(AutoPath.READY_FOR_PICKUP_7, AutoPath.GO_TO_PICKUP_7).withName("Pickup (Pos 7)");
             case 8:
-                return pickupCube_8().withName("Pickup (Pos 8)");
+                return pickupCubeN(AutoPath.READY_FOR_PICKUP_8, AutoPath.GO_TO_PICKUP_8).withName("Pickup (Pos 8)");
             case 9:
-                return pickupCube_9().withName("Pickup (Pos 9)");
+                return pickupCubeN(AutoPath.READY_FOR_PICKUP_9, AutoPath.GO_TO_PICKUP_9).withName("Pickup (Pos 9)");
             case 10:
-                return pickupCube_10().withName("Pickup (Pos 10)");
+                return pickupCubeN(AutoPath.READY_FOR_PICKUP_10, AutoPath.GO_TO_PICKUP_10).withName("Pickup (Pos 10)");
             default:
-                return none();
+                return none().withName("None");
         }
 
     }
@@ -178,75 +180,34 @@ public class Auto {
             case 13:
                 return AutoPath.CUBE_SCORE_11.getPath(drive).withName("Score Cube (Pos 13)");
             default:
-                return none();
+                return none().withName("None");
         }
     }
 
     public CommandBase combinedAuto(int coneScore, int cubePos, int cubeScorePos) {
         CommandBase coneScoreCmd = scoreConePos(coneScore);
         CommandBase pickupCubeCmd = pickupCubePos(cubePos);
+        CommandBase scoreCubeCmd = scoreCubePos(cubeScorePos);
 
+        CommandBase outOfCommunity = none();
         CommandBase returnToCommunity = none();
         if (coneScore == 1 || coneScore == 2 || coneScore == 3) {
+            outOfCommunity = AutoPath.OUT_OF_COMMUNITY_1_2_3.getPath(drive);
             returnToCommunity = AutoPath.INTO_COMMUNITY_1_2_3.getPath(drive);
         } else if (coneScore == 4 || coneScore == 5 || coneScore == 6) {
+            outOfCommunity = AutoPath.OUT_OF_COMMUNITY_4_5_6.getPath(drive);
             returnToCommunity = AutoPath.INTO_COMMUNITY_4_5_6.getPath(drive);
         }
 
-        CommandBase scoreCubeCmd = scoreCubePos(cubeScorePos);
+        return sequence(
+                coneScoreCmd,
+                outOfCommunity,
+                pickupCubeCmd,
+                returnToCommunity,
+                scoreCubeCmd,
+                scoreCube()
 
-        return sequence(coneScoreCmd, pickupCubeCmd, returnToCommunity, scoreCubeCmd, scoreCube())
-                .withName(coneScoreCmd.getName() + " " + pickupCubeCmd.getName() + " " + scoreCubeCmd.getName());
-    }
-
-    public CommandBase startGridScoreCone_1() {
-        return startGridScoreCone(AutoPath.UP_TO_CONE_STATION_1, AutoPath.BACKED_UP_1, AutoPath.OUT_OF_COMMUNITY_1_2_3,
-                1);
-    }
-
-    public CommandBase startGridScoreCone_2() {
-        return startGridScoreCone(AutoPath.UP_TO_CONE_STATION_2, AutoPath.BACKED_UP_2, AutoPath.OUT_OF_COMMUNITY_1_2_3,
-                2);
-    }
-
-    public CommandBase startGridScoreCone_3() {
-        return startGridScoreCone(AutoPath.UP_TO_CONE_STATION_3, AutoPath.BACKED_UP_3, AutoPath.OUT_OF_COMMUNITY_1_2_3,
-                3);
-    }
-
-    public CommandBase startGridScoreCone_4() {
-        return startGridScoreCone(AutoPath.UP_TO_CONE_STATION_4, AutoPath.BACKED_UP_4, AutoPath.OUT_OF_COMMUNITY_4_5_6,
-                4);
-    }
-
-    public CommandBase startGridScoreCone_5() {
-        return startGridScoreCone(AutoPath.UP_TO_CONE_STATION_5, AutoPath.BACKED_UP_5, AutoPath.OUT_OF_COMMUNITY_4_5_6,
-                5);
-    }
-
-    public CommandBase startGridScoreCone_6() {
-        return startGridScoreCone(AutoPath.UP_TO_CONE_STATION_6, AutoPath.BACKED_UP_6, AutoPath.OUT_OF_COMMUNITY_4_5_6,
-                6);
-    }
-
-    //
-    //
-    // SCORE CONE, EXIT COMMUNITY, AND PICKUP A CUBE
-    // Score cone and pickup a cube starting from pos. 1
-    public CommandBase pickupCube_7() {
-        return pickupCubeN(AutoPath.READY_FOR_PICKUP_7, AutoPath.GO_TO_PICKUP_7);
-    }
-
-    public CommandBase pickupCube_8() {
-        return pickupCubeN(AutoPath.READY_FOR_PICKUP_8, AutoPath.GO_TO_PICKUP_8);
-    }
-
-    public CommandBase pickupCube_9() {
-        return pickupCubeN(AutoPath.READY_FOR_PICKUP_9, AutoPath.GO_TO_PICKUP_9);
-    }
-
-    public CommandBase pickupCube_10() {
-        return pickupCubeN(AutoPath.READY_FOR_PICKUP_10, AutoPath.GO_TO_PICKUP_10);
+        ).withName(coneScoreCmd.getName() + " " + pickupCubeCmd.getName() + " " + scoreCubeCmd.getName());
     }
 
     // Score cone and back up onto charge station (from pos 1) and then balance
