@@ -135,8 +135,7 @@ public enum AutoPath {
 
     //// Start of some stuff that Joe wrote
     PRE_TEST(0.05,
-            new Pose2d(
-                    14.165401626124469, 2.879876924969839, Rotation2d.fromRadians(-0.22656457143950046)));
+            new Pose2d(14.165401626124469, 2.879876924969839, Rotation2d.fromRadians(-0.22656457143950046)));
 
     Pose2d poses[];
     double tolerance;
@@ -148,10 +147,8 @@ public enum AutoPath {
 
     // Create a sequence command to drive to each pose
     public CommandBase getPath(Drive drive) {
-
         return sequence(
-                Arrays.stream(poses).map((pos) -> drive.driveTo(pos,
-                        this.tolerance)).toArray(CommandBase[]::new))
+                Arrays.stream(poses).map(pos -> drive.driveTo(pos, this.tolerance)).toArray(CommandBase[]::new))
                 .withName(this.name()).andThen(drive.safeStateCmd());
     }
 }

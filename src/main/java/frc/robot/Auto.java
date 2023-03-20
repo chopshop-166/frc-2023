@@ -176,9 +176,9 @@ public class Auto {
             case 11:
                 return AutoPath.CUBE_SCORE_11.getPath(drive).withName("Score Cube (Pos 11)");
             case 12:
-                return AutoPath.CUBE_SCORE_11.getPath(drive).withName("Score Cube (Pos 12)");
+                return AutoPath.CUBE_SCORE_12.getPath(drive).withName("Score Cube (Pos 12)");
             case 13:
-                return AutoPath.CUBE_SCORE_11.getPath(drive).withName("Score Cube (Pos 13)");
+                return AutoPath.CUBE_SCORE_13.getPath(drive).withName("Score Cube (Pos 13)");
             default:
                 return none().withName("None");
         }
