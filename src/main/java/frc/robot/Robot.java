@@ -23,6 +23,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
+import frc.robot.auto.ConeStation;
+import frc.robot.auto.CubePickupLocation;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.maps.RobotMap;
 // $Imports$
@@ -34,8 +36,8 @@ import frc.robot.subsystems.Led;
 
 public class Robot extends CommandRobot {
 
-    SendableChooser<Integer> conePosChooser = new SendableChooser<>();
-    SendableChooser<Integer> cubePosChooser = new SendableChooser<>();
+    SendableChooser<ConeStation> conePosChooser = new SendableChooser<>();
+    SendableChooser<CubePickupLocation> cubePosChooser = new SendableChooser<>();
     SendableChooser<Integer> cubeScorePosChooser = new SendableChooser<>();
 
     private RobotMap map = getMapForName("FrostBite", RobotMap.class, "frc.robot.maps");
@@ -80,8 +82,8 @@ public class Robot extends CommandRobot {
 
     @Autonomous
     public CommandBase buildCommand = new ProxyCommand(() -> {
-        int conePos = conePosChooser.getSelected();
-        int cubePos = cubePosChooser.getSelected();
+        ConeStation conePos = conePosChooser.getSelected();
+        CubePickupLocation cubePos = cubePosChooser.getSelected();
         int cubeScorePos = cubeScorePosChooser.getSelected();
         return auto.combinedAuto(conePos, cubePos, cubeScorePos);
     });
@@ -161,19 +163,17 @@ public class Robot extends CommandRobot {
     public void robotInit() {
         super.robotInit();
 
-        conePosChooser.setDefaultOption("Don't Score Cone", 0);
-        conePosChooser.addOption("Cone Pos 1", 1);
-        conePosChooser.addOption("Cone Pos 2", 2);
-        conePosChooser.addOption("Cone Pos 3", 3);
-        conePosChooser.addOption("Cone Pos 4", 4);
-        conePosChooser.addOption("Cone Pos 5", 5);
-        conePosChooser.addOption("Cone Pos 6", 6);
+        conePosChooser.setDefaultOption("Cone Pos 1", ConeStation.STATION_1);
+        conePosChooser.addOption("Cone Pos 2", ConeStation.STATION_2);
+        conePosChooser.addOption("Cone Pos 3", ConeStation.STATION_3);
+        conePosChooser.addOption("Cone Pos 4", ConeStation.STATION_4);
+        conePosChooser.addOption("Cone Pos 5", ConeStation.STATION_5);
+        conePosChooser.addOption("Cone Pos 6", ConeStation.STATION_6);
 
-        cubePosChooser.setDefaultOption("Don't Pick Up Cube", 0);
-        cubePosChooser.addOption("Pick Up Cube 7", 7);
-        cubePosChooser.addOption("Pick Up Cube 8", 8);
-        cubePosChooser.addOption("Pick Up Cube 9", 9);
-        cubePosChooser.addOption("Pick Up Cube 10", 10);
+        cubePosChooser.setDefaultOption("Pick Up Cube 1", CubePickupLocation.CUBE_1);
+        cubePosChooser.addOption("Pick Up Cube 2", CubePickupLocation.CUBE_2);
+        cubePosChooser.addOption("Pick Up Cube 3", CubePickupLocation.CUBE_3);
+        cubePosChooser.addOption("Pick Up Cube 4", CubePickupLocation.CUBE_4);
 
         cubeScorePosChooser.setDefaultOption("Don't Score Cube", 0);
         cubeScorePosChooser.addOption("Score Cube 11", 11);
