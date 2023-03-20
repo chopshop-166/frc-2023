@@ -2,7 +2,6 @@ package frc.robot;
 
 import static edu.wpi.first.wpilibj2.command.Commands.race;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
-import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 
 import java.util.Arrays;
 
@@ -38,26 +37,6 @@ public class Auto {
     private static final double uptoconex = 2.00;
     private static final double backedupx = 2.25;
     private static final double outofcommunityx = 6.00;
-
-    ////////////////// TABLE OF CONTENTS \\\\\\\\\\\\\\\\\\
-    ////// POSITIONS AND PATHS-------------------- lines 62 - 185
-    //// Cone scoring sub-positions -------------- lines 86 - 124
-    //// Cube scoring sub-positions -------------- lines 125 - 134
-    //// Into and out of community --------------- lines 135 - 152
-    //// Pickup positions ------------------------ lines 153 - 181
-    //// Chargestation position(s?) -------------- lines 182 - 185
-    ////// JOE CODE ------------------------------ lines 186 - 271
-    ////// SEQUENCES ----------------------------- lines 272 - 1118
-    //// Sequences to make stuff easier ---------- lines 272 - 311
-    //// Just score a cone and exit community ---- lines 312 - 396
-    //// Score, leave, pickup cube --------------- lines 397 - 615
-    //// Score, leave, pickup, go back, score ---- lines 616 - 1099
-    // Start 1-3, pickup 7-8, score 11-12 -------- lines 616 - 858
-    // Start 4-6, pickup 9-10, score 12-13 ------- lines 859 - 1099
-    //// Score cone and balance ------------------ lines 1100 - 1118
-    ////// JOE CODE ------------------------------ lines 1119 - 1211
-
-    // PLEASE update with every change ^
 
     public enum Path {
 
@@ -282,9 +261,9 @@ public class Auto {
     public CommandBase scoreCone() {
         return sequence(
                 armExtend.moveTo(ArmPresets.HIGH_SCORE),
-                new FunctionalWaitCommand(() -> 0.25),
+                timingWait(),
                 intake.coneRelease(),
-                new FunctionalWaitCommand(() -> 0.25));
+                timingWait());
     }
 
     public CommandBase stowArmCloseIntake() {
@@ -304,312 +283,73 @@ public class Auto {
     public CommandBase scoreCube() {
         return sequence(
                 armRotate.moveTo(ArmPresets.HIGH_SCORE),
-                new FunctionalWaitCommand(() -> 0.25),
+                timingWait(),
                 intake.cubeRelease(),
-                new FunctionalWaitCommand(() -> 0.25));
+                timingWait());
     }
 
     // SEQUENCES TO JUST SCORE A CONE - from starting positions
-    public CommandBase startGridScoreCone_1() {
+    private CommandBase startGridScoreCone(Path upToStation, Path backedUp, Path outOfCommunity, int position) {
         return sequence(
                 prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_1.getPath(drive),
+                upToStation.getPath(drive),
                 scoreCone(),
-                Path.BACKED_UP_1.getPath(drive),
+                backedUp.getPath(drive),
                 stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_1_2_3.getPath(drive)
+                outOfCommunity.getPath(drive)
 
-        )
-                .withName("Start Grid Score Cone Pos 1");
+        ).withName("Start Grid Score Cone Pos " + position);
+    }
+
+    private CommandBase pickupCubeN(Path readyForPickup, Path goToPickup) {
+        return sequence(
+                readyForPickup.getPath(drive),
+                pickUpCube(),
+                goToPickup.getPath(drive));
+    }
+
+    public CommandBase startGridScoreCone_1() {
+        return startGridScoreCone(Path.UP_TO_CONE_STATION_1, Path.BACKED_UP_1, Path.OUT_OF_COMMUNITY_1_2_3, 1);
     }
 
     public CommandBase startGridScoreCone_2() {
-        return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_2.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_2.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_1_2_3.getPath(drive)
-
-        )
-                .withName("Start Grid Score Cone Pos 2");
+        return startGridScoreCone(Path.UP_TO_CONE_STATION_2, Path.BACKED_UP_2, Path.OUT_OF_COMMUNITY_1_2_3, 2);
     }
 
     public CommandBase startGridScoreCone_3() {
-        return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_3.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_3.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_1_2_3.getPath(drive)
-
-        )
-                .withName("Start Grid Score Cone Pos 3");
+        return startGridScoreCone(Path.UP_TO_CONE_STATION_3, Path.BACKED_UP_3, Path.OUT_OF_COMMUNITY_1_2_3, 3);
     }
 
     public CommandBase startGridScoreCone_4() {
-        return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_4.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_4.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_4_5_6.getPath(drive)
-
-        )
-                .withName("Start Grid Score Cone Pos 4");
+        return startGridScoreCone(Path.UP_TO_CONE_STATION_4, Path.BACKED_UP_4, Path.OUT_OF_COMMUNITY_4_5_6, 4);
     }
 
     public CommandBase startGridScoreCone_5() {
-        return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_5.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_5.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_4_5_6.getPath(drive)
-
-        )
-                .withName("Start Grid Score Cone Pos 5");
+        return startGridScoreCone(Path.UP_TO_CONE_STATION_5, Path.BACKED_UP_5, Path.OUT_OF_COMMUNITY_4_5_6, 5);
     }
 
     public CommandBase startGridScoreCone_6() {
-        return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_6.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_6.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_4_5_6.getPath(drive)
-
-        )
-                .withName("Start Grid Score Cone Pos 6");
+        return startGridScoreCone(Path.UP_TO_CONE_STATION_6, Path.BACKED_UP_6, Path.OUT_OF_COMMUNITY_4_5_6, 6);
     }
 
     //
     //
     // SCORE CONE, EXIT COMMUNITY, AND PICKUP A CUBE
     // Score cone and pickup a cube starting from pos. 1
-    public CommandBase scoreCone_1_PickupCube_7() {
-        return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_1.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_1.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_1_2_3.getPath(drive),
-                Path.READY_FOR_PICKUP_7.getPath(drive),
-                pickUpCube(),
-                Path.GO_TO_PICKUP_7.getPath(drive)
-
-        )
-                .withName("Score Cone (Pos 1) Pickup Cube (Pos 7)");
+    public CommandBase pickupCube_7() {
+        return pickupCubeN(Path.READY_FOR_PICKUP_7, Path.GO_TO_PICKUP_7);
     }
 
-    // Score cone and pickup a cube starting from pos. 2
-    public CommandBase scoreCone_2_PickupCube_7() {
-        return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_2.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_2.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_1_2_3.getPath(drive),
-                Path.READY_FOR_PICKUP_7.getPath(drive),
-                pickUpCube(),
-                Path.GO_TO_PICKUP_7.getPath(drive)
-
-        )
-                .withName("Score Cone (Pos 2) Pickup Cube (Pos 7)");
+    public CommandBase pickupCube_8() {
+        return pickupCubeN(Path.READY_FOR_PICKUP_8, Path.GO_TO_PICKUP_8);
     }
 
-    // Score cone and pickup a cube starting from pos. 3
-    public CommandBase scoreCone_3_PickupCube_7() {
-        return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_3.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_3.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_1_2_3.getPath(drive),
-                Path.READY_FOR_PICKUP_7.getPath(drive),
-                pickUpCube(),
-                Path.GO_TO_PICKUP_7.getPath(drive)
-
-        )
-                .withName("Score Cone (Pos 3) Pickup Cube (Pos 7)");
+    public CommandBase pickupCube_9() {
+        return pickupCubeN(Path.READY_FOR_PICKUP_9, Path.GO_TO_PICKUP_9);
     }
 
-    // Score cone and pickup a cube starting from pos. 1
-    public CommandBase scoreCone_1_PickupCube_8() {
-        return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_1.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_1.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_1_2_3.getPath(drive),
-                Path.READY_FOR_PICKUP_8.getPath(drive),
-                pickUpCube(),
-                Path.GO_TO_PICKUP_8.getPath(drive)
-
-        )
-                .withName("Score Cone (Pos 1) Pickup Cube (Pos 8)");
-    }
-
-    // Score cone and pickup a cube starting from pos. 2
-    public CommandBase scoreCone_2_PickupCube_8() {
-        return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_2.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_2.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_1_2_3.getPath(drive),
-                Path.READY_FOR_PICKUP_8.getPath(drive),
-                pickUpCube(),
-                Path.GO_TO_PICKUP_8.getPath(drive)
-
-        )
-                .withName("Score Cone (Pos 2) Pickup Cube (Pos 8)");
-    }
-
-    // Score cone and pickup a cube starting from pos. 3
-    public CommandBase scoreCone_3_PickupCube_8() {
-        return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_3.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_3.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_1_2_3.getPath(drive),
-                Path.READY_FOR_PICKUP_8.getPath(drive),
-                pickUpCube(),
-                Path.GO_TO_PICKUP_8.getPath(drive)
-
-        )
-                .withName("Score Cone (Pos 3) Pickup Cube (Pos 8)");
-    }
-
-    // Score cone and pickup a cube starting from pos. 4
-    public CommandBase scoreCone_4_PickupCube_9() {
-        return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_4.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_4.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_4_5_6.getPath(drive),
-                Path.READY_FOR_PICKUP_9.getPath(drive),
-                pickUpCube(),
-                Path.GO_TO_PICKUP_9.getPath(drive)
-
-        )
-                .withName("Score Cone (Pos 4) Pickup Cube (Pos 9)");
-    }
-
-    // Score cone and pickup a cube starting from pos. 5
-    public CommandBase scoreCone_5_PickupCube_9() {
-        return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_5.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_5.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_4_5_6.getPath(drive),
-                Path.READY_FOR_PICKUP_9.getPath(drive),
-                pickUpCube(),
-                Path.GO_TO_PICKUP_9.getPath(drive)
-
-        )
-                .withName("Score Cone (Pos 5) Pickup Cube (Pos 9)");
-    }
-
-    // Score cone and pickup a cube starting from pos. 6
-    public CommandBase scoreCone_6_PickupCube_9() {
-        return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_6.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_6.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_4_5_6.getPath(drive),
-                Path.READY_FOR_PICKUP_9.getPath(drive),
-                pickUpCube(),
-                Path.GO_TO_PICKUP_9.getPath(drive)
-
-        )
-                .withName("Score Cone (Pos 4) Pickup Cube (Pos 9)");
-    }
-
-    // Score cone and pickup a cube starting from pos. 4
-    public CommandBase scoreCone_4_PickupCube_10() {
-        return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_4.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_4.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_4_5_6.getPath(drive),
-                Path.READY_FOR_PICKUP_10.getPath(drive),
-                pickUpCube(),
-                Path.GO_TO_PICKUP_10.getPath(drive)
-
-        )
-                .withName("Score Cone (Pos 4) Pickup Cube (Pos 10)");
-    }
-
-    // Score cone and pickup a cube starting from pos. 5
-    public CommandBase scoreCone_5_PickupCube_10() {
-        return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_5.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_5.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_4_5_6.getPath(drive),
-                Path.READY_FOR_PICKUP_10.getPath(drive),
-                pickUpCube(),
-                Path.GO_TO_PICKUP_10.getPath(drive)
-
-        )
-                .withName("Score Cone (Pos 5) Pickup Cube (Pos 10)");
-    }
-
-    // Score cone and pickup a cube starting from pos. 6
-    public CommandBase scoreCone_6_PickupCube_10() {
-        return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_6.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_6.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_4_5_6.getPath(drive),
-                Path.READY_FOR_PICKUP_10.getPath(drive),
-                pickUpCube(),
-                Path.GO_TO_PICKUP_10.getPath(drive)
-
-        )
-                .withName("Score Cone (Pos 4) Pickup Cube (Pos 10)");
+    public CommandBase pickupCube_10() {
+        return pickupCubeN(Path.READY_FOR_PICKUP_10, Path.GO_TO_PICKUP_10);
     }
 
     //
@@ -618,16 +358,8 @@ public class Auto {
     // Score cone, pickup and score a cube
     public CommandBase scoreCone_1_Pickup_7_ScoreCube_11() {
         return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_1.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_1.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_1_2_3.getPath(drive),
-                Path.READY_FOR_PICKUP_7.getPath(drive),
-                pickUpCube(),
-                Path.GO_TO_PICKUP_7.getPath(drive),
+                startGridScoreCone_1(),
+                pickupCube_7(),
                 Path.INTO_COMMUNITY_1_2_3.getPath(drive),
                 Path.CUBE_SCORE_11.getPath(drive),
                 scoreCube()
@@ -638,16 +370,8 @@ public class Auto {
 
     public CommandBase scoreCone_2_Pickup_7_ScoreCube_11() {
         return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_2.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_2.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_1_2_3.getPath(drive),
-                Path.READY_FOR_PICKUP_7.getPath(drive),
-                pickUpCube(),
-                Path.GO_TO_PICKUP_7.getPath(drive),
+                startGridScoreCone_2(),
+                pickupCube_7(),
                 Path.INTO_COMMUNITY_1_2_3.getPath(drive),
                 Path.CUBE_SCORE_11.getPath(drive),
                 scoreCube()
@@ -658,16 +382,8 @@ public class Auto {
 
     public CommandBase scoreCone_3_Pickup_7_ScoreCube_11() {
         return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_3.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_3.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_1_2_3.getPath(drive),
-                Path.READY_FOR_PICKUP_7.getPath(drive),
-                pickUpCube(),
-                Path.GO_TO_PICKUP_7.getPath(drive),
+                startGridScoreCone_3(),
+                pickupCube_7(),
                 Path.INTO_COMMUNITY_1_2_3.getPath(drive),
                 Path.CUBE_SCORE_11.getPath(drive),
                 scoreCube()
@@ -678,16 +394,8 @@ public class Auto {
 
     public CommandBase scoreCone_1_Pickup_8_ScoreCube_11() {
         return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_1.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_1.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_1_2_3.getPath(drive),
-                Path.READY_FOR_PICKUP_8.getPath(drive),
-                pickUpCube(),
-                Path.GO_TO_PICKUP_8.getPath(drive),
+                startGridScoreCone_1(),
+                pickupCube_8(),
                 Path.INTO_COMMUNITY_1_2_3.getPath(drive),
                 Path.CUBE_SCORE_11.getPath(drive),
                 scoreCube()
@@ -698,16 +406,8 @@ public class Auto {
 
     public CommandBase scoreCone_2_Pickup_8_ScoreCube_11() {
         return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_2.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_2.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_1_2_3.getPath(drive),
-                Path.READY_FOR_PICKUP_8.getPath(drive),
-                pickUpCube(),
-                Path.GO_TO_PICKUP_8.getPath(drive),
+                startGridScoreCone_2(),
+                pickupCube_8(),
                 Path.INTO_COMMUNITY_1_2_3.getPath(drive),
                 Path.CUBE_SCORE_11.getPath(drive),
                 scoreCube()
@@ -718,16 +418,8 @@ public class Auto {
 
     public CommandBase scoreCone_3_Pickup_8_ScoreCube_11() {
         return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_3.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_3.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_1_2_3.getPath(drive),
-                Path.READY_FOR_PICKUP_8.getPath(drive),
-                pickUpCube(),
-                Path.GO_TO_PICKUP_8.getPath(drive),
+                startGridScoreCone_3(),
+                pickupCube_8(),
                 Path.INTO_COMMUNITY_1_2_3.getPath(drive),
                 Path.CUBE_SCORE_11.getPath(drive),
                 scoreCube()
@@ -738,16 +430,8 @@ public class Auto {
 
     public CommandBase scoreCone_1_Pickup_7_ScoreCube_12() {
         return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_1.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_1.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_1_2_3.getPath(drive),
-                Path.READY_FOR_PICKUP_7.getPath(drive),
-                pickUpCube(),
-                Path.GO_TO_PICKUP_7.getPath(drive),
+                startGridScoreCone_1(),
+                pickupCube_7(),
                 Path.INTO_COMMUNITY_1_2_3.getPath(drive),
                 Path.CUBE_SCORE_12.getPath(drive),
                 scoreCube()
@@ -758,16 +442,8 @@ public class Auto {
 
     public CommandBase scoreCone_2_Pickup_7_ScoreCube_12() {
         return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_2.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_2.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_1_2_3.getPath(drive),
-                Path.READY_FOR_PICKUP_7.getPath(drive),
-                pickUpCube(),
-                Path.GO_TO_PICKUP_7.getPath(drive),
+                startGridScoreCone_2(),
+                pickupCube_7(),
                 Path.INTO_COMMUNITY_1_2_3.getPath(drive),
                 Path.CUBE_SCORE_12.getPath(drive),
                 scoreCube()
@@ -778,16 +454,8 @@ public class Auto {
 
     public CommandBase scoreCone_3_Pickup_7_ScoreCube_12() {
         return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_3.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_3.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_1_2_3.getPath(drive),
-                Path.READY_FOR_PICKUP_7.getPath(drive),
-                pickUpCube(),
-                Path.GO_TO_PICKUP_7.getPath(drive),
+                startGridScoreCone_3(),
+                pickupCube_7(),
                 Path.INTO_COMMUNITY_1_2_3.getPath(drive),
                 Path.CUBE_SCORE_12.getPath(drive),
                 scoreCube()
@@ -798,16 +466,8 @@ public class Auto {
 
     public CommandBase scoreCone_1_Pickup_8_ScoreCube_12() {
         return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_1.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_1.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_1_2_3.getPath(drive),
-                Path.READY_FOR_PICKUP_8.getPath(drive),
-                pickUpCube(),
-                Path.GO_TO_PICKUP_8.getPath(drive),
+                startGridScoreCone_1(),
+                pickupCube_8(),
                 Path.INTO_COMMUNITY_1_2_3.getPath(drive),
                 Path.CUBE_SCORE_12.getPath(drive),
                 scoreCube()
@@ -818,16 +478,8 @@ public class Auto {
 
     public CommandBase scoreCone_2_Pickup_8_ScoreCube_12() {
         return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_2.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_2.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_1_2_3.getPath(drive),
-                Path.READY_FOR_PICKUP_8.getPath(drive),
-                pickUpCube(),
-                Path.GO_TO_PICKUP_8.getPath(drive),
+                startGridScoreCone_2(),
+                pickupCube_8(),
                 Path.INTO_COMMUNITY_1_2_3.getPath(drive),
                 Path.CUBE_SCORE_12.getPath(drive),
                 scoreCube()
@@ -838,16 +490,8 @@ public class Auto {
 
     public CommandBase scoreCone_3_Pickup_8_ScoreCube_12() {
         return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_3.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_3.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_1_2_3.getPath(drive),
-                Path.READY_FOR_PICKUP_8.getPath(drive),
-                pickUpCube(),
-                Path.GO_TO_PICKUP_8.getPath(drive),
+                startGridScoreCone_3(),
+                pickupCube_8(),
                 Path.INTO_COMMUNITY_1_2_3.getPath(drive),
                 Path.CUBE_SCORE_12.getPath(drive),
                 scoreCube()
@@ -858,17 +502,8 @@ public class Auto {
 
     public CommandBase scoreCone_4_Pickup_9_ScoreCube_12() {
         return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_4.getPath(drive),
-                armExtend.moveTo(ArmPresets.HIGH_SCORE),
-                scoreCone(),
-                Path.BACKED_UP_4.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_4_5_6.getPath(drive),
-                Path.READY_FOR_PICKUP_9.getPath(drive),
-                pickUpCube(),
-                Path.GO_TO_PICKUP_9.getPath(drive),
+                startGridScoreCone_4(),
+                pickupCube_9(),
                 Path.INTO_COMMUNITY_4_5_6.getPath(drive),
                 Path.CUBE_SCORE_12.getPath(drive),
                 scoreCube()
@@ -879,16 +514,8 @@ public class Auto {
 
     public CommandBase scoreCone_5_Pickup_9_ScoreCube_12() {
         return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_5.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_5.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_4_5_6.getPath(drive),
-                Path.READY_FOR_PICKUP_9.getPath(drive),
-                pickUpCube(),
-                Path.GO_TO_PICKUP_9.getPath(drive),
+                startGridScoreCone_5(),
+                pickupCube_9(),
                 Path.INTO_COMMUNITY_4_5_6.getPath(drive),
                 Path.CUBE_SCORE_12.getPath(drive),
                 scoreCube()
@@ -899,16 +526,8 @@ public class Auto {
 
     public CommandBase scoreCone_6_Pickup_9_ScoreCube_12() {
         return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_6.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_6.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_4_5_6.getPath(drive),
-                Path.READY_FOR_PICKUP_9.getPath(drive),
-                pickUpCube(),
-                Path.GO_TO_PICKUP_9.getPath(drive),
+                startGridScoreCone_6(),
+                pickupCube_9(),
                 Path.INTO_COMMUNITY_4_5_6.getPath(drive),
                 Path.CUBE_SCORE_12.getPath(drive),
                 scoreCube()
@@ -919,16 +538,8 @@ public class Auto {
 
     public CommandBase scoreCone_4_Pickup_10_ScoreCube_12() {
         return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_4.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_4.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_4_5_6.getPath(drive),
-                Path.READY_FOR_PICKUP_10.getPath(drive),
-                pickUpCube(),
-                Path.GO_TO_PICKUP_10.getPath(drive),
+                startGridScoreCone_4(),
+                pickupCube_10(),
                 Path.INTO_COMMUNITY_4_5_6.getPath(drive),
                 Path.CUBE_SCORE_12.getPath(drive),
                 scoreCube()
@@ -939,16 +550,8 @@ public class Auto {
 
     public CommandBase scoreCone_5_Pickup_10_ScoreCube_12() {
         return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_5.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_5.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_4_5_6.getPath(drive),
-                Path.READY_FOR_PICKUP_10.getPath(drive),
-                pickUpCube(),
-                Path.GO_TO_PICKUP_10.getPath(drive),
+                startGridScoreCone_5(),
+                pickupCube_10(),
                 Path.INTO_COMMUNITY_4_5_6.getPath(drive),
                 Path.CUBE_SCORE_12.getPath(drive),
                 scoreCube()
@@ -959,16 +562,8 @@ public class Auto {
 
     public CommandBase scoreCone_6_Pickup_10_ScoreCube_12() {
         return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_6.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_6.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_4_5_6.getPath(drive),
-                Path.READY_FOR_PICKUP_10.getPath(drive),
-                pickUpCube(),
-                Path.GO_TO_PICKUP_10.getPath(drive),
+                startGridScoreCone_6(),
+                pickupCube_10(),
                 Path.INTO_COMMUNITY_4_5_6.getPath(drive),
                 Path.CUBE_SCORE_12.getPath(drive),
                 scoreCube()
@@ -979,16 +574,8 @@ public class Auto {
 
     public CommandBase scoreCone_4_Pickup_9_ScoreCube_13() {
         return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_4.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_4.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_4_5_6.getPath(drive),
-                Path.READY_FOR_PICKUP_9.getPath(drive),
-                pickUpCube(),
-                Path.GO_TO_PICKUP_9.getPath(drive),
+                startGridScoreCone_4(),
+                pickupCube_9(),
                 Path.INTO_COMMUNITY_4_5_6.getPath(drive),
                 Path.CUBE_SCORE_13.getPath(drive),
                 scoreCube()
@@ -999,16 +586,8 @@ public class Auto {
 
     public CommandBase scoreCone_5_Pickup_9_ScoreCube_13() {
         return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_5.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_5.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_4_5_6.getPath(drive),
-                Path.READY_FOR_PICKUP_9.getPath(drive),
-                pickUpCube(),
-                Path.GO_TO_PICKUP_9.getPath(drive),
+                startGridScoreCone_5(),
+                pickupCube_9(),
                 Path.INTO_COMMUNITY_4_5_6.getPath(drive),
                 Path.CUBE_SCORE_13.getPath(drive),
                 scoreCube()
@@ -1019,16 +598,8 @@ public class Auto {
 
     public CommandBase scoreCone_6_Pickup_9_ScoreCube_13() {
         return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_6.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_6.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_4_5_6.getPath(drive),
-                Path.READY_FOR_PICKUP_9.getPath(drive),
-                pickUpCube(),
-                Path.GO_TO_PICKUP_9.getPath(drive),
+                startGridScoreCone_6(),
+                pickupCube_9(),
                 Path.INTO_COMMUNITY_4_5_6.getPath(drive),
                 Path.CUBE_SCORE_13.getPath(drive),
                 scoreCube()
@@ -1039,16 +610,8 @@ public class Auto {
 
     public CommandBase scoreCone_4_Pickup_10_ScoreCube_13() {
         return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_4.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_4.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_4_5_6.getPath(drive),
-                Path.READY_FOR_PICKUP_10.getPath(drive),
-                pickUpCube(),
-                Path.GO_TO_PICKUP_10.getPath(drive),
+                startGridScoreCone_4(),
+                pickupCube_10(),
                 Path.INTO_COMMUNITY_4_5_6.getPath(drive),
                 Path.CUBE_SCORE_13.getPath(drive),
                 scoreCube()
@@ -1059,16 +622,8 @@ public class Auto {
 
     public CommandBase scoreCone_5_Pickup_10_ScoreCube_13() {
         return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_5.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_5.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_4_5_6.getPath(drive),
-                Path.READY_FOR_PICKUP_10.getPath(drive),
-                pickUpCube(),
-                Path.GO_TO_PICKUP_10.getPath(drive),
+                startGridScoreCone_5(),
+                pickupCube_10(),
                 Path.INTO_COMMUNITY_4_5_6.getPath(drive),
                 Path.CUBE_SCORE_13.getPath(drive),
                 scoreCube()
@@ -1079,16 +634,8 @@ public class Auto {
 
     public CommandBase scoreCone_6_Pickup_10_ScoreCube_13() {
         return sequence(
-                // armRotate.zeroVelocityCheck(),
-                prepareToScoreCone(),
-                Path.UP_TO_CONE_STATION_6.getPath(drive),
-                scoreCone(),
-                Path.BACKED_UP_6.getPath(drive),
-                stowArmCloseIntake(),
-                Path.OUT_OF_COMMUNITY_4_5_6.getPath(drive),
-                Path.READY_FOR_PICKUP_10.getPath(drive),
-                pickUpCube(),
-                Path.GO_TO_PICKUP_10.getPath(drive),
+                startGridScoreCone_6(),
+                pickupCube_10(),
                 Path.INTO_COMMUNITY_4_5_6.getPath(drive),
                 Path.CUBE_SCORE_13.getPath(drive),
                 scoreCube()
@@ -1194,9 +741,9 @@ public class Auto {
                 armRotate.moveTo(ArmPresets.HIGH_SCORE),
                 Path.UP_TO_CONE_STATION_1.getPath(drive),
                 armExtend.moveTo(ArmPresets.HIGH_SCORE),
-                new FunctionalWaitCommand(() -> 0.25),
+                timingWait(),
                 intake.coneRelease(),
-                new FunctionalWaitCommand(() -> 0.25),
+                timingWait(),
                 Path.BACKED_UP_1.getPath(drive),
                 armExtend.moveTo(ArmPresets.ARM_STOWED),
                 intake.coneGrab(),
@@ -1208,5 +755,9 @@ public class Auto {
     }
 
     //// End of some more stuff that Joe wrote
+
+    private CommandBase timingWait() {
+        return new FunctionalWaitCommand(() -> 0.25);
+    }
 
 }
