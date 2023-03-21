@@ -280,7 +280,7 @@ public class Drive extends SmartSubsystemBase {
         return cmd().onExecute(() -> {
             double pitchDeriv = pigeonGyro.getPitch() - previousPitch;
             robotDriveDirection lastDroveDirection = robotDriveDirection.STOPPED;
-            if (pitchDeriv > 0.03) {
+            if (Math.abs(pitchDeriv) > 0.03) {
                 if (lastDroveDirection == robotDriveDirection.FORWARD) {
                     move(0, -0.15, 0);
                 } else if (lastDroveDirection == robotDriveDirection.BACKWARD) {
