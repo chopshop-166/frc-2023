@@ -268,19 +268,34 @@ public class Drive extends SmartSubsystemBase {
         }).runsUntil(() -> drivePID.isFinished(pose, invertSide(targetPose), tolerance)).onEnd(this::safeState);
     }
 
+    private enum robotDriveDirection {
+        FORWARD,
+        BACKWARD,
+        STOPPED;
+    }
+
     public CommandBase balance() {
 
         PersistenceCheck balancedCheck = new PersistenceCheck(15, () -> Math.abs(pigeonGyro.getPitch()) < 3);
         return cmd().onExecute(() -> {
             double pitchDeriv = pigeonGyro.getPitch() - previousPitch;
+            robotDriveDirection lastDroveDirection = robotDriveDirection.STOPPED;
             if (pitchDeriv > 0.03) {
-                safeState();
+                if (lastDroveDirection == robotDriveDirection.FORWARD) {
+                    move(0, -0.15, 0);
+                } else if (lastDroveDirection == robotDriveDirection.BACKWARD) {
+                    move(0, 0.15, 0);
+                }
             } else if (pigeonGyro.getPitch() > 7) {
                 move(0.0, 0.25, 0.0);
+                lastDroveDirection = robotDriveDirection.FORWARD;
             } else if (pigeonGyro.getPitch() < -7) {
                 move(0.0, -0.25, 0.0);
+                lastDroveDirection = robotDriveDirection.BACKWARD;
             } else {
                 safeState();
+                lastDroveDirection = robotDriveDirection.STOPPED;
+
             }
 
             Logger.getInstance().recordOutput("Balanced yet?", false);
