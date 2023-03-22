@@ -99,9 +99,9 @@ public class Led extends SmartSubsystemBase {
                 Logger.getInstance().recordOutput("IndicateLEDs", "Purple");
                 break;
             case ColdFire:
-                coldFire(heat.length, 25);
+                calculateColdFire(heat.length, 25);
                 for (int i = 1; i < heat.length; i++) {
-                    Color color = new Color(heat[i] / 29.0, 42 / 255.0, 235 / 255.0);
+                    Color color = heatToColor(heat[i]);
                     ledBuffer.setLED(i, color);
                     ledBuffer.setLED(ledBuffer.getLength() - i - 1, color);
                 }
@@ -184,7 +184,25 @@ public class Led extends SmartSubsystemBase {
         });
     }
 
-    public void coldFire(int flameHeight, int sparks) {
+    private Color heatToColor(byte h) {
+        // Scale 'heat' down from 0-255 to 0-191
+        byte t192 = (byte) Math.round((h / 255.0) * 191);
+
+        // calculate ramp up from
+        byte heatramp = (byte) (t192 & 0x3F); // 0..63
+        heatramp <<= 2; // scale up to 0..252
+
+        // figure out which third of the spectrum we're in:
+        if (t192 > 0x80) { // hottest
+            return new Color(heatramp, 255, 255);
+        } else if (t192 > 0x40) { // middle
+            return new Color(0, heatramp, 255);
+        } else { // coolest
+            return new Color(0, 0, heatramp);
+        }
+    }
+
+    public void calculateColdFire(int flameHeight, int sparks) {
         // Cool down each cell a little
         for (int i = 1; i < heat.length; i++) {
             int cooldown = (int) (Math.random() * ((flameHeight * 10) / heat.length + 2));
@@ -214,7 +232,6 @@ public class Led extends SmartSubsystemBase {
             ledBehaviors[LedSection.Bottom.getSection()] = LedBehavior.None;
             ledBehaviors[LedSection.All.getSection()] = LedBehavior.ColdFire;
         }).runsWhenDisabled(true);
-
     }
 
     @Override
@@ -236,7 +253,7 @@ public class Led extends SmartSubsystemBase {
         // Use this for any background processing
 
         boolean seesTag = SmartDashboard.getBoolean("Saw Tag", false);
-        Color ledColor = (seesTag) ? (new Color(0, 255, 0)) : (new Color(255, 0, 0));
+        Color ledColor = (seesTag) ? Color.kGreen : Color.kRed;
         if (groundSub.get()) {
             setColor(255, 0, 0, LedSection.Top);
         }
