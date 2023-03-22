@@ -100,7 +100,7 @@ public class FrostBiteMap extends RobotMap {
                         MotorType.kBrushless),
                 MK4i_L2);
 
-        final double maxDriveSpeedMetersPerSecond = Units.feetToMeters(10);
+        final double maxDriveSpeedMetersPerSecond = Units.feetToMeters(12);
 
         final double maxRotationRadianPerSecond = Math.PI;
 
