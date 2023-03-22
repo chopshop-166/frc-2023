@@ -14,8 +14,10 @@ import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.networktables.StringSubscriber;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.maps.RobotMap;
 // $Imports$
 import frc.robot.subsystems.Arm;
@@ -115,12 +117,6 @@ public class Robot extends CommandRobot {
     }
 
     @Override
-    public void teleopInit() {
-        super.teleopInit();
-        armRotate.brakeMode().schedule();
-    }
-
-    @Override
     public void configureButtonBindings() {
         // DRIVE CONTROLLER
         // Drive
@@ -138,6 +134,7 @@ public class Robot extends CommandRobot {
 
         // Arm
         // extend and rotate are in default commands
+        new Trigger(DriverStation::isEnabled).onTrue(armRotate.brakeMode());
         copilotController.start().onTrue(arm.zeroVelocityCheck());
         copilotController.back().whileTrue(armRotate.resetZero());
 
