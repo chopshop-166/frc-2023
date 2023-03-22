@@ -84,7 +84,7 @@ public class FrostBiteMap extends RobotMap {
 
         // Rear Left Module
         final CANCoder encoderRL = new CANCoder(2);
-        encoderRL.configMagnetOffset(23.115);
+        encoderRL.configMagnetOffset(-7.7);
         encoderRL.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
         final SDSSwerveModule rearLeft = new SDSSwerveModule(new Translation2d(-MODULE_OFFSET_XY, MODULE_OFFSET_XY),
                 encoderRL, rearLeftSteer, new CSSparkMax(3,
