@@ -283,34 +283,47 @@ public class Drive extends SmartSubsystemBase {
             double pitchVelocity = xyz[0];
             double rollVelocity = xyz[1];
             double yawVelocity = xyz[2];
+
+            double velocityThresholdDegreesPerSec = 8.0;
+
+            double angleVelocityDegreesPerSec = map.gyro().getRotation2d().getCos() * pitchVelocity
+                    + map.gyro().getRotation2d().getSin() * rollVelocity;
+            boolean shouldStop = (pigeonGyro.getPitch() < 0.0 &&
+                    angleVelocityDegreesPerSec > velocityThresholdDegreesPerSec)
+                    || (pigeonGyro.getPitch() > 0.0 && angleVelocityDegreesPerSec < -velocityThresholdDegreesPerSec);
             robotDriveDirection lastDroveDirection = robotDriveDirection.STOPPED;
-            if (Math.abs(pitchVelocity) > 0.001) {
-                Logger.getInstance().recordOutput("Pitch Velocity I think happened", pitchVelocity);
-                if (lastDroveDirection == robotDriveDirection.FORWARD) {
-                    move(0, -0.15, 0);
-                    Logger.getInstance().recordOutput("Driving:", "backward-deriv");
-                    Logger.getInstance().recordOutput("Balanced yet?", false);
-                } else if (lastDroveDirection == robotDriveDirection.BACKWARD) {
-                    move(0, 0.15, 0);
-                    Logger.getInstance().recordOutput("Driving:", "forward-deriv");
-                    Logger.getInstance().recordOutput("Balanced yet?", false);
-                }
-            } else if (pigeonGyro.getPitch() > 7) {
-                move(0.0, 0.15, 0.0);
-                lastDroveDirection = robotDriveDirection.FORWARD;
-                Logger.getInstance().recordOutput("Driving:", "forward");
-                Logger.getInstance().recordOutput("Balanced yet?", false);
-
-            } else if (pigeonGyro.getPitch() < -7) {
-                move(0.0, -0.15, 0.0);
-                lastDroveDirection = robotDriveDirection.BACKWARD;
-                Logger.getInstance().recordOutput("Driving:", "backward");
-                Logger.getInstance().recordOutput("Balanced yet?", false);
-            } else {
+            if (shouldStop) {
                 safeState();
-                lastDroveDirection = robotDriveDirection.STOPPED;
-                Logger.getInstance().recordOutput("Balanced yet?", true);
+                Logger.getInstance().recordOutput("Driving:", "I'm stopped!");
+            } else {
+                if (Math.abs(angleVelocityDegreesPerSec) > 0.001) {
+                    Logger.getInstance().recordOutput("Pitch Velocity I think happened", pitchVelocity);
+                    if (lastDroveDirection == robotDriveDirection.FORWARD) {
+                        move(0, -0.15, 0);
+                        Logger.getInstance().recordOutput("Driving:", "backward-deriv");
+                        Logger.getInstance().recordOutput("Balanced yet?", false);
+                    } else if (lastDroveDirection == robotDriveDirection.BACKWARD) {
+                        move(0, 0.15, 0);
+                        Logger.getInstance().recordOutput("Driving:", "forward-deriv");
+                        Logger.getInstance().recordOutput("Balanced yet?", false);
+                    }
+                } else if (pigeonGyro.getPitch() > 7) {
+                    move(0.0, 0.15, 0.0);
+                    lastDroveDirection = robotDriveDirection.FORWARD;
+                    Logger.getInstance().recordOutput("Driving:", "forward");
+                    Logger.getInstance().recordOutput("Balanced yet?", false);
 
+                } else if (pigeonGyro.getPitch() < -7) {
+                    move(0.0, -0.15, 0.0);
+                    lastDroveDirection = robotDriveDirection.BACKWARD;
+                    Logger.getInstance().recordOutput("Driving:", "backward");
+                    Logger.getInstance().recordOutput("Balanced yet?", false);
+                } else {
+                    safeState();
+                    lastDroveDirection = robotDriveDirection.STOPPED;
+                    Logger.getInstance().recordOutput("Balanced yet?", true);
+
+                }
             }
 
         }).runsUntil(balancedCheck).onEnd(() -> Logger.getInstance().recordOutput("Balanced yet?", true));
