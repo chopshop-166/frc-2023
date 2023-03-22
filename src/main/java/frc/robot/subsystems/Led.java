@@ -253,7 +253,7 @@ public class Led extends SmartSubsystemBase {
         // Use this for any background processing
 
         boolean seesTag = SmartDashboard.getBoolean("Saw Tag", false);
-        Color ledColor = (seesTag) ? (new Color(0, 255, 0)) : (new Color(255, 0, 0));
+        Color ledColor = (seesTag) ? Color.kGreen : Color.kRed;
         if (groundSub.get()) {
             setColor(255, 0, 0, LedSection.Top);
         }
