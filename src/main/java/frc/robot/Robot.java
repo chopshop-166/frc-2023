@@ -14,6 +14,9 @@ import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.networktables.StringSubscriber;
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.PneumaticHub;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
@@ -47,6 +50,7 @@ public class Robot extends CommandRobot {
     private ArmRotate armRotate = new ArmRotate(map.getArmRotateMap());
 
     private Auto auto = new Auto(drive, arm, armRotate, intake);
+    private Compressor compressor = new Compressor(PneumaticsModuleType.REVPH);
 
     @Autonomous(defaultAuto = true)
     public CommandBase noAuto = runOnce(() -> {
@@ -114,6 +118,14 @@ public class Robot extends CommandRobot {
         // Start logging! No more data receivers, replay sources, or metadata values may
         // be added.
         Logger.getInstance().start();
+    }
+
+    @Override
+    public void robotPeriodic() {
+        super.robotPeriodic();
+        Logger.getInstance().recordOutput("Compressor/Pressure", compressor.getPressure());
+        Logger.getInstance().recordOutput("Compressor/PressureSwitch", compressor.getPressureSwitchValue());
+        Logger.getInstance().recordOutput("Compressor/Current", compressor.getCurrent());
     }
 
     @Override
