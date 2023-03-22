@@ -337,49 +337,40 @@ public class Drive extends SmartSubsystemBase {
             double rollVelocity = xyz[1];
             double yawVelocity = xyz[2];
 
-            double velocityThresholdDegreesPerSec = 8.0;
+            double velocityThresholdDegreesPerSec = 1.0;
 
             double angleVelocityDegreesPerSec = map.gyro().getRotation2d().getCos() * pitchVelocity
                     + map.gyro().getRotation2d().getSin() * rollVelocity;
             boolean shouldStop = (pigeonGyro.getPitch() < 0.0 &&
                     angleVelocityDegreesPerSec > velocityThresholdDegreesPerSec)
                     || (pigeonGyro.getPitch() > 0.0 && angleVelocityDegreesPerSec < -velocityThresholdDegreesPerSec);
-            robotDriveDirection lastDroveDirection = robotDriveDirection.STOPPED;
+
+            Logger.getInstance().recordOutput("Pitch Velocity:", map.gyro().getRotation2d().getCos() * pitchVelocity);
+            Logger.getInstance().recordOutput("Roll Velocity:", map.gyro().getRotation2d().getSin() * rollVelocity);
+            Logger.getInstance().recordOutput("angleVelocity:", angleVelocityDegreesPerSec);
+            Logger.getInstance().recordOutput("pitch", pigeonGyro.getPitch());
+
             if (shouldStop) {
                 safeState();
                 Logger.getInstance().recordOutput("Driving:", "I'm stopped!");
+
             } else {
-                if (Math.abs(angleVelocityDegreesPerSec) > 0.001) {
-                    Logger.getInstance().recordOutput("Pitch Velocity I think happened", pitchVelocity);
-                    if (lastDroveDirection == robotDriveDirection.FORWARD) {
-                        move(0, -0.15, 0);
-                        Logger.getInstance().recordOutput("Driving:", "backward-deriv");
-                        Logger.getInstance().recordOutput("Balanced yet?", false);
-                    } else if (lastDroveDirection == robotDriveDirection.BACKWARD) {
-                        move(0, 0.15, 0);
-                        Logger.getInstance().recordOutput("Driving:", "forward-deriv");
-                        Logger.getInstance().recordOutput("Balanced yet?", false);
-                    }
-                } else if (pigeonGyro.getPitch() > 7) {
-                    move(0.0, 0.15, 0.0);
-                    lastDroveDirection = robotDriveDirection.FORWARD;
+                if (pigeonGyro.getPitch() > 3) {
+                    move(0.0, 0.25, 0.0);
+
                     Logger.getInstance().recordOutput("Driving:", "forward");
                     Logger.getInstance().recordOutput("Balanced yet?", false);
 
-                } else if (pigeonGyro.getPitch() < -7) {
-                    move(0.0, -0.15, 0.0);
-                    lastDroveDirection = robotDriveDirection.BACKWARD;
+                } else if (pigeonGyro.getPitch() < -3) {
+                    move(0.0, -0.25, 0.0);
+
                     Logger.getInstance().recordOutput("Driving:", "backward");
                     Logger.getInstance().recordOutput("Balanced yet?", false);
-                } else {
-                    safeState();
-                    lastDroveDirection = robotDriveDirection.STOPPED;
-                    Logger.getInstance().recordOutput("Balanced yet?", true);
-
                 }
+
             }
 
-        }).runsUntil(balancedCheck).onEnd(() -> Logger.getInstance().recordOutput("Balanced yet?", true));
+        }).runsUntil(balancedCheck).onEnd(() -> Logger.getInstance().recordOutput("Driving:", "Command Ended"));
     }
 
     public CommandBase resetGyroCommand() {
