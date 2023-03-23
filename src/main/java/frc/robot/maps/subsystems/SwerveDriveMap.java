@@ -7,7 +7,6 @@ import com.chopshop166.chopshoplib.drive.MockSwerveModule;
 import com.chopshop166.chopshoplib.drive.SwerveModule;
 
 import com.chopshop166.chopshoplib.sensors.gyro.MockGyro;
-import com.chopshop166.chopshoplib.sensors.gyro.PigeonGyro2;
 import com.chopshop166.chopshoplib.sensors.gyro.SmartGyro;
 
 import edu.wpi.first.math.geometry.Rotation2d;
