@@ -44,7 +44,7 @@ public class Drive extends SmartSubsystemBase {
     double speedCoef = 1;
     double rotationCoef = 1;
 
-    private final double balanceSpeed = 0.25;
+    private final double BALANCE_SPEED = 0.25;
 
     boolean isBlue = false;
 
@@ -324,14 +324,14 @@ public class Drive extends SmartSubsystemBase {
 
     public CommandBase driveUntilTipped() {
         return cmd().onExecute(() -> {
-            move(0.0, balanceSpeed, 0.0);
+            move(0.0, BALANCE_SPEED, 0.0);
 
         }).runsUntil(() -> Math.abs(this.getTilt()) > 9);
     }
 
     public double getTilt() {
         return this.map.gyro().getRotation2d().getCos() * this.map.gyro().getRotation3d().getY()
-                + this.map.gyro().getRotation2d().getSin() * this.map.gyro().getRotation3d().getY();
+                + this.map.gyro().getRotation2d().getSin() * this.map.gyro().getRotation3d().getX();
     }
 
     public CommandBase balance() {
@@ -345,9 +345,9 @@ public class Drive extends SmartSubsystemBase {
 
             double angleVelocityDegreesPerSec = map.gyro().getRotation2d().getCos() * rotationVelocity.getY()
                     + map.gyro().getRotation2d().getSin() * rotationVelocity.getX();
-            boolean shouldStop = (rotationVelocity.getY() < 0.0 &&
+            boolean shouldStop = (getTilt() < 0.0 &&
                     angleVelocityDegreesPerSec > velocityThresholdDegreesPerSec)
-                    || (rotationVelocity.getY() > 0.0 && angleVelocityDegreesPerSec < -velocityThresholdDegreesPerSec);
+                    || (getTilt() > 0.0 && angleVelocityDegreesPerSec < -velocityThresholdDegreesPerSec);
 
             Logger.getInstance().recordOutput("Angle Velocity", angleVelocityDegreesPerSec);
             Logger.getInstance().recordOutput("Pitch", getTilt());
@@ -358,12 +358,12 @@ public class Drive extends SmartSubsystemBase {
 
             } else {
                 if (getTilt() > 3) {
-                    move(0.0, balanceSpeed, 0.0);
+                    move(0.0, BALANCE_SPEED, 0.0);
 
                     Logger.getInstance().recordOutput("AutoBalanceState", "backward");
 
                 } else {
-                    move(0.0, -balanceSpeed, 0.0);
+                    move(0.0, -BALANCE_SPEED, 0.0);
 
                     Logger.getInstance().recordOutput("AutoBalanceState", "forward");
 

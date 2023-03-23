@@ -33,7 +33,7 @@ public class OffAxis extends RobotMap {
         // Value taken from CAD as offset from center of module base pulley to center
         // of the robot
         final double MODULE_OFFSET_XY = 0.381;
-        final PigeonGyro2 pigeonGyro2 = new PigeonGyro2(3);
+        final PigeonGyro pigeonGyro = new PigeonGyro(new PigeonIMU(5));
 
         final CSSparkMax frontLeftSteer = new CSSparkMax(2, MotorType.kBrushless);
         final CSSparkMax frontRightSteer = new CSSparkMax(4, MotorType.kBrushless);
@@ -94,7 +94,7 @@ public class OffAxis extends RobotMap {
 
         return new SwerveDriveMap(frontLeft, frontRight, rearLeft, rearRight,
                 maxDriveSpeedMetersPerSecond,
-                maxRotationRadianPerSecond, pigeonGyro2, pid, cameraPosition, "eyes");
+                maxRotationRadianPerSecond, pigeonGyro, pid, cameraPosition, "eyes");
     }
 
     @Override
