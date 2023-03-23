@@ -154,9 +154,9 @@ public class Auto {
 
         return sequence(
                 coneScoreCmd,
-                conePos.outOfCommunity.getPath(drive),
+                conePos.communityPosition.outOfCommunity.getPath(drive),
                 pickupCubeCmd,
-                conePos.inCommunity.getPath(drive),
+                conePos.communityPosition.inCommunity.getPath(drive),
                 scoreCubeCmd,
                 scoreCube()
 
