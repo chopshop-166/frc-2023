@@ -321,6 +321,13 @@ public class Drive extends SmartSubsystemBase {
 
     }
 
+    public CommandBase driveUntilTipped() {
+        return cmd().onExecute(() -> {
+            move(0.0, 0.25, 0.0);
+
+        }).runsUntil(() -> Math.abs(pigeonGyro.getPitch()) > 9);
+    }
+
     private enum robotDriveDirection {
         FORWARD,
         BACKWARD,
