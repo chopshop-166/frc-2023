@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
@@ -169,16 +170,19 @@ public class Robot extends CommandRobot {
         conePosChooser.addOption("Cone Pos 4", ConeStation.STATION_4);
         conePosChooser.addOption("Cone Pos 5", ConeStation.STATION_5);
         conePosChooser.addOption("Cone Pos 6", ConeStation.STATION_6);
+        SmartDashboard.putData(conePosChooser);
 
         cubePosChooser.setDefaultOption("Pick Up Cube 1", CubePickupLocation.CUBE_1);
         cubePosChooser.addOption("Pick Up Cube 2", CubePickupLocation.CUBE_2);
         cubePosChooser.addOption("Pick Up Cube 3", CubePickupLocation.CUBE_3);
         cubePosChooser.addOption("Pick Up Cube 4", CubePickupLocation.CUBE_4);
+        SmartDashboard.putData(cubePosChooser);
 
         cubeScorePosChooser.setDefaultOption("Don't Score Cube", 0);
         cubeScorePosChooser.addOption("Score Cube 11", 11);
         cubeScorePosChooser.addOption("Score Cube 12", 12);
         cubeScorePosChooser.addOption("Score Cube 13", 13);
+        SmartDashboard.putData(cubeScorePosChooser);
 
         Logger.getInstance().recordMetadata("ProjectName", "FRC-2023"); // Set a metadata value
         map.setupLogging();
