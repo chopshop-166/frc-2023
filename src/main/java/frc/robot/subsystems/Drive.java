@@ -328,12 +328,6 @@ public class Drive extends SmartSubsystemBase {
         }).runsUntil(() -> Math.abs(pigeonGyro.getPitch()) > 9);
     }
 
-    private enum robotDriveDirection {
-        FORWARD,
-        BACKWARD,
-        STOPPED;
-    }
-
     public CommandBase balance() {
 
         PersistenceCheck balancedCheck = new PersistenceCheck(15, () -> Math.abs(pigeonGyro.getPitch()) < 7);
@@ -352,32 +346,32 @@ public class Drive extends SmartSubsystemBase {
                     angleVelocityDegreesPerSec > velocityThresholdDegreesPerSec)
                     || (pigeonGyro.getPitch() > 0.0 && angleVelocityDegreesPerSec < -velocityThresholdDegreesPerSec);
 
-            Logger.getInstance().recordOutput("Pitch Velocity:", map.gyro().getRotation2d().getCos() * pitchVelocity);
-            Logger.getInstance().recordOutput("Roll Velocity:", map.gyro().getRotation2d().getSin() * rollVelocity);
-            Logger.getInstance().recordOutput("angleVelocity:", angleVelocityDegreesPerSec);
-            Logger.getInstance().recordOutput("pitch", pigeonGyro.getPitch());
+            Logger.getInstance().recordOutput("Pitch Velocity", map.gyro().getRotation2d().getCos() * pitchVelocity);
+            Logger.getInstance().recordOutput("Roll Velocity", map.gyro().getRotation2d().getSin() * rollVelocity);
+            Logger.getInstance().recordOutput("Angle Velocity", angleVelocityDegreesPerSec);
+            Logger.getInstance().recordOutput("Pitch", pigeonGyro.getPitch());
 
             if (shouldStop) {
                 safeState();
-                Logger.getInstance().recordOutput("Driving:", "I'm stopped!");
+                Logger.getInstance().recordOutput("Driving", "I'm stopped!");
 
             } else {
                 if (pigeonGyro.getPitch() > 3) {
                     move(0.0, 0.25, 0.0);
 
-                    Logger.getInstance().recordOutput("Driving:", "forward");
-                    Logger.getInstance().recordOutput("Balanced yet?", false);
+                    Logger.getInstance().recordOutput("Driving", "forward");
+                    Logger.getInstance().recordOutput("Balanced", false);
 
                 } else if (pigeonGyro.getPitch() < -3) {
                     move(0.0, -0.25, 0.0);
 
-                    Logger.getInstance().recordOutput("Driving:", "backward");
-                    Logger.getInstance().recordOutput("Balanced yet?", false);
+                    Logger.getInstance().recordOutput("Driving", "backward");
+                    Logger.getInstance().recordOutput("Balanced", false);
                 }
 
             }
 
-        }).runsUntil(balancedCheck).onEnd(() -> Logger.getInstance().recordOutput("Driving:", "Command Ended"));
+        }).runsUntil(balancedCheck).onEnd(() -> Logger.getInstance().recordOutput("Driving", "Command Ended"));
     }
 
     public CommandBase resetGyroCommand() {
