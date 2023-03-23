@@ -362,7 +362,7 @@ public class Drive extends SmartSubsystemBase {
                     Logger.getInstance().recordOutput("Driving", "forward");
                     Logger.getInstance().recordOutput("Balanced", false);
 
-                } else if (pigeonGyro.getPitch() < -3) {
+                } else {
                     move(0.0, -0.25, 0.0);
 
                     Logger.getInstance().recordOutput("Driving", "backward");
