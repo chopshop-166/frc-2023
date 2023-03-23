@@ -46,7 +46,7 @@ public class FrostBiteMap extends RobotMap {
         // of the robot
 
         final double MODULE_OFFSET_XY = Units.inchesToMeters(8.89);
-        final PigeonGyro2 pigeonGyro = new PigeonGyro2(1);
+        final PigeonGyro2 pigeonGyro2 = new PigeonGyro2(1);
 
         final CSSparkMax frontLeftSteer = new CSSparkMax(8, MotorType.kBrushless);
         final CSSparkMax frontRightSteer = new CSSparkMax(6, MotorType.kBrushless);
@@ -122,7 +122,7 @@ public class FrostBiteMap extends RobotMap {
 
         return new SwerveDriveMap(frontLeft, frontRight, rearLeft, rearRight,
                 maxDriveSpeedMetersPerSecond,
-                maxRotationRadianPerSecond, pigeonGyro, pid, cameraPosition, "eyes");
+                maxRotationRadianPerSecond, pigeonGyro2, pid, cameraPosition, "eyes");
 
     }
 

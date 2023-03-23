@@ -23,7 +23,7 @@ import frc.robot.util.DrivePID;
  */
 public record SwerveDriveMap(SwerveModule frontLeft, SwerveModule frontRight, SwerveModule rearLeft,
         SwerveModule rearRight, double maxDriveSpeedMetersPerSecond,
-        double maxRotationRadianPerSecond, PigeonGyro2 gyro, DrivePID pid, Transform3d cameraPosition,
+        double maxRotationRadianPerSecond, SmartGyro gyro, DrivePID pid, Transform3d cameraPosition,
         String cameraName) {
 
     /** A distance to use for default values. */
@@ -49,7 +49,7 @@ public record SwerveDriveMap(SwerveModule frontLeft, SwerveModule frontRight, Sw
                 // Max rotation (rad/s)
                 Math.PI,
                 // Gyro
-                new PigeonGyro2(1), new DrivePID(), new Transform3d(), "");
+                new MockGyro(), new DrivePID(), new Transform3d(), "");
     }
 
     public void updateInputs(Data io) {
