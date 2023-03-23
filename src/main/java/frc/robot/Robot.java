@@ -17,6 +17,7 @@ import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
@@ -106,6 +107,18 @@ public class Robot extends CommandRobot {
         }), led.setYellow());
     }
 
+    public CommandBase rumbleOn() {
+        return runOnce(() -> {
+            copilotController.getHID().setRumble(RumbleType.kBothRumble, 1);
+        });
+    }
+
+    public CommandBase rumbleOff() {
+        return runOnce(() -> {
+            copilotController.getHID().setRumble(RumbleType.kBothRumble, 0);
+        });
+    }
+
     @Override
     public void robotInit() {
         super.robotInit();
@@ -140,7 +153,9 @@ public class Robot extends CommandRobot {
 
         // COPILOT CONTROLLER
         // Intake
-        copilotController.a().onTrue(led.intakeSpinning().andThen(intake.grab(), led.GrabbedPiece()));
+        copilotController.getHID().setRumble(RumbleType.kBothRumble, 1);
+        copilotController.a().onTrue(rumbleOn().andThen(led.intakeSpinning()).andThen(intake.grab(), led.GrabbedPiece())
+                .andThen(rumbleOff()));
         copilotController.b().onTrue(intake.toggle());
         copilotController.x().whileTrue(intake.cubeRelease());
 
