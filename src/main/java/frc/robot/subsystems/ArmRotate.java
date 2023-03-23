@@ -5,7 +5,6 @@ import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
 import com.chopshop166.chopshoplib.PersistenceCheck;
-import com.chopshop166.chopshoplib.commands.BuildCommand;
 import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
 
 import edu.wpi.first.math.controller.PIDController;

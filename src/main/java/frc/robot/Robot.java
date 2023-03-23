@@ -81,7 +81,7 @@ public class Robot extends CommandRobot {
     @Autonomous
     public CommandBase preTest = auto.preTest();
 
-    @Autonomous
+    @Autonomous(name = "Piecemeal Auto")
     public CommandBase buildCommand = new ProxyCommand(() -> {
         ConeStation conePos = conePosChooser.getSelected();
         CubePickupLocation cubePos = cubePosChooser.getSelected();
