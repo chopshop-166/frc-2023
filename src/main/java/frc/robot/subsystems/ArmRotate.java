@@ -5,6 +5,7 @@ import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
 import com.chopshop166.chopshoplib.PersistenceCheck;
+import com.chopshop166.chopshoplib.commands.BuildCommand;
 import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -13,6 +14,7 @@ import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.ArmPresets;
 import frc.robot.maps.subsystems.ArmRotateMap;
 import frc.robot.maps.subsystems.ArmRotateMap.Data;
@@ -108,19 +110,15 @@ public class ArmRotate extends SmartSubsystemBase {
     }
 
     public CommandBase brakeMode() {
-        return cmd().onInitialize(() -> {
+        return new InstantCommand(() -> {
             map.setBrake();
-        }).runsUntil(() -> {
-            return true;
-        }).runsWhenDisabled(true);
+        }).ignoringDisable(true);
     }
 
     public CommandBase coastMode() {
-        return cmd().onInitialize(() -> {
+        return new InstantCommand(() -> {
             map.setCoast();
-        }).runsUntil(() -> {
-            return true;
-        }).runsWhenDisabled(true);
+        }).ignoringDisable(true);
     }
 
     @Override
