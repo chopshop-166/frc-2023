@@ -356,9 +356,7 @@ public class Drive extends SmartSubsystemBase {
                 safeState();
                 Logger.getInstance().recordOutput("AutoBalanceState", "stopped");
 
-            } else {
-            }
-            if (getTilt() > 3) {
+            } else if (getTilt() > 3) {
                 move(0.0, BALANCE_SPEED, 0.0);
 
                 Logger.getInstance().recordOutput("AutoBalanceState", "backward");
