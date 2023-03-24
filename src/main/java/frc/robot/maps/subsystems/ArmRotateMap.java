@@ -53,8 +53,8 @@ public class ArmRotateMap {
         data.tempCelcius = motor.getTemperatureC();
         data.acceleration = data.velocityDegreesPerSecond - previousRate;
         previousRate = data.velocityDegreesPerSecond;
-        data.rotatingAbsAngleDegrees = absEncoder.getAbsolutePosition();
-        data.rotatingRelativeAngleDegrees = encoder.getAbsolutePosition();
+        data.rotatingAbsAngleDegrees = absEncoder.getDistance();
+        data.rotatingRelativeAngleDegrees = encoder.getDistance();
         data.rotatingAngleVelocity = encoder.getRate();
     }
 
