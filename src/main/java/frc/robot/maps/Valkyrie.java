@@ -6,10 +6,12 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import com.chopshop166.chopshoplib.maps.RobotMapFor;
 import com.chopshop166.chopshoplib.motors.CSSparkMax;
+import com.chopshop166.chopshoplib.sensors.MockEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import frc.robot.maps.subsystems.ArmMap;
@@ -28,8 +30,9 @@ public class Valkyrie extends RobotMap {
     public ArmRotateMap getArmRotateMap() {
         CSSparkMax motor = new CSSparkMax(18, MotorType.kBrushless);
         PIDController pid = new PIDController(0.01, 0, 0);
+        DutyCycleEncoder mockArmEncoder = new DutyCycleEncoder(18);
         pid.setTolerance(1);
-        return new ArmRotateMap(motor, 1, 10, 1, 10, 0, pid, 0, 0);
+        return new ArmRotateMap(motor, 1, 10, 1, 10, 0, pid, mockArmEncoder, new MockEncoder(), 0, 0);
     }
 
     @Override
