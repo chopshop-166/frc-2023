@@ -362,7 +362,7 @@ public class Drive extends SmartSubsystemBase {
 
                     Logger.getInstance().recordOutput("AutoBalanceState", "backward");
 
-                } else {
+                } else if (pigeonGyro.getPitch() > 3) {
                     move(0.0, -BALANCE_SPEED, 0.0);
 
                     Logger.getInstance().recordOutput("AutoBalanceState", "forward");
