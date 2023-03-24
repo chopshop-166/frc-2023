@@ -134,7 +134,6 @@ public class Led extends SmartSubsystemBase {
                 ledBuffer.setRGB(ledBuffer.getLength() - ledPosition - 1, 0, 255, 0);
                 Logger.getInstance().recordOutput("IndicateLEDs", "Spinning");
                 break;
-
             case None:
                 break;
 
@@ -177,10 +176,16 @@ public class Led extends SmartSubsystemBase {
         });
     }
 
-    public CommandBase GrabbedPiece() {
+    public CommandBase grabbedPiece() {
         return runOnce(() -> {
             ledBehaviors[LedSection.Bottom.getSection()] = LedBehavior.GrabbedPiece;
             ledBehaviors[LedSection.All.getSection()] = LedBehavior.None;
+        });
+    }
+
+    public CommandBase bottomOff() {
+        return runOnce(() -> {
+            ledBehaviors[LedSection.Bottom.getSection()] = LedBehavior.None;
         });
     }
 
