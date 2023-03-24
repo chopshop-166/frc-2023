@@ -357,21 +357,21 @@ public class Drive extends SmartSubsystemBase {
                 Logger.getInstance().recordOutput("AutoBalanceState", "stopped");
 
             } else {
-                if (getTilt() > 3) {
-                    move(0.0, BALANCE_SPEED, 0.0);
+            }
+            if (getTilt() > 3) {
+                move(0.0, BALANCE_SPEED, 0.0);
 
-                    Logger.getInstance().recordOutput("AutoBalanceState", "backward");
+                Logger.getInstance().recordOutput("AutoBalanceState", "backward");
 
-                } else if (pigeonGyro.getPitch() > 3) {
-                    move(0.0, -BALANCE_SPEED, 0.0);
+            } else if (getTilt() < 3) {
+                move(0.0, -BALANCE_SPEED, 0.0);
 
-                    Logger.getInstance().recordOutput("AutoBalanceState", "forward");
-
-                }
+                Logger.getInstance().recordOutput("AutoBalanceState", "forward");
 
             }
 
         }).runsUntil(balancedCheck).onEnd(() -> Logger.getInstance().recordOutput("AutoBalanceState", "ended"));
+
     }
 
     public CommandBase resetGyroCommand() {
