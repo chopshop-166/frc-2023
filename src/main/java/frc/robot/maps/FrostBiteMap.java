@@ -46,7 +46,7 @@ public class FrostBiteMap extends RobotMap {
         // of the robot
 
         final double MODULE_OFFSET_XY = Units.inchesToMeters(8.89);
-        final PigeonGyro2 pigeonGyro2 = new PigeonGyro2(1);
+        final PigeonGyro2 pigeonGyro = new PigeonGyro2(1);
 
         final CSSparkMax frontLeftSteer = new CSSparkMax(8, MotorType.kBrushless);
         final CSSparkMax frontRightSteer = new CSSparkMax(6, MotorType.kBrushless);
@@ -103,7 +103,7 @@ public class FrostBiteMap extends RobotMap {
                         MotorType.kBrushless),
                 MK4i_L2);
 
-        final double maxDriveSpeedMetersPerSecond = Units.feetToMeters(10);
+        final double maxDriveSpeedMetersPerSecond = Units.feetToMeters(12);
 
         final double maxRotationRadianPerSecond = Math.PI;
 
@@ -122,7 +122,7 @@ public class FrostBiteMap extends RobotMap {
 
         return new SwerveDriveMap(frontLeft, frontRight, rearLeft, rearRight,
                 maxDriveSpeedMetersPerSecond,
-                maxRotationRadianPerSecond, pigeonGyro2, pid, cameraPosition, "eyes");
+                maxRotationRadianPerSecond, pigeonGyro, pid, cameraPosition, "eyes");
 
     }
 
@@ -152,7 +152,7 @@ public class FrostBiteMap extends RobotMap {
         CSEncoder encoder = new CSEncoder(2, 3);
         DutyCycleEncoder absEncoder = new DutyCycleEncoder(4);
         pid.setTolerance(0.5);
-        return new ArmRotateMap(csmotor, 85, 10, 115, 0, 15, pid, absEncoder, encoder, 6.654, 42.3) {
+        return new ArmRotateMap(csmotor, 85, 10, 115, 0, 15, pid, absEncoder, encoder, 46.654, 42.3) {
             @Override
             public void setBrake() {
                 csmotor.getMotorController().setIdleMode(IdleMode.kBrake);
