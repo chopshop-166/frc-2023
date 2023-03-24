@@ -7,6 +7,7 @@ import java.util.Arrays;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.Drive;
 
 public enum AutoPath {
@@ -32,7 +33,8 @@ public enum AutoPath {
     // Pos. 13 -> closest to judging table
 
     // Chargestation position
-    // Pos. 14 -> direct center of chargestation
+    // Pos. 14 -> inner side of chargestation (near scoring stations)
+    // Pos. 15 -> outer side of chargestation (community)
 
     // CONE STATION SUB-POSITIONS
     UP_TO_CONE_STATION_1(0.05,
@@ -130,7 +132,10 @@ public enum AutoPath {
             new Pose2d(6.90, 1.09, AutoConstants.ROTATION_0)),
 
     // CHARGE STATION POSTION(S?)
-    ON_CHARGE_STATION_14(0.2,
+    INNER_SIDE_CHARGE_STATION_14(0.2,
+            new Pose2d()),
+
+    OUTER_SIDE_CHARGE_STATION_15(0.2,
             new Pose2d()),
 
     //// Start of some stuff that Joe wrote

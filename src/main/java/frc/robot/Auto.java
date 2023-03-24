@@ -74,9 +74,6 @@ public class Auto {
 
     }
 
-    //// End of some stuff that Joe wrote
-    //
-
     public CommandBase prepareToScoreCone() {
         return sequence(
                 // armRotate.zeroVelocityCheck(),
@@ -159,6 +156,9 @@ public class Auto {
                 conePos.communityPosition.inCommunity.getPath(drive),
                 scoreCubeCmd,
                 scoreCube()
+        // position to be in front of drive station in community? I'll add that
+        // , drive.driveUntilTipped()
+        // , drive.balance()
 
         ).withName(coneScoreCmd.getName() + " " + pickupCubeCmd.getName() + " " + scoreCubeCmd.getName());
     }
@@ -174,15 +174,13 @@ public class Auto {
                 scoreCone(),
                 AutoPath.BACKED_UP_1.getPath(drive),
                 stowArmCloseIntake(),
-                AutoPath.ON_CHARGE_STATION_14.getPath(drive)
+                AutoPath.INNER_SIDE_CHARGE_STATION_14.getPath(drive)
         // will need values for this ^
         // add whatever balance command that we do
 
         )
                 .withName("Score Cone Balance");
     }
-
-    //// Start of some more stuff that Joe wrote
 
     public CommandBase oneConeTest() {
         return sequence(
@@ -269,8 +267,6 @@ public class Auto {
 
         ).withName("One Cone Taxi No Cable");
     }
-
-    //// End of some more stuff that Joe wrote
 
     private CommandBase timingWait() {
         return new FunctionalWaitCommand(() -> 0.25);
