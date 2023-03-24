@@ -164,7 +164,7 @@ public class Robot extends CommandRobot {
         copilotController.a()
                 .onTrue(rumbleOn().andThen(led.intakeSpinning()).andThen(intake.grab(), rumbleAndIntakeSpinningOff()));
         copilotController.b().onTrue(intake.toggle().andThen(rumbleAndIntakeSpinningOff()));
-        copilotController.x().whileTrue(intake.cubeRelease());
+        copilotController.x().whileTrue(rumbleAndIntakeSpinningOff().andThen(intake.cubeRelease()));
 
         // Arm
         // extend and rotate are in default commands
