@@ -10,6 +10,7 @@ import com.chopshop166.chopshoplib.maps.RobotMapFor;
 import com.chopshop166.chopshoplib.motors.CSSparkMax;
 import com.chopshop166.chopshoplib.motors.CSTalonSRX;
 import com.chopshop166.chopshoplib.pneumatics.RevDSolenoid;
+import com.chopshop166.chopshoplib.sensors.CSEncoder;
 import com.chopshop166.chopshoplib.sensors.MockColorSensor;
 import com.chopshop166.chopshoplib.sensors.gyro.PigeonGyro2;
 import com.chopshop166.chopshoplib.states.PIDValues;
@@ -25,6 +26,8 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DutyCycle;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import frc.robot.maps.subsystems.ArmMap;
@@ -43,7 +46,7 @@ public class FrostBiteMap extends RobotMap {
         // of the robot
 
         final double MODULE_OFFSET_XY = Units.inchesToMeters(8.89);
-        final PigeonGyro2 pigeonGyro = new PigeonGyro2(1);
+        final PigeonGyro2 pigeonGyro2 = new PigeonGyro2(1);
 
         final CSSparkMax frontLeftSteer = new CSSparkMax(8, MotorType.kBrushless);
         final CSSparkMax frontRightSteer = new CSSparkMax(6, MotorType.kBrushless);
@@ -100,7 +103,7 @@ public class FrostBiteMap extends RobotMap {
                         MotorType.kBrushless),
                 MK4i_L2);
 
-        final double maxDriveSpeedMetersPerSecond = Units.feetToMeters(12);
+        final double maxDriveSpeedMetersPerSecond = Units.feetToMeters(10);
 
         final double maxRotationRadianPerSecond = Math.PI;
 
@@ -119,7 +122,7 @@ public class FrostBiteMap extends RobotMap {
 
         return new SwerveDriveMap(frontLeft, frontRight, rearLeft, rearRight,
                 maxDriveSpeedMetersPerSecond,
-                maxRotationRadianPerSecond, pigeonGyro, pid, cameraPosition, "eyes");
+                maxRotationRadianPerSecond, pigeonGyro2, pid, cameraPosition, "eyes");
 
     }
 
@@ -146,8 +149,10 @@ public class FrostBiteMap extends RobotMap {
         csmotor.getEncoder().setPositionScaleFactor(1.125);
         csmotor.getEncoder().setVelocityScaleFactor(1.125 / 60);
         PIDController pid = new PIDController(0.06, 0, 0);
+        CSEncoder encoder = new CSEncoder(2, 3);
+        DutyCycleEncoder absEncoder = new DutyCycleEncoder(4);
         pid.setTolerance(0.5);
-        return new ArmRotateMap(csmotor, 85, 10, 115, 0, 15, pid, 46.654, 42.3) {
+        return new ArmRotateMap(csmotor, 85, 10, 115, 0, 15, pid, absEncoder, encoder, 6.654, 42.3) {
             @Override
             public void setBrake() {
                 csmotor.getMotorController().setIdleMode(IdleMode.kBrake);
