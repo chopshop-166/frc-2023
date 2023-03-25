@@ -12,5 +12,6 @@ public class AutoConstants {
 
     public static final double UP_TO_CONE_X = 2.00;
     public static final double BACKED_UP_X = 2.25;
+    public static final double CONE_DIFFERENCE_Y = 0.2;
     public static final double OUT_OF_COMMUNITY_X = 6.00;
 }

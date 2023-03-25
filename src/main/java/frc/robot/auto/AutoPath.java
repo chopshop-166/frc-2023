@@ -38,41 +38,41 @@ public enum AutoPath {
 
     // CONE STATION SUB-POSITIONS
     UP_TO_CONE_STATION_1(0.05,
-            new Pose2d(AutoConstants.UP_TO_CONE_X, 5.32, AutoConstants.ROTATION_180)),
+            new Pose2d(AutoConstants.UP_TO_CONE_X, 5.32 - AutoConstants.CONE_DIFFERENCE_Y, AutoConstants.ROTATION_180)),
 
     BACKED_UP_1(0.05,
-            new Pose2d(AutoConstants.BACKED_UP_X, 5.32, AutoConstants.ROTATION_180)),
+            new Pose2d(AutoConstants.BACKED_UP_X, 5.32 - AutoConstants.CONE_DIFFERENCE_Y, AutoConstants.ROTATION_180)),
 
     UP_TO_CONE_STATION_2(0.05,
-            new Pose2d(AutoConstants.UP_TO_CONE_X, 4.1, AutoConstants.ROTATION_180)),
+            new Pose2d(AutoConstants.UP_TO_CONE_X, 4.12 - AutoConstants.CONE_DIFFERENCE_Y, AutoConstants.ROTATION_180)),
 
     BACKED_UP_2(0.05,
-            new Pose2d(AutoConstants.BACKED_UP_X, 4.15, AutoConstants.ROTATION_180)),
+            new Pose2d(AutoConstants.BACKED_UP_X, 4.12 - AutoConstants.CONE_DIFFERENCE_Y, AutoConstants.ROTATION_180)),
 
     UP_TO_CONE_STATION_3(0.05,
-            new Pose2d(AutoConstants.UP_TO_CONE_X, 3.52, AutoConstants.ROTATION_180)),
+            new Pose2d(AutoConstants.UP_TO_CONE_X, 3.53 - AutoConstants.CONE_DIFFERENCE_Y, AutoConstants.ROTATION_180)),
 
     BACKED_UP_3(0.05,
-            new Pose2d(AutoConstants.BACKED_UP_X, 3.55, AutoConstants.ROTATION_180)),
+            new Pose2d(AutoConstants.BACKED_UP_X, 3.53 - AutoConstants.CONE_DIFFERENCE_Y, AutoConstants.ROTATION_180)),
 
     UP_TO_CONE_STATION_4(0.05,
-            new Pose2d(AutoConstants.UP_TO_CONE_X, 2.37, AutoConstants.ROTATION_180)),
+            new Pose2d(AutoConstants.UP_TO_CONE_X, 2.37 - AutoConstants.CONE_DIFFERENCE_Y, AutoConstants.ROTATION_180)),
 
     BACKED_UP_4(0.05,
-            new Pose2d(AutoConstants.BACKED_UP_X, 2.39, AutoConstants.ROTATION_180)),
+            new Pose2d(AutoConstants.BACKED_UP_X, 2.37 - AutoConstants.CONE_DIFFERENCE_Y, AutoConstants.ROTATION_180)),
 
     UP_TO_CONE_STATION_5(0.05,
-            new Pose2d(AutoConstants.UP_TO_CONE_X, 1.79, AutoConstants.ROTATION_180)),
+            new Pose2d(AutoConstants.UP_TO_CONE_X, 1.79 - AutoConstants.CONE_DIFFERENCE_Y, AutoConstants.ROTATION_180)),
 
     BACKED_UP_5(0.05,
-            new Pose2d(AutoConstants.BACKED_UP_X, 1.81, AutoConstants.ROTATION_180)),
+            new Pose2d(AutoConstants.BACKED_UP_X, 1.79 - AutoConstants.CONE_DIFFERENCE_Y, AutoConstants.ROTATION_180)),
 
     UP_TO_CONE_STATION_6(0.05,
-            new Pose2d(AutoConstants.UP_TO_CONE_X, 0.61, AutoConstants.ROTATION_180)),
+            new Pose2d(AutoConstants.UP_TO_CONE_X, 0.61 - AutoConstants.CONE_DIFFERENCE_Y, AutoConstants.ROTATION_180)),
 
     BACKED_UP_6(0.05,
-            new Pose2d(AutoConstants.BACKED_UP_X, 0.63, AutoConstants.ROTATION_180)),
-
+            new Pose2d(AutoConstants.BACKED_UP_X, 0.61 - AutoConstants.CONE_DIFFERENCE_Y, AutoConstants.ROTATION_180)),
+            
     //
     // CUBE STATION POSITIONS
     CUBE_SCORE_11(0.05,
