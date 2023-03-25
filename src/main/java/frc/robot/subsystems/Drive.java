@@ -222,6 +222,8 @@ public class Drive extends SmartSubsystemBase {
         final ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(ySpeed, xSpeed,
                 rotation,
                 Rotation2d.fromDegrees(io.gyroYawPositionDegrees));
+        ChassisSpeeds e = ChassisSpeeds.fromFieldRelativeSpeeds(ySpeed, xSpeed, rotation,
+                Rotation2d.fromDegrees(io.gyroYawPositionDegrees));
 
         // Now use this in our kinematics
         final SwerveModuleState[] moduleStates = kinematics.toSwerveModuleStates(speeds);
