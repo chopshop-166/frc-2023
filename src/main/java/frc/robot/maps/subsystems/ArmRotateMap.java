@@ -4,6 +4,8 @@ import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.inputs.LoggableInputs;
 
 import com.chopshop166.chopshoplib.motors.SmartMotorController;
+import com.chopshop166.chopshoplib.sensors.IEncoder;
+import com.chopshop166.chopshoplib.sensors.MockEncoder;
 
 import edu.wpi.first.math.controller.PIDController;
 
@@ -13,6 +15,7 @@ public class ArmRotateMap {
     public final double softMaxAngle;
     public final double softMinAngle;
     public final double bumperAngle;
+    public final IEncoder encoder;
     public double hardMaxAngle;
     public double hardMinAngle;
     public double armPivotHeight;
@@ -20,17 +23,19 @@ public class ArmRotateMap {
     private double previousRate = 0;
 
     public ArmRotateMap() {
-        this(new SmartMotorController(), 0, 0, 0, 0, 0, new PIDController(0, 0, 0), 0, 0);
+        this(new SmartMotorController(), 0, 0, 0, 0, 0, new PIDController(0, 0, 0), new MockEncoder(), 0, 0);
     }
 
     public ArmRotateMap(SmartMotorController motor, double softMaxAngle, double softMinAngle, double hardMaxAngle,
-            double hardMinAngle, double bumperAngle, PIDController pid, double armPivotHeight, double armStartLength) {
+            double hardMinAngle, double bumperAngle, PIDController pid, IEncoder encoder,
+            double armPivotHeight, double armStartLength) {
         this.motor = motor;
         this.softMaxAngle = softMaxAngle;
         this.softMinAngle = softMinAngle;
         this.hardMaxAngle = hardMaxAngle;
         this.hardMinAngle = hardMinAngle;
         this.pid = pid;
+        this.encoder = encoder;
         this.bumperAngle = bumperAngle;
         this.armPivotHeight = armPivotHeight;
         this.armStartLength = armStartLength;
@@ -44,14 +49,17 @@ public class ArmRotateMap {
         data.tempCelcius = motor.getTemperatureC();
         data.acceleration = data.velocityDegreesPerSecond - previousRate;
         previousRate = data.velocityDegreesPerSecond;
+        data.rotatingAbsAngleDegrees = encoder.getAbsolutePosition();
+        data.rotatingRelativeAngleDegrees = encoder.getDistance();
+        data.rotatingAngleVelocity = encoder.getRate();
     }
 
     public void setCoast() {
-    
+
     }
 
     public void setBrake() {
-    
+
     }
 
     public static class Data implements LoggableInputs {
@@ -61,6 +69,9 @@ public class ArmRotateMap {
         public double acceleration;
         public double[] currentAmps;
         public double[] tempCelcius;
+        public double rotatingAbsAngleDegrees;
+        public double rotatingRelativeAngleDegrees;
+        public double rotatingAngleVelocity;
 
         @Override
         public void toLog(LogTable table) {
@@ -70,17 +81,24 @@ public class ArmRotateMap {
             table.put("MotorTempCelcius", tempCelcius);
             table.put("MotorCurrentAmps", currentAmps);
             table.put("MotorAcceleration", acceleration);
+            table.put("rotatingAbsAngleDegrees", rotatingAbsAngleDegrees);
+            table.put("rotatingRelativeAngleDegrees", rotatingRelativeAngleDegrees);
+            table.put("rotatingAngleVelocity", rotatingAngleVelocity);
 
         }
 
         @Override
         public void fromLog(LogTable table) {
             this.setPoint = table.getDouble("MotorSetpoint", setPoint);
-            this.degrees = table.getDouble("RoationDegrees", degrees);
+            this.degrees = table.getDouble("RotationDegrees", degrees);
             this.velocityDegreesPerSecond = table.getDouble("MotorVelocityMetersPerSeconds", velocityDegreesPerSecond);
             this.currentAmps = table.getDoubleArray("MotorCurrentAmps", currentAmps);
             this.tempCelcius = table.getDoubleArray("MotorTempCelcius", tempCelcius);
             this.acceleration = table.getDouble("MotorAcceleration", acceleration);
+            this.rotatingAbsAngleDegrees = table.getDouble("rotatingAbsAngleDegrees", rotatingAbsAngleDegrees);
+            this.rotatingRelativeAngleDegrees = table.getDouble("rotatingRelativeAngleDegrees",
+                    rotatingRelativeAngleDegrees);
+            this.rotatingAngleVelocity = table.getDouble("rotatingAngleVelocity", rotatingAngleVelocity);
 
         }
     }

@@ -63,7 +63,7 @@ public class DrivePID {
     public boolean isFinished(Pose2d currentPose, Pose2d targetPose, double deadband) {
         Transform2d error = targetPose.minus(currentPose);
 
-        SmartDashboard.putNumberArray("PID Error",
+        SmartDashboard.putNumberArray("pidError",
                 new double[] { error.getX(), error.getY(), error.getRotation().getRadians() });
 
         return (Math.abs(error.getX()) < deadband) && (Math.abs(error.getY()) < deadband)

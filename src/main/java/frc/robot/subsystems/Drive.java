@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import java.lang.annotation.Target;
 import java.util.function.DoubleSupplier;
 
 import org.littletonrobotics.junction.Logger;
@@ -274,9 +273,7 @@ public class Drive extends SmartSubsystemBase {
                 move(-fb.getX(), -fb.getY(), -fb.getRotation().getDegrees());
             }
 
-            double debugPose[] = new double[] { flipped.getX(), flipped.getY(),
-                    flipped.getRotation().getDegrees() };
-            SmartDashboard.putNumberArray("Target Pose", debugPose);
+            Logger.getInstance().recordOutput("targetPose", flipped);
         }).runsUntil(() -> drivePID.isFinished(pose, invertSide(targetPose), tolerance)).onEnd(this::safeState);
     }
 
@@ -318,6 +315,8 @@ public class Drive extends SmartSubsystemBase {
         return cmd().onInitialize(() -> {
             resetGyro();
             resetTag();
+        }).runsUntil(() -> {
+            return true;
         }).runsWhenDisabled(true);
     }
 

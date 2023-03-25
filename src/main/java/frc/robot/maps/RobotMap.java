@@ -8,7 +8,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import com.chopshop166.chopshoplib.maps.RobotMapFor;
 
 // $Imports$
-import frc.robot.maps.subsystems.ArmMap;
+import frc.robot.maps.subsystems.ArmExtendMap;
 import frc.robot.maps.subsystems.ArmRotateMap;
 import frc.robot.maps.subsystems.IntakeData;
 import frc.robot.maps.subsystems.LedMap;
@@ -18,8 +18,8 @@ import frc.robot.maps.subsystems.SwerveDriveMap;
 public class RobotMap {
 
     // $Getters$
-    public ArmMap getArmMap() {
-        return new ArmMap();
+    public ArmExtendMap getArmMap() {
+        return new ArmExtendMap();
     }
 
     public ArmRotateMap getArmRotateMap() {

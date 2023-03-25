@@ -44,7 +44,7 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
         });
     }
 
-    // Grabs game piece Cone
+    // Releases game piece Cone
     public CommandBase coneRelease() {
         return runOnce(() -> {
             getData().solenoidSetPoint = Value.kReverse;

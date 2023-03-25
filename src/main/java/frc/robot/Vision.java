@@ -1,5 +1,6 @@
 package frc.robot;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.littletonrobotics.junction.Logger;
@@ -8,6 +9,8 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -31,6 +34,7 @@ public class Vision {
     PoseFilter filter = new PoseFilter(0.1);
     Pose2d prevPose = new Pose2d();
     public boolean sawTag = false;
+    SwerveDrivePoseEstimator estimator;
 
     public Vision(
             String cameraName, AprilTagFieldLayout aprilTags,
@@ -50,6 +54,11 @@ public class Vision {
         odometry = new SwerveDriveOdometry(kinematics, driveMap.gyro().getRotation2d(),
                 getModulePositions());
 
+        estimator = new SwerveDrivePoseEstimator(kinematics, driveMap.gyro().getRotation2d(), getModulePositions(),
+                new Pose2d(),
+                VecBuilder.fill(0.02, 0.02, 0.01),
+                VecBuilder.fill(0.1, 0.1, 0.01));
+
     }
 
     public void setPose(Pose2d pose) {
@@ -61,53 +70,72 @@ public class Vision {
         PhotonPipelineResult result = camera.getLatestResult();
 
         // Sees an apriltag
-
         if (result.hasTargets()) {
-            PhotonTrackedTarget target = result.getBestTarget();
-            Transform3d cameraToTarget = target.getBestCameraToTarget();
-            int tagId = target.getFiducialId();
-            SmartDashboard.putNumber("Tag ID", tagId);
-            Optional<Pose3d> opt = aprilTags.getTagPose(tagId);
 
-            if (opt.isPresent() && target.getPoseAmbiguity() < 0.3) {
-                // Reverse the pose to determine the position on the field
-                Pose2d pose = opt.get().plus(cameraToTarget.inverse())
-                        .plus(cameraToRobot.inverse()).toPose2d();
+            List<PhotonTrackedTarget> allTargets = result.getTargets();
 
-                double tagDistance = cameraToTarget.getTranslation().getDistance(new Translation3d());
+            // PhotonTrackedTarget target = result.getBestTarget();
+            for (var target : allTargets) {
+                Transform3d cameraToTarget = target.getBestCameraToTarget();
+                int tagId = target.getFiducialId();
+                SmartDashboard.putNumber("Tag ID", tagId);
+                Optional<Pose3d> opt = aprilTags.getTagPose(tagId);
 
-                boolean poseInField = (pose.getX() > 0 && pose.getX() < Field.LENGTH)
-                        && (pose.getY() > 0 && pose.getY() < Field.WIDTH);
+                if (opt.isPresent() && target.getPoseAmbiguity() < 0.3) {
+                    // Reverse the pose to determine the position on the field
+                    Pose2d pose = opt.get().plus(cameraToTarget.inverse())
+                            .plus(cameraToRobot.inverse()).toPose2d();
 
-                double distance = 0;
-                if (sawTag) {
-                    distance = prevPose.getTranslation().getDistance(pose.getTranslation());
-                } else {
-                    driveMap.gyro().setAngle(pose.getRotation().getDegrees() + (isBlue ? 0 : 180));
+                    double tagDistance = cameraToTarget.getTranslation().getDistance(new Translation3d());
+
+                    boolean poseInField = (pose.getX() > 0 && pose.getX() < Field.LENGTH)
+                            && (pose.getY() > 0 && pose.getY() < Field.WIDTH);
+
+                    double distance = 0;
+                    if (sawTag) {
+                        distance = prevPose.getTranslation().getDistance(pose.getTranslation());
+                    } else {
+                        driveMap.gyro().setAngle(pose.getRotation().getDegrees() + (isBlue ? 0 : 180));
+
+                        estimator.resetPosition(
+                                Rotation2d.fromDegrees(driveMap.gyro().getAngle() - 180),
+                                getModulePositions(), pose);
+
+                        // setPose(pose);
+                    }
+
+                    // Logger.getInstance().recordOutput("visionPose", pose);
+                    if (distance < 2 && tagDistance < 1 && poseInField) {
+                        estimator.addVisionMeasurement(pose, result.getTimestampSeconds());
+                    }
+                    sawTag = true;
+
                 }
-                if (distance < 2 && tagDistance < 4 && poseInField) {
-                    // setPose(pose);
-                    Logger.getInstance().recordOutput("visionPose", pose);
-                }
-                sawTag = true;
             }
         }
 
         SmartDashboard.putBoolean("Saw Tag", sawTag);
         // Subtract 180 degrees from the gyro angle for some reason
 
-        prevPose = filter.calculate(odometry.update(
-                Rotation2d.fromDegrees(driveMap.gyro().getAngle()), getModulePositions()));
+        // prevPose = filter.calculate(odometry.update(
+        // driveMap.gyro().getRotation2d(), getModulePositions()));
+        prevPose = filter.calculate(estimator.getEstimatedPosition());
+        estimator.update(
+                Rotation2d.fromDegrees(
+                        driveMap.gyro().getAngle()),
+                getModulePositions());
+        Logger.getInstance().recordOutput("kalman pose", estimator.getEstimatedPosition());
+        Logger.getInstance().recordOutput("odometryPose", odometry.getPoseMeters());
         return prevPose;
     }
 
     // Get every swerve module state
     private SwerveModulePosition[] getModulePositions() {
         return new SwerveModulePosition[] {
-                new SwerveModulePosition(driveMap.frontLeft().getDistance(), driveMap.frontLeft().getAngle()),
-                new SwerveModulePosition(driveMap.frontRight().getDistance(), driveMap.frontRight().getAngle()),
-                new SwerveModulePosition(driveMap.rearLeft().getDistance(), driveMap.rearLeft().getAngle()),
-                new SwerveModulePosition(driveMap.rearRight().getDistance(), driveMap.rearRight().getAngle()),
+                new SwerveModulePosition(-driveMap.frontLeft().getDistance(), driveMap.frontLeft().getAngle()),
+                new SwerveModulePosition(-driveMap.frontRight().getDistance(), driveMap.frontRight().getAngle()),
+                new SwerveModulePosition(-driveMap.rearLeft().getDistance(), driveMap.rearLeft().getAngle()),
+                new SwerveModulePosition(-driveMap.rearRight().getDistance(), driveMap.rearRight().getAngle()),
         };
     }
 }

@@ -10,6 +10,9 @@ import com.chopshop166.chopshoplib.maps.RobotMapFor;
 import com.chopshop166.chopshoplib.motors.CSSparkMax;
 import com.chopshop166.chopshoplib.motors.CSTalonSRX;
 import com.chopshop166.chopshoplib.pneumatics.RevDSolenoid;
+import com.chopshop166.chopshoplib.sensors.CSDutyCycleEncoder;
+import com.chopshop166.chopshoplib.sensors.CSEncoder;
+import com.chopshop166.chopshoplib.sensors.CSFusedEncoder;
 import com.chopshop166.chopshoplib.sensors.MockColorSensor;
 import com.chopshop166.chopshoplib.sensors.gyro.PigeonGyro2;
 import com.chopshop166.chopshoplib.states.PIDValues;
@@ -27,7 +30,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import frc.robot.maps.subsystems.ArmMap;
+import frc.robot.maps.subsystems.ArmExtendMap;
 import frc.robot.maps.subsystems.ArmRotateMap;
 import frc.robot.maps.subsystems.IntakeData;
 import frc.robot.maps.subsystems.LedMap;
@@ -104,7 +107,7 @@ public class FrostBiteMap extends RobotMap {
 
         final double maxRotationRadianPerSecond = Math.PI;
 
-        final DrivePID pid = new DrivePID(1.5, 0, 0, 0.01, 0, 0.001);
+        final DrivePID pid = new DrivePID(1.5, 0.001, 0, 0.01, 0.00001, 0);
 
         final Transform3d cameraPosition = new Transform3d(
                 // These probably need to be refined
@@ -147,7 +150,17 @@ public class FrostBiteMap extends RobotMap {
         csmotor.getEncoder().setVelocityScaleFactor(1.125 / 60);
         PIDController pid = new PIDController(0.06, 0, 0);
         pid.setTolerance(0.5);
-        return new ArmRotateMap(csmotor, 85, 10, 115, 0, 15, pid, 46.654, 42.3) {
+
+        CSEncoder encoder = new CSEncoder(2, 3);
+        encoder.setDistancePerPulse(360 / 2048);
+        CSDutyCycleEncoder absEncoder = new CSDutyCycleEncoder(4);
+        absEncoder.setDutyCycleRange(1 / 1025, 1024 / 1025);
+        absEncoder.setDistancePerRotation(360);
+        // Adjust this to move the encoder zero point to the retracted position
+        absEncoder.setPositionOffset(0);
+        CSFusedEncoder fusedEncoder = new CSFusedEncoder(encoder, absEncoder);
+
+        return new ArmRotateMap(csmotor, 85, 10, 115, 0, 15, pid, fusedEncoder, 46.654, 42.3) {
             @Override
             public void setBrake() {
                 csmotor.getMotorController().setIdleMode(IdleMode.kBrake);
@@ -163,7 +176,7 @@ public class FrostBiteMap extends RobotMap {
     }
 
     @Override
-    public ArmMap getArmMap() {
+    public ArmExtendMap getArmMap() {
         CSSparkMax motor = new CSSparkMax(11, MotorType.kBrushless);
         motor.getMotorController().setInverted(true);
         motor.getMotorController().setIdleMode(IdleMode.kBrake);
@@ -173,7 +186,7 @@ public class FrostBiteMap extends RobotMap {
         motor.getEncoder().setVelocityScaleFactor((1.273 * Math.PI) / 10);
         PIDController pid = new PIDController(0.06, 0.05, 0.0);
         pid.setTolerance(0.5);
-        return new ArmMap(motor, 18.5, 3, 19.8, 0.3, pid, 46.654, 42.3);
+        return new ArmExtendMap(motor, 18.5, 3, 19.8, 0.3, pid, 46.654, 42.3);
     }
 
     @Override

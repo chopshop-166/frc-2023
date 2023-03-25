@@ -1,19 +1,17 @@
 package frc.robot;
 
+import static edu.wpi.first.wpilibj2.command.Commands.none;
 import static edu.wpi.first.wpilibj2.command.Commands.race;
-import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
-import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
-
-import java.util.Arrays;
 
 import com.chopshop166.chopshoplib.commands.FunctionalWaitCommand;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Arm;
+import frc.robot.auto.AutoPath;
+import frc.robot.auto.ConeStation;
+import frc.robot.auto.CubePickupLocation;
+import frc.robot.subsystems.ArmExtend;
 import frc.robot.subsystems.ArmRotate;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
@@ -21,111 +19,37 @@ import frc.robot.subsystems.Intake;
 public class Auto {
     // Declare references to subsystems
     Drive drive;
-    Arm armExtend;
+    ArmExtend armExtend;
     ArmRotate armRotate;
     Intake intake;
 
     // Pass in all subsystems
-    public Auto(Drive drive, Arm armExtend, ArmRotate armRotate, Intake intake) {
+    public Auto(Drive drive, ArmExtend armExtend, ArmRotate armRotate, Intake intake) {
         this.drive = drive;
         this.armExtend = armExtend;
         this.armRotate = armRotate;
         this.intake = intake;
     }
 
-    private static final double blueX = 1.8;
-    private static final Rotation2d rotation0 = Rotation2d.fromDegrees(0);
-    private static final Rotation2d rotation180 = Rotation2d.fromDegrees(180);
-
-    public enum Path {
-
-        UP_TO_CONE_STATION(0.05,
-                new Pose2d(1.7539,
-                        5.0123, Rotation2d.fromDegrees(180))),
-
-        BACKED_UP(0.05,
-                new Pose2d(2.1,
-                        5.0123, Rotation2d.fromDegrees(180))),
-
-        OUT_OF_COMMUNITY(0.2,
-                new Pose2d(2.1877, 4.7327, Rotation2d.fromDegrees(180)),
-                new Pose2d(5.1150, 4.7327, Rotation2d.fromDegrees(0))
-
-        ),
-
-        CONE_5(0.05,
-                new Pose2d(blueX, 5.27, rotation0)),
-
-        CONE_4(0.05,
-                new Pose2d(blueX, 4.11, rotation0)),
-
-        CONE_3(0.05,
-                new Pose2d(blueX, 3.51, rotation0)),
-
-        CONE_2(0.05,
-                new Pose2d(blueX, 2.36, rotation0)),
-
-        CONE_1(0.05,
-                new Pose2d(blueX, 1.8, rotation0)),
-
-        CONE_0(0.05,
-                new Pose2d(blueX, 0.63, rotation0));
-
-        Pose2d poses[];
-        double tolerance;
-
-        private Path(double tolerance, Pose2d... poses) {
-            this.poses = poses;
-            this.tolerance = tolerance;
-        }
-
-        // Create a sequence command to drive to each pose
-        public CommandBase getPath(Drive drive) {
-
-            return sequence(
-                    Arrays.stream(poses).map((pos) -> drive.driveTo(pos,
-                            this.tolerance)).toArray(CommandBase[]::new))
-                    .withName(this.name()).andThen(drive.safeStateCmd());
-        }
-    }
-
-    /**
-     * 5.42 N
-     * Next is 4.74 B
-     * Then 4.15 N
-     * Then 3.56 N
-     * Then 2.95 B
-     * Then 2.36 N
-     * Then 1.82 N
-     * Then 1.23 B
-     * And the one closest to judge table is 0.6 N
-     * The x values for red (where the robot will go) are 15.45
-     * And blue is 5. 44
-     */
-
     private CommandBase backUp(double speed, double seconds) {
-        return sequence(race(
+        return race(
                 drive.driveRaw(() -> 0, () -> -speed, () -> 0),
-                new FunctionalWaitCommand(() -> seconds)), drive.safeStateCmd())
-
-        ;
+                new FunctionalWaitCommand(() -> seconds)).andThen(drive.safeStateCmd());
     }
 
     private CommandBase moveLeft(double speed, double seconds) {
-        return sequence(race(
+        return race(
                 drive.driveRaw(() -> speed, () -> 0, () -> 0),
-                new FunctionalWaitCommand(() -> seconds)), drive.safeStateCmd())
-
-        ;
+                new FunctionalWaitCommand(() -> seconds)).andThen(drive.safeStateCmd());
     }
 
-    private CommandBase armScore(EnumLevel aboveLevel, EnumLevel scoreLevel) {
+    private CommandBase armScore(ArmPresets aboveLevel, ArmPresets scoreLevel) {
         return sequence(
                 armRotate.moveTo(aboveLevel), armExtend.moveTo(aboveLevel),
-                armRotate.moveTo(scoreLevel), armExtend.moveTo(EnumLevel.ARM_STOWED));
+                armRotate.moveTo(scoreLevel), armExtend.moveTo(ArmPresets.ARM_STOWED));
     }
 
-    public CommandBase scoreCone(EnumLevel aboveLevel, EnumLevel scoreLevel) {
+    public CommandBase scoreCone(ArmPresets aboveLevel, ArmPresets scoreLevel) {
         return sequence(
                 armRotate.moveTo(aboveLevel),
                 race(drive.driveToNearest(), new FunctionalWaitCommand(() -> 2)),
@@ -135,50 +59,140 @@ public class Auto {
     public CommandBase scoreConeSimple() {
         return race(new FunctionalWaitCommand(() -> 8),
                 sequence(
-                        armRotate.moveTo(EnumLevel.HIGH_SCORE),
+                        armRotate.moveTo(ArmPresets.HIGH_SCORE),
                         backUp(-1.0, 1.5),
-                        armScore(EnumLevel.HIGH_SCORE, EnumLevel.HIGH_SCORE_ACTUAL)));
+                        armScore(ArmPresets.HIGH_SCORE, ArmPresets.HIGH_SCORE_ACTUAL)));
 
     }
 
     public CommandBase scoreConeSimpleSlow() {
         return race(new FunctionalWaitCommand(() -> 8),
                 sequence(
-                        armRotate.moveTo(EnumLevel.HIGH_SCORE),
+                        armRotate.moveTo(ArmPresets.HIGH_SCORE),
                         backUp(-1.0, 0.3),
-                        armScore(EnumLevel.HIGH_SCORE, EnumLevel.HIGH_SCORE_ACTUAL)));
+                        armScore(ArmPresets.HIGH_SCORE, ArmPresets.HIGH_SCORE_ACTUAL)));
 
     }
 
-    public CommandBase startGridScoreCone() {
+    public CommandBase prepareToScoreCone() {
         return sequence(
                 // armRotate.zeroVelocityCheck(),
                 armExtend.zeroVelocityCheck(),
-
-                // armRotate.moveTo(EnumLevel.HIGH_SCORE),
                 backUp(0.5, 0.5),
-                armRotate.moveTo(EnumLevel.HIGH_SCORE),
-                Path.UP_TO_CONE_STATION.getPath(drive),
-                armExtend.moveTo(EnumLevel.HIGH_SCORE),
-                new FunctionalWaitCommand(() -> 0.25),
+                armRotate.moveTo(ArmPresets.HIGH_SCORE));
+    }
+
+    public CommandBase scoreCone() {
+        return sequence(
+                armExtend.moveTo(ArmPresets.HIGH_SCORE),
+                timingWait(),
                 intake.coneRelease(),
-                new FunctionalWaitCommand(() -> 0.25),
-                Path.BACKED_UP.getPath(drive),
-                armExtend.moveTo(EnumLevel.ARM_STOWED),
+                timingWait());
+    }
+
+    public CommandBase stowArmCloseIntake() {
+        return sequence(
+                armExtend.moveTo(ArmPresets.ARM_STOWED),
                 intake.coneGrab(),
-                armRotate.moveTo(EnumLevel.ARM_STOWED),
-                Path.OUT_OF_COMMUNITY.getPath(drive)
+                armRotate.moveTo(ArmPresets.ARM_STOWED));
+    }
+
+    public CommandBase pickUpCube() {
+        return sequence(
+                armRotate.moveTo(ArmPresets.CUBE_PICKUP),
+                intake.grab(),
+                armExtend.moveTo(ArmPresets.CUBE_PICKUP));
+    }
+
+    public CommandBase scoreCube() {
+        return sequence(
+                armRotate.moveTo(ArmPresets.HIGH_SCORE),
+                timingWait(),
+                intake.cubeRelease(),
+                timingWait());
+    }
+
+    // SEQUENCES TO JUST SCORE A CONE - from starting positions
+    private CommandBase startGridScoreCone(AutoPath upToStation, AutoPath backedUp) {
+        return sequence(
+                prepareToScoreCone(),
+                upToStation.getPath(drive),
+                scoreCone(),
+                backedUp.getPath(drive),
+                stowArmCloseIntake());
+    }
+
+    private CommandBase pickupCubeN(AutoPath readyForPickup, AutoPath goToPickup) {
+        return sequence(
+                readyForPickup.getPath(drive),
+                pickUpCube(),
+                goToPickup.getPath(drive));
+    }
+
+    public CommandBase scoreCubePos(int cubeScorePos) {
+        switch (cubeScorePos) {
+            case 11:
+                return AutoPath.CUBE_SCORE_11.getPath(drive).withName("Score Cube (Pos 11)");
+            case 12:
+                return AutoPath.CUBE_SCORE_12.getPath(drive).withName("Score Cube (Pos 12)");
+            case 13:
+                return AutoPath.CUBE_SCORE_13.getPath(drive).withName("Score Cube (Pos 13)");
+            default:
+                return none().withName("None");
+        }
+    }
+
+    public CommandBase combinedAuto(ConeStation conePos, CubePickupLocation cubePos, int cubeScorePos) {
+        CommandBase coneScoreCmd = startGridScoreCone(conePos.upToStation, conePos.backedUp)
+                .withName("Score Cone (Pos " + conePos.number + ")");
+        CommandBase pickupCubeCmd = pickupCubeN(cubePos.readyForPickup, cubePos.goToPickup)
+                .withName("Pickup (Pos " + cubePos.number + ")");
+        CommandBase scoreCubeCmd = scoreCubePos(cubeScorePos);
+
+        return sequence(
+                coneScoreCmd,
+                conePos.communityPosition.outOfCommunity.getPath(drive),
+                pickupCubeCmd,
+                conePos.communityPosition.inCommunity.getPath(drive),
+                scoreCubeCmd,
+                scoreCube()
+        // position to be in front of drive station in community? I'll add that
+        // , drive.driveUntilTipped()
+        // , drive.balance()
+
+        ).withName(coneScoreCmd.getName() + " " + pickupCubeCmd.getName() + " " + scoreCubeCmd.getName());
+    }
+
+    public CommandBase outOfCommunity(ConeStation conePos) {
+        return sequence(
+                conePos.communityPosition.outOfCommunity.getPath(drive));
+    }
+
+    // Score cone and back up onto charge station (from pos 1) and then balance
+    public CommandBase scoreConeBalance() {
+        return sequence(
+                // armRotate.zeroVelocityCheck(),
+                armExtend.zeroVelocityCheck(),
+                backUp(0.5, 0.5),
+                armRotate.moveTo(ArmPresets.HIGH_SCORE),
+                AutoPath.UP_TO_CONE_STATION_1.getPath(drive),
+                scoreCone(),
+                AutoPath.BACKED_UP_1.getPath(drive),
+                stowArmCloseIntake(),
+                AutoPath.INNER_SIDE_CHARGE_STATION_14.getPath(drive)
+        // will need values for this ^
+        // add whatever balance command that we do
 
         )
-                .withName("Start Grid Score Cone");
+                .withName("Score Cone Balance");
     }
 
     public CommandBase oneConeTest() {
         return sequence(
                 armExtend.zeroVelocityCheck(),
-                scoreCone(EnumLevel.HIGH_SCORE, EnumLevel.HIGH_SCORE_ACTUAL),
+                scoreCone(ArmPresets.HIGH_SCORE, ArmPresets.HIGH_SCORE_ACTUAL),
                 backUp(1.2, 0.5),
-                armRotate.moveTo(EnumLevel.ARM_STOWED))
+                armRotate.moveTo(ArmPresets.ARM_STOWED))
                 .withName("One Cone Test");
     }
 
@@ -187,8 +201,13 @@ public class Auto {
                 armExtend.zeroVelocityCheck(),
                 scoreConeSimple(),
                 backUp(0.5, 0.5),
-                armRotate.moveTo(EnumLevel.ARM_STOWED))
+                armRotate.moveTo(ArmPresets.ARM_STOWED))
                 .withName("Simple One Cone Test");
+    }
+
+    public CommandBase outOfCommunityTest() {
+        return AutoPath.OUT_OF_COMMUNITY_1_2_3.getPath(drive)
+                .withName("Go out of community");
     }
 
     public CommandBase oneConeTaxiTest() {
@@ -197,7 +216,7 @@ public class Auto {
                 scoreConeSimple(),
                 backUp(0.5, 0.5),
                 race(new FunctionalWaitCommand(() -> 3),
-                        armRotate.moveTo(EnumLevel.ARM_STOWED)),
+                        armRotate.moveTo(ArmPresets.ARM_STOWED)),
                 backUp(1.5, 3.5))
                 .withName("(MAIN) One Cone Mobolity");
     }
@@ -209,7 +228,7 @@ public class Auto {
                 scoreConeSimpleSlow(),
                 backUp(1, 0.3),
                 race(new FunctionalWaitCommand(() -> 3),
-                        armRotate.moveTo(EnumLevel.ARM_STOWED)),
+                        armRotate.moveTo(ArmPresets.ARM_STOWED)),
                 backUp(1.5, 3.5))
 
                 .withName("(TEST) One Cone Mobolity");
@@ -220,9 +239,14 @@ public class Auto {
                 drive.setGyro180(),
                 scoreConeSimple(),
                 backUp(0.5, 0.5),
-                armRotate.moveTo(EnumLevel.ARM_STOWED),
+                armRotate.moveTo(ArmPresets.ARM_STOWED),
                 drive.driveDistance(3, 1, Rotation2d.fromDegrees(2)))
                 .withName("Move Distance Auto");
+    }
+
+    public CommandBase preTest() {
+        return sequence(
+                AutoPath.PRE_TEST.getPath(drive)).withName("(TEST) Pre Test");
     }
 
     public CommandBase oneConeTaxiWire() {
@@ -230,10 +254,11 @@ public class Auto {
                 drive.setGyro180(),
                 scoreConeSimple(),
                 backUp(0.5, 0.5),
-                armRotate.moveTo(EnumLevel.ARM_STOWED),
+                armRotate.moveTo(ArmPresets.ARM_STOWED),
                 moveLeft(0.5, 0.25),
-                backUp(1.2, 4))
-                .withName("Wire Guard One Cone Mobolity");
+                backUp(1.2, 4)
+
+        ).withName("Wire Guard One Cone Mobolity");
     }
 
     public CommandBase oneConeTaxiNoCable() {
@@ -241,20 +266,20 @@ public class Auto {
                 // armRotate.zeroVelocityCheck(),
                 armExtend.zeroVelocityCheck(),
 
-                armRotate.moveTo(EnumLevel.HIGH_SCORE),
-                Path.UP_TO_CONE_STATION.getPath(drive),
-                armExtend.moveTo(EnumLevel.HIGH_SCORE),
-                new FunctionalWaitCommand(() -> 0.25),
-                intake.coneRelease(),
-                new FunctionalWaitCommand(() -> 0.25),
-                Path.BACKED_UP.getPath(drive),
-                armExtend.moveTo(EnumLevel.ARM_STOWED),
+                armRotate.moveTo(ArmPresets.HIGH_SCORE),
+                AutoPath.UP_TO_CONE_STATION_1.getPath(drive),
+                scoreCone(),
+                AutoPath.BACKED_UP_1.getPath(drive),
+                armExtend.moveTo(ArmPresets.ARM_STOWED),
                 intake.coneGrab(),
-                armRotate.moveTo(EnumLevel.ARM_STOWED),
-                Path.OUT_OF_COMMUNITY.getPath(drive)
+                armRotate.moveTo(ArmPresets.ARM_STOWED),
+                AutoPath.OUT_OF_COMMUNITY_1_2_3.getPath(drive)
 
-        )
-                .withName("One Cone Taxi No Cable");
+        ).withName("One Cone Taxi No Cable");
+    }
+
+    private CommandBase timingWait() {
+        return new FunctionalWaitCommand(() -> 0.25);
     }
 
 }
