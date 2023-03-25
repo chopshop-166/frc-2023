@@ -18,6 +18,7 @@ import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -145,6 +146,22 @@ public class Robot extends CommandRobot {
         }), led.setYellow());
     }
 
+    public CommandBase rumbleOn() {
+        return runOnce(() -> {
+            copilotController.getHID().setRumble(RumbleType.kBothRumble, 1);
+        });
+    }
+
+    public CommandBase rumbleOff() {
+        return runOnce(() -> {
+            copilotController.getHID().setRumble(RumbleType.kBothRumble, 0);
+        });
+    }
+
+    public CommandBase rumbleAndIntakeSpinningOff() {
+        return rumbleOff().andThen(led.colorAlliance());
+    }
+
     public CommandBase stowArm = sequence(
             intake.coneGrab(),
             new ConditionalCommand(
@@ -214,9 +231,11 @@ public class Robot extends CommandRobot {
 
         // COPILOT CONTROLLER
         // Intake
-        copilotController.a().onTrue(led.intakeSpinning().andThen(intake.grab(), led.GrabbedPiece()));
-        copilotController.b().onTrue(intake.toggle());
-        copilotController.x().whileTrue(intake.cubeRelease());
+        copilotController.a()
+                .onTrue(rumbleOn().andThen(led.intakeSpinning(), intake.grab(), rumbleOff(),
+                        led.grabbedPiece()));
+        copilotController.b().onTrue(intake.toggle().andThen(rumbleAndIntakeSpinningOff()));
+        copilotController.x().whileTrue(rumbleAndIntakeSpinningOff().andThen(intake.cubeRelease()));
 
         // Arm
         // extend and rotate are in default commands
