@@ -231,6 +231,7 @@ public class Robot extends CommandRobot {
         driveController.rightStick().whileTrue(drive.robotCentricDrive(driveController::getLeftX,
                 driveController::getLeftY, driveController::getRightX));
 
+        driveController.y().whileTrue(drive.balance());
         // Arm
 
         // COPILOT CONTROLLER

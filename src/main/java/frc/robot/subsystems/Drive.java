@@ -21,6 +21,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -330,21 +331,25 @@ public class Drive extends SmartSubsystemBase {
     }
 
     public double getTilt() {
-        return this.map.gyro().getRotation2d().getCos() * this.map.gyro().getRotation3d().getY()
-                + this.map.gyro().getRotation2d().getSin() * this.map.gyro().getRotation3d().getX();
+        return this.map.gyro().getRotation2d().getCos()
+                * Units.radiansToDegrees(this.map.gyro().getRotation3d().getY())
+                + this.map.gyro().getRotation2d().getSin()
+                        * Units.radiansToDegrees(this.map.gyro().getRotation3d().getX());
     }
 
     public CommandBase balance() {
 
         PersistenceCheck balancedCheck = new PersistenceCheck(15,
-                () -> Math.abs(this.map.gyro().getRotationalVelocity().getY()) < 6);
+                () -> Math.abs(getTilt()) < 6);
         return cmd().onExecute(() -> {
             Rotation3d rotationVelocity = this.map.gyro().getRotationalVelocity();
 
             double velocityThresholdDegreesPerSec = 1.0;
 
-            double angleVelocityDegreesPerSec = map.gyro().getRotation2d().getCos() * rotationVelocity.getY()
-                    + map.gyro().getRotation2d().getSin() * rotationVelocity.getX();
+            double angleVelocityDegreesPerSec = map.gyro().getRotation2d().getCos()
+                    * Units.radiansToDegrees(rotationVelocity.getY())
+                    + map.gyro().getRotation2d().getSin() * Units
+                            .radiansToDegrees(rotationVelocity.getX());
             boolean shouldStop = (getTilt() < 0.0 &&
                     angleVelocityDegreesPerSec > velocityThresholdDegreesPerSec)
                     || (getTilt() > 0.0 && angleVelocityDegreesPerSec < -velocityThresholdDegreesPerSec);
