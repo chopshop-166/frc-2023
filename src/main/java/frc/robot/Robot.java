@@ -152,6 +152,8 @@ public class Robot extends CommandRobot {
         driveController.rightBumper().onTrue(drive.setSpeedCoef(0.25, 0.35)).onFalse(drive.setSpeedCoef(1, 1));
         driveController.leftBumper().onTrue(drive.setSpeedCoef(0.4000000001, 0.5)).onFalse(drive.setSpeedCoef(1, 1));
         driveController.back().onTrue(drive.resetGyroCommand());
+        driveController.rightStick().whileTrue(drive.RobotCentricDrive(driveController::getLeftX,
+                driveController::getLeftY, driveController::getRightX));
 
         // Arm
 

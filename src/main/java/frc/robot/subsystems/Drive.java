@@ -186,7 +186,7 @@ public class Drive extends SmartSubsystemBase {
     }
 
     private void deadbandMove(final double xSpeed, final double ySpeed,
-            final double rotation) {
+            final double rotation, boolean isRobotCentric) {
 
         final Modifier deadband = Modifier.deadband(0.15);
 
@@ -212,18 +212,26 @@ public class Drive extends SmartSubsystemBase {
                 * maxDriveSpeedMetersPerSecond * speedCoef;
         final double rotationSpeed = rotationInput
                 * maxRotationRadiansPerSecond * rotationCoef;
-        move(translateXSpeed, translateYSpeed, rotationSpeed);
+        _move(translateXSpeed, translateYSpeed, rotationSpeed, isRobotCentric);
     }
 
     private void move(final double xSpeed, final double ySpeed,
             final double rotation) {
+        _move(xSpeed, ySpeed, rotation, false);
+    }
+
+    private void _move(final double xSpeed, final double ySpeed,
+            final double rotation, boolean isRobotCentric) {
 
         // rotationOffset is temporary and startingRotation is set at the start
-        final ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(ySpeed, xSpeed,
-                rotation,
-                Rotation2d.fromDegrees(io.gyroYawPositionDegrees));
-        ChassisSpeeds e = ChassisSpeeds.fromFieldRelativeSpeeds(ySpeed, xSpeed, rotation,
-                Rotation2d.fromDegrees(io.gyroYawPositionDegrees));
+        ChassisSpeeds speeds;
+        if (isRobotCentric) {
+            speeds = new ChassisSpeeds(ySpeed, xSpeed, rotation);
+        } else {
+            speeds = ChassisSpeeds.fromFieldRelativeSpeeds(ySpeed, xSpeed,
+                    rotation,
+                    Rotation2d.fromDegrees(io.gyroYawPositionDegrees));
+        }
 
         // Now use this in our kinematics
         final SwerveModuleState[] moduleStates = kinematics.toSwerveModuleStates(speeds);
@@ -246,7 +254,11 @@ public class Drive extends SmartSubsystemBase {
     }
 
     public CommandBase drive(DoubleSupplier xSpeed, DoubleSupplier ySpeed, DoubleSupplier rotation) {
-        return run(() -> deadbandMove(xSpeed.getAsDouble(), ySpeed.getAsDouble(), rotation.getAsDouble()));
+        return run(() -> deadbandMove(xSpeed.getAsDouble(), ySpeed.getAsDouble(), rotation.getAsDouble(), false));
+    }
+
+    public CommandBase RobotCentricDrive(DoubleSupplier xSpeed, DoubleSupplier ySpeed, DoubleSupplier rotation) {
+        return run(() -> deadbandMove(xSpeed.getAsDouble(), ySpeed.getAsDouble(), rotation.getAsDouble(), true));
     }
 
     public CommandBase driveTo(Pose2d targetPose, double tolerance) {
