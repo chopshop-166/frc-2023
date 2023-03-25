@@ -38,98 +38,99 @@ public enum AutoPath {
 
     // CONE STATION SUB-POSITIONS
     UP_TO_CONE_STATION_1(0.05,
-            new Pose2d(AutoConstants.UP_TO_CONE_X, 5.32 - AutoConstants.CONE_DIFFERENCE_Y, AutoConstants.ROTATION_180)),
+            new Pose2d(AutoConstants.UP_TO_CONE_X, 5.32 - AutoConstants.Y_DIFFERENCE, AutoConstants.ROTATION_180)),
 
     BACKED_UP_1(0.05,
-            new Pose2d(AutoConstants.BACKED_UP_X, 5.32 - AutoConstants.CONE_DIFFERENCE_Y, AutoConstants.ROTATION_180)),
+            new Pose2d(AutoConstants.BACKED_UP_X, 5.32 - AutoConstants.Y_DIFFERENCE, AutoConstants.ROTATION_180)),
 
     UP_TO_CONE_STATION_2(0.05,
-            new Pose2d(AutoConstants.UP_TO_CONE_X, 4.12 - AutoConstants.CONE_DIFFERENCE_Y, AutoConstants.ROTATION_180)),
+            new Pose2d(AutoConstants.UP_TO_CONE_X, 4.12 - AutoConstants.Y_DIFFERENCE, AutoConstants.ROTATION_180)),
 
     BACKED_UP_2(0.05,
-            new Pose2d(AutoConstants.BACKED_UP_X, 4.12 - AutoConstants.CONE_DIFFERENCE_Y, AutoConstants.ROTATION_180)),
+            new Pose2d(AutoConstants.BACKED_UP_X, 4.12 - AutoConstants.Y_DIFFERENCE, AutoConstants.ROTATION_180)),
 
     UP_TO_CONE_STATION_3(0.05,
-            new Pose2d(AutoConstants.UP_TO_CONE_X, 3.53 - AutoConstants.CONE_DIFFERENCE_Y, AutoConstants.ROTATION_180)),
+            new Pose2d(AutoConstants.UP_TO_CONE_X, 3.53 - AutoConstants.Y_DIFFERENCE, AutoConstants.ROTATION_180)),
 
     BACKED_UP_3(0.05,
-            new Pose2d(AutoConstants.BACKED_UP_X, 3.53 - AutoConstants.CONE_DIFFERENCE_Y, AutoConstants.ROTATION_180)),
+            new Pose2d(AutoConstants.BACKED_UP_X, 3.53 - AutoConstants.Y_DIFFERENCE, AutoConstants.ROTATION_180)),
 
     UP_TO_CONE_STATION_4(0.05,
-            new Pose2d(AutoConstants.UP_TO_CONE_X, 2.37 - AutoConstants.CONE_DIFFERENCE_Y, AutoConstants.ROTATION_180)),
+            new Pose2d(AutoConstants.UP_TO_CONE_X, 2.37 - AutoConstants.Y_DIFFERENCE, AutoConstants.ROTATION_180)),
 
     BACKED_UP_4(0.05,
-            new Pose2d(AutoConstants.BACKED_UP_X, 2.37 - AutoConstants.CONE_DIFFERENCE_Y, AutoConstants.ROTATION_180)),
+            new Pose2d(AutoConstants.BACKED_UP_X, 2.37 - AutoConstants.Y_DIFFERENCE, AutoConstants.ROTATION_180)),
 
     UP_TO_CONE_STATION_5(0.05,
-            new Pose2d(AutoConstants.UP_TO_CONE_X, 1.79 - AutoConstants.CONE_DIFFERENCE_Y, AutoConstants.ROTATION_180)),
+            new Pose2d(AutoConstants.UP_TO_CONE_X, 1.79 - AutoConstants.Y_DIFFERENCE, AutoConstants.ROTATION_180)),
 
     BACKED_UP_5(0.05,
-            new Pose2d(AutoConstants.BACKED_UP_X, 1.79 - AutoConstants.CONE_DIFFERENCE_Y, AutoConstants.ROTATION_180)),
+            new Pose2d(AutoConstants.BACKED_UP_X, 1.79 - AutoConstants.Y_DIFFERENCE, AutoConstants.ROTATION_180)),
 
     UP_TO_CONE_STATION_6(0.05,
-            new Pose2d(AutoConstants.UP_TO_CONE_X, 0.61 - AutoConstants.CONE_DIFFERENCE_Y, AutoConstants.ROTATION_180)),
+            new Pose2d(AutoConstants.UP_TO_CONE_X, 0.61 - AutoConstants.Y_DIFFERENCE, AutoConstants.ROTATION_180)),
 
     BACKED_UP_6(0.05,
-            new Pose2d(AutoConstants.BACKED_UP_X, 0.61 - AutoConstants.CONE_DIFFERENCE_Y, AutoConstants.ROTATION_180)),
-            
+            new Pose2d(AutoConstants.BACKED_UP_X, 0.61 - AutoConstants.Y_DIFFERENCE, AutoConstants.ROTATION_180)),
+
     //
     // CUBE STATION POSITIONS
     CUBE_SCORE_11(0.05,
-            new Pose2d(AutoConstants.BACKED_UP_X, 4.71, AutoConstants.ROTATION_180)),
+            new Pose2d(AutoConstants.BACKED_UP_X, 4.71 - AutoConstants.Y_DIFFERENCE, AutoConstants.ROTATION_180)),
 
     CUBE_SCORE_12(0.05,
-            new Pose2d(AutoConstants.BACKED_UP_X, 2.96, AutoConstants.ROTATION_180)),
+            new Pose2d(AutoConstants.BACKED_UP_X, 2.96 - AutoConstants.Y_DIFFERENCE, AutoConstants.ROTATION_180)),
 
     CUBE_SCORE_13(0.05,
-            new Pose2d(AutoConstants.BACKED_UP_X, 1.21, AutoConstants.ROTATION_180)),
+            new Pose2d(AutoConstants.BACKED_UP_X, 1.21 - AutoConstants.Y_DIFFERENCE, AutoConstants.ROTATION_180)),
 
     // INTO AND OUT OF COMMUNITY
+
     OUT_OF_COMMUNITY_1_2_3(0.2,
-            new Pose2d(2.0, 5.30, AutoConstants.ROTATION_180),
-            new Pose2d(AutoConstants.OUT_OF_COMMUNITY_X, 5.30, AutoConstants.ROTATION_180)),
+            new Pose2d(2.0, 4.9, AutoConstants.ROTATION_180),
+            new Pose2d(AutoConstants.OUT_OF_COMMUNITY_X, 4.9, AutoConstants.ROTATION_180)),
 
     OUT_OF_COMMUNITY_4_5_6(0.2,
             new Pose2d(2.0, 0.63, AutoConstants.ROTATION_180),
-            new Pose2d(AutoConstants.OUT_OF_COMMUNITY_X, 0.63, AutoConstants.ROTATION_180)),
+            new Pose2d(AutoConstants.OUT_OF_COMMUNITY_X, 0.43, AutoConstants.ROTATION_180)),
 
     INTO_COMMUNITY_1_2_3(0.2,
-            new Pose2d(AutoConstants.OUT_OF_COMMUNITY_X, 5.30, AutoConstants.ROTATION_180),
+            new Pose2d(AutoConstants.OUT_OF_COMMUNITY_X, 4.9, AutoConstants.ROTATION_180),
             new Pose2d(2.0, 5.30, AutoConstants.ROTATION_180)),
 
     INTO_COMMUNITY_4_5_6(0.2,
-            new Pose2d(AutoConstants.OUT_OF_COMMUNITY_X, 0.63, AutoConstants.ROTATION_180),
+            new Pose2d(AutoConstants.OUT_OF_COMMUNITY_X, 0.43, AutoConstants.ROTATION_180),
             new Pose2d(2.0, 0.63, AutoConstants.ROTATION_180)),
 
     //
     // PICKUP POSITIONS
     READY_FOR_PICKUP_7(0.2,
-            new Pose2d(AutoConstants.OUT_OF_COMMUNITY_X, 5.30, AutoConstants.ROTATION_0),
-            new Pose2d(AutoConstants.OUT_OF_COMMUNITY_X, 4.92, AutoConstants.ROTATION_0)),
+            new Pose2d(AutoConstants.OUT_OF_COMMUNITY_X, 5.30 - AutoConstants.Y_DIFFERENCE, AutoConstants.ROTATION_0),
+            new Pose2d(AutoConstants.OUT_OF_COMMUNITY_X, 4.92 - AutoConstants.Y_DIFFERENCE, AutoConstants.ROTATION_0)),
 
     GO_TO_PICKUP_7(0.2,
-            new Pose2d(6.90, 4.92, AutoConstants.ROTATION_0)),
+            new Pose2d(6.90, 4.92 - AutoConstants.Y_DIFFERENCE, AutoConstants.ROTATION_0)),
 
     READY_FOR_PICKUP_8(0.2,
-            new Pose2d(AutoConstants.OUT_OF_COMMUNITY_X, 5.30, AutoConstants.ROTATION_0),
-            new Pose2d(AutoConstants.OUT_OF_COMMUNITY_X, 3.64, AutoConstants.ROTATION_0)),
+            new Pose2d(AutoConstants.OUT_OF_COMMUNITY_X, 5.30 - AutoConstants.Y_DIFFERENCE, AutoConstants.ROTATION_0),
+            new Pose2d(AutoConstants.OUT_OF_COMMUNITY_X, 3.64 - AutoConstants.Y_DIFFERENCE, AutoConstants.ROTATION_0)),
 
     GO_TO_PICKUP_8(0.2,
-            new Pose2d(6.90, 3.64, AutoConstants.ROTATION_0)),
+            new Pose2d(6.90, 3.64 - AutoConstants.Y_DIFFERENCE, AutoConstants.ROTATION_0)),
 
     READY_FOR_PICKUP_9(0.2,
-            new Pose2d(AutoConstants.OUT_OF_COMMUNITY_X, 0.63, AutoConstants.ROTATION_0),
-            new Pose2d(AutoConstants.OUT_OF_COMMUNITY_X, 2.35, AutoConstants.ROTATION_0)),
+            new Pose2d(AutoConstants.OUT_OF_COMMUNITY_X, 0.63 - AutoConstants.Y_DIFFERENCE, AutoConstants.ROTATION_0),
+            new Pose2d(AutoConstants.OUT_OF_COMMUNITY_X, 2.35 - AutoConstants.Y_DIFFERENCE, AutoConstants.ROTATION_0)),
 
     GO_TO_PICKUP_9(0.2,
-            new Pose2d(6.90, 2.35, AutoConstants.ROTATION_0)),
+            new Pose2d(6.90, 2.35 - AutoConstants.Y_DIFFERENCE, AutoConstants.ROTATION_0)),
 
     READY_FOR_PICKUP_10(0.2,
-            new Pose2d(AutoConstants.OUT_OF_COMMUNITY_X, 0.63, AutoConstants.ROTATION_0),
-            new Pose2d(AutoConstants.OUT_OF_COMMUNITY_X, 1.09, AutoConstants.ROTATION_0)),
+            new Pose2d(AutoConstants.OUT_OF_COMMUNITY_X, 0.63 - AutoConstants.Y_DIFFERENCE, AutoConstants.ROTATION_0),
+            new Pose2d(AutoConstants.OUT_OF_COMMUNITY_X, 1.09 - AutoConstants.Y_DIFFERENCE, AutoConstants.ROTATION_0)),
 
     GO_TO_PICKUP_10(0.2,
-            new Pose2d(6.90, 1.09, AutoConstants.ROTATION_0)),
+            new Pose2d(6.90, 1.09 - AutoConstants.Y_DIFFERENCE, AutoConstants.ROTATION_0)),
 
     // CHARGE STATION POSTION(S?)
     INNER_SIDE_CHARGE_STATION_14(0.2,

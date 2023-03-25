@@ -163,6 +163,11 @@ public class Auto {
         ).withName(coneScoreCmd.getName() + " " + pickupCubeCmd.getName() + " " + scoreCubeCmd.getName());
     }
 
+    public CommandBase outOfCommunity(ConeStation conePos) {
+        return sequence(
+                conePos.communityPosition.outOfCommunity.getPath(drive));
+    }
+
     // Score cone and back up onto charge station (from pos 1) and then balance
     public CommandBase scoreConeBalance() {
         return sequence(
@@ -198,6 +203,11 @@ public class Auto {
                 backUp(0.5, 0.5),
                 armRotate.moveTo(ArmPresets.ARM_STOWED))
                 .withName("Simple One Cone Test");
+    }
+
+    public CommandBase outOfCommunityTest() {
+        return AutoPath.OUT_OF_COMMUNITY_1_2_3.getPath(drive)
+                .withName("Go out of community");
     }
 
     public CommandBase oneConeTaxiTest() {

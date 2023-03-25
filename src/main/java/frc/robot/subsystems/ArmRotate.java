@@ -89,10 +89,11 @@ public class ArmRotate extends SmartSubsystemBase {
     }
 
     public CommandBase resetZero() {
-        return cmd().onExecute(() -> {
+        return runEnd(() -> {
             data.setPoint = DESCEND_SPEED;
-        }).onEnd(() -> {
+        }, () -> {
             map.motor.getEncoder().reset();
+            data.setPoint = 0;
         });
     }
 

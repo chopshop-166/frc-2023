@@ -25,6 +25,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
+import frc.robot.auto.AutoPath;
+import frc.robot.auto.CommunityPosition;
 import frc.robot.auto.ConeStation;
 import frc.robot.auto.CubePickupLocation;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -80,7 +82,7 @@ public class Robot extends CommandRobot {
     public CommandBase simpleTaxiWireAuto = auto.oneConeTaxiWire();
 
     @Autonomous
-    public CommandBase preTest = auto.preTest();
+    public CommandBase outOfCommunity = auto.outOfCommunityTest();
 
     @Autonomous(name = "Piecemeal Auto")
     public CommandBase buildCommand = new ProxyCommand(() -> {

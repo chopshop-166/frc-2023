@@ -139,13 +139,3 @@ public class Vision {
         };
     }
 }
-
-
-    
-
-    
-    
-
-    
-    
-    
