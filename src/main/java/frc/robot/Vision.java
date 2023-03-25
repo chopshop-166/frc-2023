@@ -98,7 +98,7 @@ public class Vision {
                         driveMap.gyro().setAngle(pose.getRotation().getDegrees() + (isBlue ? 0 : 180));
 
                         estimator.resetPosition(
-                                Rotation2d.fromDegrees(driveMap.gyro().getAngle() - (isBlue ? 0 : 180)),
+                                Rotation2d.fromDegrees(driveMap.gyro().getAngle() - 180),
                                 getModulePositions(), pose);
 
                         // setPose(pose);
