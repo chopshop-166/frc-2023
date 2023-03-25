@@ -122,9 +122,8 @@ public class Robot extends CommandRobot {
     public CommandBase rumbleAndIntakeSpinningOff() {
         return runOnce(() -> {
             copilotController.getHID().setRumble(RumbleType.kBothRumble, 0);
-            led.bottomOff();
 
-        });
+        }).andThen(led.colorAlliance());
     }
 
     @Override
@@ -162,7 +161,8 @@ public class Robot extends CommandRobot {
         // COPILOT CONTROLLER
         // Intake
         copilotController.a()
-                .onTrue(rumbleOn().andThen(led.intakeSpinning()).andThen(intake.grab(), rumbleAndIntakeSpinningOff()));
+                .onTrue(rumbleOn().andThen(led.intakeSpinning()).andThen(intake.grab(), rumbleOff(),
+                        led.grabbedPiece()));
         copilotController.b().onTrue(intake.toggle().andThen(rumbleAndIntakeSpinningOff()));
         copilotController.x().whileTrue(rumbleAndIntakeSpinningOff().andThen(intake.cubeRelease()));
 
