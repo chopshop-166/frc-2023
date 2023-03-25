@@ -339,20 +339,20 @@ public class Drive extends SmartSubsystemBase {
 
     public CommandBase balance() {
 
-        PersistenceCheck balancedCheck = new PersistenceCheck(15,
+        PersistenceCheck balancedCheck = new PersistenceCheck(50,
                 () -> Math.abs(getTilt()) < 6);
         return cmd().onExecute(() -> {
             Rotation3d rotationVelocity = this.map.gyro().getRotationalVelocity();
 
-            double velocityThresholdDegreesPerSec = 1.0;
+            double velocityThresholdDegreesPerSec = 4.0;
 
             double angleVelocityDegreesPerSec = map.gyro().getRotation2d().getCos()
                     * Units.radiansToDegrees(rotationVelocity.getY())
                     + map.gyro().getRotation2d().getSin() * Units
                             .radiansToDegrees(rotationVelocity.getX());
-            boolean shouldStop = (getTilt() < 0.0 &&
+            boolean shouldStop = (getTilt() < 1 &&
                     angleVelocityDegreesPerSec > velocityThresholdDegreesPerSec)
-                    || (getTilt() > 0.0 && angleVelocityDegreesPerSec < -velocityThresholdDegreesPerSec);
+                    || (getTilt() > 1 && angleVelocityDegreesPerSec < -velocityThresholdDegreesPerSec);
 
             Logger.getInstance().recordOutput("Angle Velocity", angleVelocityDegreesPerSec);
             Logger.getInstance().recordOutput("Pitch", getTilt());
@@ -361,12 +361,12 @@ public class Drive extends SmartSubsystemBase {
                 safeState();
                 Logger.getInstance().recordOutput("AutoBalanceState", "stopped");
 
-            } else if (getTilt() > 3) {
+            } else if (getTilt() > 4) {
                 move(0.0, BALANCE_SPEED, 0.0);
 
                 Logger.getInstance().recordOutput("AutoBalanceState", "backward");
 
-            } else if (getTilt() < 3) {
+            } else if (getTilt() < -4) {
                 move(0.0, -BALANCE_SPEED, 0.0);
 
                 Logger.getInstance().recordOutput("AutoBalanceState", "forward");
