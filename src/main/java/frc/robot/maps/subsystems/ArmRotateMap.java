@@ -90,7 +90,7 @@ public class ArmRotateMap {
         @Override
         public void fromLog(LogTable table) {
             this.setPoint = table.getDouble("MotorSetpoint", setPoint);
-            this.degrees = table.getDouble("RoationDegrees", degrees);
+            this.degrees = table.getDouble("RotationDegrees", degrees);
             this.velocityDegreesPerSecond = table.getDouble("MotorVelocityMetersPerSeconds", velocityDegreesPerSecond);
             this.currentAmps = table.getDoubleArray("MotorCurrentAmps", currentAmps);
             this.tempCelcius = table.getDoubleArray("MotorTempCelcius", tempCelcius);
