@@ -257,8 +257,9 @@ public class Drive extends SmartSubsystemBase {
         return run(() -> deadbandMove(xSpeed.getAsDouble(), ySpeed.getAsDouble(), rotation.getAsDouble(), false));
     }
 
-    public CommandBase RobotCentricDrive(DoubleSupplier xSpeed, DoubleSupplier ySpeed, DoubleSupplier rotation) {
-        return run(() -> deadbandMove(xSpeed.getAsDouble(), ySpeed.getAsDouble(), rotation.getAsDouble(), true));
+    public CommandBase robotCentricDrive(DoubleSupplier xSpeed, DoubleSupplier ySpeed, DoubleSupplier rotation) {
+        return run(() -> deadbandMove(xSpeed.getAsDouble(), ySpeed.getAsDouble(), rotation.getAsDouble(), true))
+                .withName("Robot Centric Drive");
     }
 
     public CommandBase driveTo(Pose2d targetPose, double tolerance) {
