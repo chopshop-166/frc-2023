@@ -144,7 +144,7 @@ public class Led extends SmartSubsystemBase {
         return runOnce(() -> {
             ledBehaviors[LedSection.Bottom.getSection()] = LedBehavior.ColorAlliance;
             ledBehaviors[LedSection.All.getSection()] = LedBehavior.None;
-        });
+        }).ignoringDisable(true);
     }
 
     public CommandBase resetColor() {
