@@ -8,7 +8,6 @@ import com.chopshop166.chopshoplib.sensors.IEncoder;
 import com.chopshop166.chopshoplib.sensors.MockEncoder;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
 
 public class ArmRotateMap {
     public final SmartMotorController motor;
@@ -16,7 +15,6 @@ public class ArmRotateMap {
     public final double softMaxAngle;
     public final double softMinAngle;
     public final double bumperAngle;
-    public final DutyCycleEncoder absEncoder;
     public final IEncoder encoder;
     public double hardMaxAngle;
     public double hardMinAngle;
@@ -25,12 +23,11 @@ public class ArmRotateMap {
     private double previousRate = 0;
 
     public ArmRotateMap() {
-        this(new SmartMotorController(), 0, 0, 0, 0, 0, new PIDController(0, 0, 0), new DutyCycleEncoder(4),
-                new MockEncoder(), 0, 0);
+        this(new SmartMotorController(), 0, 0, 0, 0, 0, new PIDController(0, 0, 0), new MockEncoder(), 0, 0);
     }
 
     public ArmRotateMap(SmartMotorController motor, double softMaxAngle, double softMinAngle, double hardMaxAngle,
-            double hardMinAngle, double bumperAngle, PIDController pid, DutyCycleEncoder absEncoder, IEncoder encoder,
+            double hardMinAngle, double bumperAngle, PIDController pid, IEncoder encoder,
             double armPivotHeight, double armStartLength) {
         this.motor = motor;
         this.softMaxAngle = softMaxAngle;
@@ -38,7 +35,6 @@ public class ArmRotateMap {
         this.hardMaxAngle = hardMaxAngle;
         this.hardMinAngle = hardMinAngle;
         this.pid = pid;
-        this.absEncoder = absEncoder;
         this.encoder = encoder;
         this.bumperAngle = bumperAngle;
         this.armPivotHeight = armPivotHeight;
@@ -53,7 +49,7 @@ public class ArmRotateMap {
         data.tempCelcius = motor.getTemperatureC();
         data.acceleration = data.velocityDegreesPerSecond - previousRate;
         previousRate = data.velocityDegreesPerSecond;
-        data.rotatingAbsAngleDegrees = absEncoder.getDistance();
+        data.rotatingAbsAngleDegrees = encoder.getAbsolutePosition();
         data.rotatingRelativeAngleDegrees = encoder.getDistance();
         data.rotatingAngleVelocity = encoder.getRate();
     }

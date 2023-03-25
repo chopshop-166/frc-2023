@@ -32,7 +32,7 @@ public class Valkyrie extends RobotMap {
         PIDController pid = new PIDController(0.01, 0, 0);
         DutyCycleEncoder mockArmEncoder = new DutyCycleEncoder(18);
         pid.setTolerance(1);
-        return new ArmRotateMap(motor, 1, 10, 1, 10, 0, pid, mockArmEncoder, new MockEncoder(), 0, 0);
+        return new ArmRotateMap(motor, 1, 10, 1, 10, 0, pid, new MockEncoder(), 0, 0);
     }
 
     @Override
