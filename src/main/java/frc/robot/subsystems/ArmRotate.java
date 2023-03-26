@@ -56,7 +56,7 @@ public class ArmRotate extends SmartSubsystemBase {
     }
 
     public boolean intakeBelowGround() {
-        double armZ = (Math.cos(Math.toRadians(data.degrees)) * (armLength + armStartLength));
+        double armZ = (Math.cos(Math.toRadians(data.rotatingRelativeAngleDegrees)) * (armLength + armStartLength));
 
         return PIVOT_HEIGHT - INTAKE_DEPTH_LIMIT < armZ;
 
@@ -67,7 +67,7 @@ public class ArmRotate extends SmartSubsystemBase {
         // value is reached, then the command will end.
         PersistenceCheck setPointPersistenceCheck = new PersistenceCheck(20, pid::atSetpoint);
         return cmd("Move To Set Angle").onExecute(() -> {
-            data.setPoint = pid.calculate(data.degrees, angle) + NO_FALL;
+            data.setPoint = pid.calculate(data.rotatingRelativeAngleDegrees, angle) + NO_FALL;
             Logger.getInstance().recordOutput("getPositionErrors", pid.getPositionError());
 
         }).runsUntil(setPointPersistenceCheck).onEnd(() -> {
@@ -124,6 +124,7 @@ public class ArmRotate extends SmartSubsystemBase {
     @Override
     public void reset() {
         map.motor.getEncoder().reset();
+        map.encoder.reset();
     }
 
     @Override
@@ -138,9 +139,8 @@ public class ArmRotate extends SmartSubsystemBase {
         // Use this for any background processing
         this.map.updateData(data);
         Logger.getInstance().processInputs(getName(), data);
-        anglePub.set(data.degrees);
+        anglePub.set(data.rotatingRelativeAngleDegrees);
         armLength = lengthSub.get();
-
     }
 
     private double limits(double speed) {
@@ -149,18 +149,18 @@ public class ArmRotate extends SmartSubsystemBase {
             return NO_FALL;
         }
 
-        if (!intakeSub.get() && speed < 0 && data.degrees < map.bumperAngle) {
+        if (!intakeSub.get() && speed < 0 && data.rotatingRelativeAngleDegrees < map.bumperAngle) {
             return 0;
         }
-        if ((data.degrees > this.map.hardMaxAngle && speed > 0)
-                || (data.degrees < this.map.hardMinAngle && speed < 0)) {
+        if ((data.rotatingRelativeAngleDegrees > this.map.hardMaxAngle && speed > 0)
+                || (data.rotatingRelativeAngleDegrees < this.map.hardMinAngle && speed < 0)) {
             return data.setPoint = 0;
         }
-        if ((data.degrees > this.map.softMaxAngle && speed > 0) ||
-                (data.degrees < this.map.softMinAngle && speed < 0)) {
+        if ((data.rotatingRelativeAngleDegrees > this.map.softMaxAngle && speed > 0) ||
+                (data.rotatingRelativeAngleDegrees < this.map.softMinAngle && speed < 0)) {
             return (speed * SLOW_DOWN);
         }
-        if (data.degrees > 13) {
+        if (data.rotatingRelativeAngleDegrees > 13) {
             return (speed + NO_FALL);
         }
 

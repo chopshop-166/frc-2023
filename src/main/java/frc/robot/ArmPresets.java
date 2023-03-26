@@ -1,5 +1,11 @@
 package frc.robot;
 
+/**
+ * Presets for arm extension length and angle
+ *
+ * length is stored in inches
+ * angle is stored in degrees
+ */
 public enum ArmPresets {
     // Need to measure values
     MEDIUM_SCORE(3.8, 78),
@@ -13,7 +19,7 @@ public enum ArmPresets {
     // Human Player Station = HPS
     HPS_PICKUP(0, 76),
 
-    ARM_STOWED(1, 4),
+    ARM_STOWED(1, 2),
 
     CUBE_PICKUP(3, 17),
 
@@ -27,10 +33,20 @@ public enum ArmPresets {
         this.angle = angle;
     }
 
+    /**
+     * Get the arm extension length
+     *
+     * @return Arm extension length in inches
+     */
     public double getLength() {
         return length;
     }
 
+    /**
+     * Get the angle of the arm
+     *
+     * @return Arm angle in degrees
+     */
     public double getAngle() {
         return angle;
     }
