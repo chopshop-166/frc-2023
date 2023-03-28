@@ -280,4 +280,4 @@ public class Robot extends CommandRobot {
         armExtend.setDefaultCommand(armExtend.manual(copilotController::getTriggers));
         armRotate.setDefaultCommand(armRotate.move(RobotUtils.deadbandAxis(.1, () -> -copilotController.getLeftY())));
     }
-        
+}
