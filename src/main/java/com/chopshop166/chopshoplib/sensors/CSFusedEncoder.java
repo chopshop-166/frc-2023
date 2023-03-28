@@ -4,6 +4,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 
 public class CSFusedEncoder implements IEncoder {
 
+    private final double ENCODER_THRESHOLD_DEGREES = 2;
     IEncoder relativeEncoder;
     IAbsolutePosition absolutePos;
 
@@ -12,7 +13,15 @@ public class CSFusedEncoder implements IEncoder {
     public CSFusedEncoder(IEncoder relativeEncoder, IAbsolutePosition absPosition) {
         this.relativeEncoder = relativeEncoder;
         this.absolutePos = absPosition;
-        relativeEncoderOffset = this.absolutePos.getAbsolutePosition();
+        this.relativeEncoderOffset = this.absolutePos.getAbsolutePosition();
+    }
+
+    public double getRelativeEncoderOffset() {
+        return this.relativeEncoderOffset;
+    }
+
+    private boolean distanceExceedsThreshold(double relativeDistance, double absoluteDistance) {
+        return Math.abs(relativeDistance) - Math.abs(absoluteDistance) >= ENCODER_THRESHOLD_DEGREES;
     }
 
     @Override
@@ -20,18 +29,27 @@ public class CSFusedEncoder implements IEncoder {
         builder.setSmartDashboardType("Quadrature Encoder");
         builder.addDoubleProperty("Speed", this::getRate, null);
         builder.addDoubleProperty("Distance", this::getDistance, null);
+        builder.addDoubleProperty("Absolute Position", this::getAbsolutePosition, null);
     }
 
     @Override
     public void reset() {
         // This sets the relative encoder to the current absolute position
+        System.out.println("Reseting Fused Encoder");
         relativeEncoderOffset = this.absolutePos.getAbsolutePosition();
         this.relativeEncoder.reset();
     }
 
     @Override
     public double getDistance() {
-        return this.relativeEncoder.getDistance() + relativeEncoderOffset;
+
+        double distance = this.relativeEncoder.getDistance() + relativeEncoderOffset;
+        // Keep trying to set the offset until we get a valid reading back
+        if (relativeEncoderOffset == 0 || distanceExceedsThreshold(distance, this.absolutePos.getAbsolutePosition())) {
+            reset();
+            distance = this.relativeEncoder.getDistance() + relativeEncoderOffset;
+        }
+        return distance;
     }
 
     @Override

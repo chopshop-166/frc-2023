@@ -148,19 +148,19 @@ public class FrostBiteMap extends RobotMap {
         csmotor.getMotorController().setIdleMode(IdleMode.kCoast);
         csmotor.getEncoder().setPositionScaleFactor(1.125);
         csmotor.getEncoder().setVelocityScaleFactor(1.125 / 60);
-        PIDController pid = new PIDController(0.06, 0, 0);
-        pid.setTolerance(0.5);
+        PIDController pid = new PIDController(0.035, 0, 0.0001);
+        pid.setTolerance(1.5);
 
-        CSEncoder encoder = new CSEncoder(2, 3);
-        encoder.setDistancePerPulse(360 / 2048);
+        CSEncoder encoder = new CSEncoder(2, 3, true);
+        encoder.setDistancePerPulse(360.0 / 2048.0);
         CSDutyCycleEncoder absEncoder = new CSDutyCycleEncoder(4);
-        absEncoder.setDutyCycleRange(1 / 1025, 1024 / 1025);
-        absEncoder.setDistancePerRotation(360);
+        absEncoder.setDutyCycleRange(1.0 / 1025.0, 1024.0 / 1025.0);
+        absEncoder.setDistancePerRotation(-360);
         // Adjust this to move the encoder zero point to the retracted position
-        absEncoder.setPositionOffset(0);
+        absEncoder.setPositionOffset(325.5);
         CSFusedEncoder fusedEncoder = new CSFusedEncoder(encoder, absEncoder);
 
-        return new ArmRotateMap(csmotor, 85, 10, 115, 0, 15, pid, fusedEncoder, 46.654, 42.3) {
+        return new ArmRotateMap(csmotor, 95, 10, 105, 0, 15, pid, fusedEncoder, 46.654, 42.3) {
             @Override
             public void setBrake() {
                 csmotor.getMotorController().setIdleMode(IdleMode.kBrake);
