@@ -6,6 +6,9 @@ import org.littletonrobotics.junction.Logger;
 
 import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
 import com.chopshop166.chopshoplib.motors.Modifier;
+import com.chopshop166.chopshoplib.PersistenceCheck;
+import com.chopshop166.chopshoplib.RobotUtils;
+import com.chopshop166.chopshoplib.sensors.gyro.PigeonGyro2;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -187,14 +190,15 @@ public class Drive extends SmartSubsystemBase {
     private void deadbandMove(final double xSpeed, final double ySpeed,
             final double rotation, boolean isRobotCentric) {
 
-        final Modifier deadband = Modifier.deadband(0.15);
-
+        var deadband = RobotUtils.scalingDeadband(0.15);
         double rotationInput = deadband.applyAsDouble(rotation);
+        double xInput = deadband.applyAsDouble(xSpeed);
+        double yInput = deadband.applyAsDouble(ySpeed);
 
         SmartDashboard.putNumber("Rotation Correction Error", latestAngle - map.gyro().getAngle());
 
         if (Math.abs(rotationInput) < 0.1
-                && !(deadband.applyAsDouble(xSpeed) < 0.1 && deadband.applyAsDouble(ySpeed) < 0.1)) {
+                && !(Math.abs(xInput) < 0.1 && Math.abs(yInput) < 0.1)) {
             rotationInput = correctionPID.calculate(latestAngle, map.gyro().getAngle());
             rotationInput = (Math.abs(rotationInput) > 0.02) ? rotationInput : 0;
             Logger.getInstance().recordOutput("pidOutput", rotationInput);
@@ -205,9 +209,9 @@ public class Drive extends SmartSubsystemBase {
         Logger.getInstance().recordOutput("latestAngle", latestAngle);
         Logger.getInstance().recordOutput("robotAngle", map.gyro().getAngle());
 
-        final double translateXSpeed = deadband.applyAsDouble(xSpeed)
+        final double translateXSpeed = xInput
                 * maxDriveSpeedMetersPerSecond * speedCoef;
-        final double translateYSpeed = deadband.applyAsDouble(ySpeed)
+        final double translateYSpeed = yInput
                 * maxDriveSpeedMetersPerSecond * speedCoef;
         final double rotationSpeed = rotationInput
                 * maxRotationRadiansPerSecond * rotationCoef;
