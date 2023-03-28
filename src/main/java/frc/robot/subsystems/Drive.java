@@ -5,14 +5,8 @@ import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
 import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
-import com.chopshop166.chopshoplib.motors.Modifier;
 import com.chopshop166.chopshoplib.PersistenceCheck;
 import com.chopshop166.chopshoplib.RobotUtils;
-import com.chopshop166.chopshoplib.sensors.gyro.PigeonGyro2;
-import com.chopshop166.chopshoplib.PersistenceCheck;
-import com.chopshop166.chopshoplib.sensors.gyro.PigeonGyro;
-
-import com.ctre.phoenix.sensors.Pigeon2;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -29,7 +23,6 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import frc.robot.Field;
 import frc.robot.Vision;
-import frc.robot.Robot;
 import frc.robot.maps.subsystems.SwerveDriveMap;
 import frc.robot.maps.subsystems.SwerveDriveMap.Data;
 import frc.robot.util.DrivePID;
@@ -44,6 +37,9 @@ public class Drive extends SmartSubsystemBase {
     double maxRotationRadiansPerSecond;
     double speedCoef = 1;
     double rotationCoef = 1;
+    private final double velocityThresholdDegreesPerSec = 4.0;
+    private final double tiltAmountThreshold = 4.0;
+    private final double fullStopTempTilt = 1;
 
     private final double BALANCE_SPEED = 0.25;
 
@@ -323,11 +319,15 @@ public class Drive extends SmartSubsystemBase {
 
     }
 
-    public CommandBase driveUntilTipped() {
+    public CommandBase driveUntilTippedFWD(boolean forward) {
         return cmd().onExecute(() -> {
-            move(0.0, BALANCE_SPEED, 0.0);
+            if (!forward) {
+                move(0.0, BALANCE_SPEED, 0.0);
+            } else {
+                move(0.0, -BALANCE_SPEED, 0.0);
+            }
 
-        }).runsUntil(() -> Math.abs(this.getTilt()) > 9);
+        }).runsUntil(() -> Math.abs(this.getTilt()) > 7);
     }
 
     public double getTilt() {
@@ -344,15 +344,13 @@ public class Drive extends SmartSubsystemBase {
         return cmd().onExecute(() -> {
             Rotation3d rotationVelocity = this.map.gyro().getRotationalVelocity();
 
-            double velocityThresholdDegreesPerSec = 4.0;
-
             double angleVelocityDegreesPerSec = map.gyro().getRotation2d().getCos()
                     * Units.radiansToDegrees(rotationVelocity.getY())
                     + map.gyro().getRotation2d().getSin() * Units
                             .radiansToDegrees(rotationVelocity.getX());
-            boolean shouldStop = (getTilt() < 1 &&
+            boolean shouldStop = (getTilt() < -fullStopTempTilt &&
                     angleVelocityDegreesPerSec > velocityThresholdDegreesPerSec)
-                    || (getTilt() > 1 && angleVelocityDegreesPerSec < -velocityThresholdDegreesPerSec);
+                    || (getTilt() > fullStopTempTilt && angleVelocityDegreesPerSec < -velocityThresholdDegreesPerSec);
 
             Logger.getInstance().recordOutput("Angle Velocity", angleVelocityDegreesPerSec);
             Logger.getInstance().recordOutput("Pitch", getTilt());
@@ -361,12 +359,12 @@ public class Drive extends SmartSubsystemBase {
                 safeState();
                 Logger.getInstance().recordOutput("AutoBalanceState", "stopped");
 
-            } else if (getTilt() > 4) {
+            } else if (getTilt() > tiltAmountThreshold) {
                 move(0.0, BALANCE_SPEED, 0.0);
 
                 Logger.getInstance().recordOutput("AutoBalanceState", "backward");
 
-            } else if (getTilt() < -4) {
+            } else if (getTilt() < -tiltAmountThreshold) {
                 move(0.0, -BALANCE_SPEED, 0.0);
 
                 Logger.getInstance().recordOutput("AutoBalanceState", "forward");
@@ -421,4 +419,5 @@ public class Drive extends SmartSubsystemBase {
         pose = vision.update(isBlue);
         Logger.getInstance().recordOutput("robotPose", pose);
     }
+
 }
