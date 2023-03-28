@@ -204,8 +204,11 @@ public class Auto {
     public CommandBase combinedAuto(ConeStation conePos, CubePickupLocation cubePos, int cubeScorePos) {
         CommandBase coneScoreCmd = startGridScoreCone(conePos.upToStation, conePos.backedUp)
                 .withName("Score Cone (Pos " + conePos.number + ")");
-        CommandBase pickupCubeCmd = pickupCubeN(cubePos.readyForPickup, cubePos.goToPickup)
-                .withName("Pickup (Pos " + cubePos.number + ")");
+        CommandBase pickupCubeCmd = none();
+        if (cubePos != null) {
+            pickupCubeCmd = pickupCubeN(cubePos.readyForPickup, cubePos.goToPickup)
+                    .withName("Pickup (Pos " + cubePos.number + ")");
+        }
         CommandBase scoreCubeCmd = scoreCubePos(cubeScorePos);
 
         return sequence(

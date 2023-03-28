@@ -169,7 +169,8 @@ public class Robot extends CommandRobot {
         conePosChooser.addOption("Cone Pos 6", ConeStation.STATION_6);
         SmartDashboard.putData(conePosChooser);
 
-        cubePosChooser.setDefaultOption("Pick Up Cube 1", CubePickupLocation.CUBE_1);
+        cubePosChooser.setDefaultOption("Don't Pick Up Cube", null);
+        cubePosChooser.addOption("Pick Up Cube 1", CubePickupLocation.CUBE_1);
         cubePosChooser.addOption("Pick Up Cube 2", CubePickupLocation.CUBE_2);
         cubePosChooser.addOption("Pick Up Cube 3", CubePickupLocation.CUBE_3);
         cubePosChooser.addOption("Pick Up Cube 4", CubePickupLocation.CUBE_4);
