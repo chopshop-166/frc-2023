@@ -5,18 +5,17 @@ import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
 import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
-import com.chopshop166.chopshoplib.motors.Modifier;
 import com.chopshop166.chopshoplib.PersistenceCheck;
 import com.chopshop166.chopshoplib.RobotUtils;
-import com.chopshop166.chopshoplib.sensors.gyro.PigeonGyro2;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -38,6 +37,11 @@ public class Drive extends SmartSubsystemBase {
     double maxRotationRadiansPerSecond;
     double speedCoef = 1;
     double rotationCoef = 1;
+    private final double TILT_VELOCITY_MAX = 4.0;
+    private final double TILT_THRESHOLD = 4.0;
+    private final double TILT_MAX_STOPPING = 1;
+
+    private final double BALANCE_SPEED = 0.25;
 
     boolean isBlue = false;
 
@@ -315,6 +319,62 @@ public class Drive extends SmartSubsystemBase {
 
     }
 
+    public CommandBase driveUntilTippedFWD(boolean forward) {
+        return cmd().onExecute(() -> {
+            if (!forward) {
+                move(0.0, BALANCE_SPEED, 0.0);
+            } else {
+                move(0.0, -BALANCE_SPEED, 0.0);
+            }
+
+        }).runsUntil(() -> Math.abs(this.getTilt()) > 7);
+    }
+
+    public double getTilt() {
+        return this.map.gyro().getRotation2d().getCos()
+                * Units.radiansToDegrees(this.map.gyro().getRotation3d().getY())
+                + this.map.gyro().getRotation2d().getSin()
+                        * Units.radiansToDegrees(this.map.gyro().getRotation3d().getX());
+    }
+
+    public CommandBase balance() {
+
+        PersistenceCheck balancedCheck = new PersistenceCheck(50,
+                () -> Math.abs(getTilt()) < 6);
+        return cmd().onExecute(() -> {
+            Rotation3d rotationVelocity = this.map.gyro().getRotationalVelocity();
+
+            double angleVelocityDegreesPerSec = map.gyro().getRotation2d().getCos()
+                    * Units.radiansToDegrees(rotationVelocity.getY())
+                    + map.gyro().getRotation2d().getSin() * Units
+                            .radiansToDegrees(rotationVelocity.getX());
+            boolean shouldStop = (getTilt() < -TILT_MAX_STOPPING &&
+                    angleVelocityDegreesPerSec > TILT_VELOCITY_MAX)
+                    || (getTilt() > TILT_MAX_STOPPING && angleVelocityDegreesPerSec < -TILT_VELOCITY_MAX);
+
+            Logger.getInstance().recordOutput("Angle Velocity", angleVelocityDegreesPerSec);
+            Logger.getInstance().recordOutput("Pitch", getTilt());
+
+            if (shouldStop) {
+                safeState();
+                Logger.getInstance().recordOutput("AutoBalanceState", "stopped");
+
+            } else if (getTilt() > TILT_THRESHOLD) {
+                move(0.0, BALANCE_SPEED, 0.0);
+
+                Logger.getInstance().recordOutput("AutoBalanceState", "backward");
+
+            } else if (getTilt() < -TILT_THRESHOLD) {
+                move(0.0, -BALANCE_SPEED, 0.0);
+
+                Logger.getInstance().recordOutput("AutoBalanceState", "forward");
+
+            }
+
+        }).runsUntil(balancedCheck).onEnd(() -> Logger.getInstance().recordOutput("AutoBalanceState", "ended"));
+
+    }
+
     public CommandBase resetGyroCommand() {
         return cmd().onInitialize(() -> {
             resetGyro();
@@ -359,4 +419,5 @@ public class Drive extends SmartSubsystemBase {
         pose = vision.update(isBlue);
         Logger.getInstance().recordOutput("robotPose", pose);
     }
+
 }
