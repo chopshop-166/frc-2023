@@ -183,7 +183,7 @@ public class Auto {
         return sequence(
                 // armRotate.zeroVelocityCheck(),
                 scoreConeSimpleSlow(),
-                backUp(0.3, 3.5),
+                // backUp(0.3, 3.5),
                 drive.driveUntilTipped(true),
                 drive.balance()
 
