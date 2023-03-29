@@ -16,6 +16,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.BooleanPublisher;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -44,6 +46,8 @@ public class Drive extends SmartSubsystemBase {
     private final double BALANCE_SPEED = 0.25;
 
     boolean isBlue = false;
+    NetworkTableInstance inst = NetworkTableInstance.getDefault();
+    BooleanPublisher autoBalanceState = inst.getBooleanTopic("Auto/Balance").publish();
 
     private Pose2d invertSide(Pose2d bluePose) {
         if (isBlue) {
