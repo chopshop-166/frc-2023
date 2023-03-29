@@ -142,7 +142,9 @@ public class Led extends SmartSubsystemBase {
                 Logger.getInstance().recordOutput("IndicateLEDs", "Spinning");
                 break;
             case BalanceLeds:
-                if (autoBalanceState.get(true)) {
+                if (autoBalanceState.get(false)) {
+                    setColor(0, 255, 0, section);
+                } else {
                     if (flashTimer.advanceIfElapsed(.5)) {
                         isFlashing = !isFlashing;
                     }
@@ -151,9 +153,6 @@ public class Led extends SmartSubsystemBase {
                     } else {
                         setColor(0, 0, 0, section);
                     }
-
-                } else {
-                    setColor(0, 255, 0, section);
                 }
                 break;
             case None:
