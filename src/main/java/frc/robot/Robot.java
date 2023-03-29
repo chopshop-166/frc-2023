@@ -72,9 +72,6 @@ public class Robot extends CommandRobot {
     @Autonomous
     public CommandBase mobilityAuto = auto.axisConeMobility();
 
-    @Autonomous
-    public CommandBase outOfCommunity = auto.outOfCommunityTest();
-
     @Autonomous(name = "Score Simple")
     public CommandBase score = auto.scoreConeSimpleSlow();
 

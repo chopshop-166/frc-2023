@@ -7,7 +7,6 @@ import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 
 import com.chopshop166.chopshoplib.commands.FunctionalWaitCommand;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -40,12 +39,6 @@ public class Auto {
     private CommandBase backUp(double speed, double seconds) {
         return race(
                 drive.driveRaw(() -> 0, () -> -speed, () -> 0),
-                new FunctionalWaitCommand(() -> seconds)).andThen(drive.safeStateCmd());
-    }
-
-    private CommandBase moveLeft(double speed, double seconds) {
-        return race(
-                drive.driveRaw(() -> speed, () -> 0, () -> 0),
                 new FunctionalWaitCommand(() -> seconds)).andThen(drive.safeStateCmd());
     }
 
@@ -166,11 +159,6 @@ public class Auto {
         ).withName(coneScoreCmd.getName() + " " + pickupCubeCmd.getName() + " " + scoreCubeCmd.getName());
     }
 
-    public CommandBase outOfCommunity(ConeStation conePos) {
-        return sequence(
-                conePos.communityPosition.outOfCommunity.getPath(drive));
-    }
-
     // Score cone and back up onto charge station (from pos 1) and then balance
     public CommandBase scoreConeBalance() {
         return sequence(
@@ -186,11 +174,6 @@ public class Auto {
                 .withName("Score Cone Balance");
     }
 
-    public CommandBase outOfCommunityTest() {
-        return AutoPath.OUT_OF_COMMUNITY_1_2_3.getPath(drive)
-                .withName("Go out of community");
-    }
-
     public CommandBase axisConeMobility() {
         return sequence(
                 drive.setGyro180(),
@@ -202,28 +185,6 @@ public class Auto {
                 backUp(1.5, 3.5))
 
                 .withName("(TEST) One Cone Mobolity");
-    }
-
-    public CommandBase preTest() {
-        return sequence(
-                AutoPath.PRE_TEST.getPath(drive)).withName("(TEST) Pre Test");
-    }
-
-    public CommandBase oneConeTaxiNoCable() {
-        return sequence(
-                // armRotate.zeroVelocityCheck(),
-                armExtend.zeroVelocityCheck(),
-
-                armRotate.moveTo(ArmPresets.HIGH_SCORE),
-                AutoPath.UP_TO_CONE_STATION_1.getPath(drive),
-                scoreCone(),
-                AutoPath.BACKED_UP_1.getPath(drive),
-                armExtend.moveTo(ArmPresets.ARM_STOWED),
-                intake.coneGrab(),
-                armRotate.moveTo(ArmPresets.ARM_STOWED),
-                AutoPath.OUT_OF_COMMUNITY_1_2_3.getPath(drive)
-
-        ).withName("One Cone Taxi No Cable");
     }
 
     private CommandBase timingWait() {
