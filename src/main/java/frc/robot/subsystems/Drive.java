@@ -43,6 +43,7 @@ public class Drive extends SmartSubsystemBase {
     private final double TILT_THRESHOLD = 4.0;
     private final double TILT_MAX_STOPPING = 1;
 
+    private final double UNTIL_TIPPED_SPEED = 1;
     private final double BALANCE_SPEED = 0.25;
 
     boolean isBlue = false;
@@ -325,13 +326,13 @@ public class Drive extends SmartSubsystemBase {
 
     public CommandBase driveUntilTipped(boolean forward) {
         return cmd().onExecute(() -> {
-            if (!forward) {
-                move(0.0, BALANCE_SPEED + 0.3, 0.0);
+            if (forward) {
+                move(0.0, -UNTIL_TIPPED_SPEED, 0.0);
             } else {
-                move(0.0, -BALANCE_SPEED - 0.3, 0.0);
+                move(0.0, UNTIL_TIPPED_SPEED, 0.0);
             }
 
-        }).runsUntil(() -> Math.abs(this.getTilt()) > 7);
+        }).runsUntil(() -> Math.abs(this.getTilt()) > 9);
     }
 
     public double getTilt() {

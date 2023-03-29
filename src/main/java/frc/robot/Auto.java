@@ -64,7 +64,7 @@ public class Auto {
                         armRotate.moveTo(ArmPresets.HIGH_SCORE),
                         backUp(-1.0, 0.4),
                         armScore(ArmPresets.HIGH_SCORE, ArmPresets.HIGH_SCORE_ACTUAL),
-                        backUp(1.0, 0.5),
+                        backUp(1.0, 0.3),
                         stowArmCloseIntake()));
 
     }
