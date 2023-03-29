@@ -182,12 +182,10 @@ public class Auto {
     public CommandBase scoreConeBalance() {
         return sequence(
                 // armRotate.zeroVelocityCheck(),
-                scoreConeSimpleSlow();
-                backUp(0.3, 3.5);
-                drive.driveUntilTipped(true);
-                drive.balance();
-        // will need values for this ^
-        // add whatever balance command that we do
+                scoreConeSimpleSlow(),
+                backUp(0.3, 3.5),
+                drive.driveUntilTipped(true),
+                drive.balance()
 
         )
                 .withName("Score Cone Balance");
