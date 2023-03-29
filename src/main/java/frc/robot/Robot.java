@@ -69,6 +69,9 @@ public class Robot extends CommandRobot {
     public CommandBase noAuto = runOnce(() -> {
     }).withName("No Auto");
 
+    @Autonomous(name = "Score then balance")
+    public CommandBase scoreBalance = auto.scoreConeBalance();
+
     @Autonomous
     public CommandBase mobilityAuto = auto.axisConeMobility();
 
