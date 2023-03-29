@@ -332,7 +332,7 @@ public class Drive extends SmartSubsystemBase {
                 move(0.0, UNTIL_TIPPED_SPEED, 0.0);
             }
 
-        }).runsUntil(() -> Math.abs(this.getTilt()) > 9);
+        }).runsUntil(() -> Math.abs(this.getTilt()) > 13);
     }
 
     public double getTilt() {

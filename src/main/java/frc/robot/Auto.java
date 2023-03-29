@@ -63,9 +63,9 @@ public class Auto {
         return race(new FunctionalWaitCommand(() -> 8),
                 sequence(
                         drive.setGyro180(),
-                        backUp(1.0, 0.4),
+                        backUp(1.5, 0.15),
                         armRotate.moveTo(ArmPresets.HIGH_SCORE),
-                        backUp(-1.0, 0.4),
+                        backUp(-1.5, 0.15),
                         armScore(ArmPresets.HIGH_SCORE, ArmPresets.HIGH_SCORE_ACTUAL),
                         backUp(1.0, 0.3),
                         stowArmCloseIntake()));
