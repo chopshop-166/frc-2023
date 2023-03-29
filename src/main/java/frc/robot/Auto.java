@@ -55,15 +55,7 @@ public class Auto {
                 armScore(aboveLevel, scoreLevel));
     }
 
-    public CommandBase scoreConeSimple() {
-        return race(new FunctionalWaitCommand(() -> 8),
-                sequence(
-                        armRotate.moveTo(ArmPresets.HIGH_SCORE),
-                        backUp(-1.0, 1.5),
-                        armScore(ArmPresets.HIGH_SCORE, ArmPresets.HIGH_SCORE_ACTUAL)));
-
-    }
-
+    // THE ONE THAT ACTUALLY WORKS
     public CommandBase scoreConeSimpleSlow() {
         return race(new FunctionalWaitCommand(() -> 8),
                 sequence(
@@ -127,7 +119,6 @@ public class Auto {
                         }));
     }
 
-    // SEQUENCES TO JUST SCORE A CONE - from starting positions
     private CommandBase startGridScoreCone(AutoPath upToStation, AutoPath backedUp) {
         return sequence(
                 prepareToScoreCone(),
