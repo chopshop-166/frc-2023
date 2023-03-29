@@ -70,16 +70,7 @@ public class Robot extends CommandRobot {
     }).withName("No Auto");
 
     @Autonomous
-    public CommandBase simpleAuto = auto.oneSimpleConeTest();
-
-    @Autonomous
     public CommandBase mobilityAuto = auto.axisConeMobility();
-
-    @Autonomous
-    public CommandBase simpleTaxiAuto = auto.oneConeTaxiTest();
-
-    @Autonomous
-    public CommandBase simpleTaxiWireAuto = auto.oneConeTaxiWire();
 
     @Autonomous
     public CommandBase outOfCommunity = auto.outOfCommunityTest();

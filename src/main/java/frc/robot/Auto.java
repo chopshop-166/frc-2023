@@ -55,22 +55,6 @@ public class Auto {
                 armRotate.moveTo(scoreLevel), armExtend.moveTo(ArmPresets.ARM_STOWED));
     }
 
-    public CommandBase scoreCone(ArmPresets aboveLevel, ArmPresets scoreLevel) {
-        return sequence(
-                armRotate.moveTo(aboveLevel),
-                race(drive.driveToNearest(), new FunctionalWaitCommand(() -> 2)),
-                armScore(aboveLevel, scoreLevel));
-    }
-
-    public CommandBase scoreConeSimple() {
-        return race(new FunctionalWaitCommand(() -> 8),
-                sequence(
-                        armRotate.moveTo(ArmPresets.HIGH_SCORE),
-                        backUp(-1.0, 1.5),
-                        armScore(ArmPresets.HIGH_SCORE, ArmPresets.HIGH_SCORE_ACTUAL)));
-
-    }
-
     public CommandBase scoreConeSimpleSlow() {
         return race(new FunctionalWaitCommand(() -> 8),
                 sequence(
@@ -206,38 +190,9 @@ public class Auto {
                 .withName("Score Cone Balance");
     }
 
-    public CommandBase oneConeTest() {
-        return sequence(
-                armExtend.zeroVelocityCheck(),
-                scoreCone(ArmPresets.HIGH_SCORE, ArmPresets.HIGH_SCORE_ACTUAL),
-                backUp(1.2, 0.5),
-                armRotate.moveTo(ArmPresets.ARM_STOWED))
-                .withName("One Cone Test");
-    }
-
-    public CommandBase oneSimpleConeTest() {
-        return sequence(
-                armExtend.zeroVelocityCheck(),
-                scoreConeSimple(),
-                backUp(0.5, 0.5),
-                armRotate.moveTo(ArmPresets.ARM_STOWED))
-                .withName("Simple One Cone Test");
-    }
-
     public CommandBase outOfCommunityTest() {
         return AutoPath.OUT_OF_COMMUNITY_1_2_3.getPath(drive)
                 .withName("Go out of community");
-    }
-
-    public CommandBase oneConeTaxiTest() {
-        return sequence(
-                drive.setGyro180(),
-                scoreConeSimple(),
-                backUp(0.5, 0.5),
-                race(new FunctionalWaitCommand(() -> 3),
-                        armRotate.moveTo(ArmPresets.ARM_STOWED)),
-                backUp(1.5, 3.5))
-                .withName("(MAIN) One Cone Mobolity");
     }
 
     public CommandBase axisConeMobility() {
@@ -253,31 +208,9 @@ public class Auto {
                 .withName("(TEST) One Cone Mobolity");
     }
 
-    public CommandBase moveDistanceTest() {
-        return sequence(
-                drive.setGyro180(),
-                scoreConeSimple(),
-                backUp(0.5, 0.5),
-                armRotate.moveTo(ArmPresets.ARM_STOWED),
-                drive.driveDistance(3, 1, Rotation2d.fromDegrees(2)))
-                .withName("Move Distance Auto");
-    }
-
     public CommandBase preTest() {
         return sequence(
                 AutoPath.PRE_TEST.getPath(drive)).withName("(TEST) Pre Test");
-    }
-
-    public CommandBase oneConeTaxiWire() {
-        return sequence(
-                drive.setGyro180(),
-                scoreConeSimple(),
-                backUp(0.5, 0.5),
-                armRotate.moveTo(ArmPresets.ARM_STOWED),
-                moveLeft(0.5, 0.25),
-                backUp(1.2, 4)
-
-        ).withName("Wire Guard One Cone Mobolity");
     }
 
     public CommandBase oneConeTaxiNoCable() {
