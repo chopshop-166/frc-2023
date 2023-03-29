@@ -175,14 +175,10 @@ public class Auto {
     public CommandBase scoreConeBalance() {
         return sequence(
                 // armRotate.zeroVelocityCheck(),
-                armExtend.zeroVelocityCheck(),
-                backUp(0.5, 0.5),
-                armRotate.moveTo(ArmPresets.HIGH_SCORE),
-                AutoPath.UP_TO_CONE_STATION_1.getPath(drive),
-                scoreCone(),
-                AutoPath.BACKED_UP_1.getPath(drive),
-                stowArmCloseIntake(),
-                AutoPath.INNER_SIDE_CHARGE_STATION_14.getPath(drive)
+                scoreConeSimpleSlow();
+                backUp(0.3, 3.5);
+                drive.driveUntilTipped(true);
+                drive.balance();
         // will need values for this ^
         // add whatever balance command that we do
 

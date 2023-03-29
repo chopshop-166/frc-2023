@@ -323,7 +323,7 @@ public class Drive extends SmartSubsystemBase {
 
     }
 
-    public CommandBase driveUntilTippedFWD(boolean forward) {
+    public CommandBase driveUntilTipped(boolean forward) {
         return cmd().onExecute(() -> {
             if (!forward) {
                 move(0.0, BALANCE_SPEED, 0.0);
@@ -333,6 +333,7 @@ public class Drive extends SmartSubsystemBase {
 
         }).runsUntil(() -> Math.abs(this.getTilt()) > 7);
     }
+
 
     public double getTilt() {
         return this.map.gyro().getRotation2d().getCos()
