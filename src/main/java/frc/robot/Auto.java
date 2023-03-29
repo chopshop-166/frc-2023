@@ -18,6 +18,7 @@ import frc.robot.subsystems.ArmExtend;
 import frc.robot.subsystems.ArmRotate;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Led;
 
 public class Auto {
     // Declare references to subsystems
@@ -25,15 +26,17 @@ public class Auto {
     ArmExtend armExtend;
     ArmRotate armRotate;
     Intake intake;
+    Led led;
     NetworkTableInstance ntinst = NetworkTableInstance.getDefault();
     StringSubscriber gamePieceSub = ntinst.getStringTopic("Game Piece").subscribe("Cone");
 
     // Pass in all subsystems
-    public Auto(Drive drive, ArmExtend armExtend, ArmRotate armRotate, Intake intake) {
+    public Auto(Drive drive, ArmExtend armExtend, ArmRotate armRotate, Intake intake, Led led) {
         this.drive = drive;
         this.armExtend = armExtend;
         this.armRotate = armRotate;
         this.intake = intake;
+        this.led = led;
     }
 
     private CommandBase backUp(double speed, double seconds) {
@@ -176,6 +179,7 @@ public class Auto {
                 scoreConeSimpleSlow(),
                 // backUp(0.3, 3.5),
                 drive.driveUntilTipped(true),
+                led.balancing(),
                 drive.balance()
 
         )

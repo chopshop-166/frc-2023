@@ -205,6 +205,13 @@ public class Led extends SmartSubsystemBase {
         });
     }
 
+    public CommandBase balancing() {
+        return runOnce(() -> {
+            ledBehaviors[LedSection.Bottom.getSection()] = LedBehavior.BalanceLeds;
+            ledBehaviors[LedSection.All.getSection()] = LedBehavior.None;
+        });
+    }
+
     public CommandBase bottomOff() {
         return runOnce(() -> {
             ledBehaviors[LedSection.Bottom.getSection()] = LedBehavior.None;

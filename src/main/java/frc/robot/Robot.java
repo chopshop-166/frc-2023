@@ -1,6 +1,5 @@
 package frc.robot;
 
-import static edu.wpi.first.wpilibj2.command.Commands.race;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 
@@ -9,27 +8,23 @@ import org.littletonrobotics.junction.Logger;
 import com.chopshop166.chopshoplib.Autonomous;
 import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.commands.CommandRobot;
-import com.chopshop166.chopshoplib.commands.FunctionalWaitCommand;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.PneumaticHub;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
-import frc.robot.auto.AutoPath;
-import frc.robot.auto.CommunityPosition;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.auto.ConeStation;
 import frc.robot.auto.CubePickupLocation;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.maps.RobotMap;
 // $Imports$
 import frc.robot.subsystems.ArmExtend;
@@ -62,7 +57,7 @@ public class Robot extends CommandRobot {
     private Led led = new Led(map.getLedMap());
     private ArmRotate armRotate = new ArmRotate(map.getArmRotateMap());
 
-    private Auto auto = new Auto(drive, armExtend, armRotate, intake);
+    private Auto auto = new Auto(drive, armExtend, armRotate, intake, led);
     private Compressor compressor = new Compressor(PneumaticsModuleType.REVPH);
 
     @Autonomous(defaultAuto = true)
