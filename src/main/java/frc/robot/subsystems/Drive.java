@@ -358,6 +358,7 @@ public class Drive extends SmartSubsystemBase {
 
             Logger.getInstance().recordOutput("Angle Velocity", angleVelocityDegreesPerSec);
             Logger.getInstance().recordOutput("Pitch", getTilt());
+            autoBalanceState.accept(shouldStop);
 
             if (shouldStop) {
                 safeState();

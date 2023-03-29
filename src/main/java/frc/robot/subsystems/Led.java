@@ -27,7 +27,7 @@ public class Led extends SmartSubsystemBase {
     public LedBehavior[] ledBehaviors = { LedBehavior.None, LedBehavior.None, LedBehavior.ColdFire };
     private int spinCounter;
     private int ledPosition = 1;
-    boolean isFlashing;
+    private boolean isFlashing;
 
     private final Timer flashTimer = new Timer();
 
@@ -142,11 +142,11 @@ public class Led extends SmartSubsystemBase {
                 Logger.getInstance().recordOutput("IndicateLEDs", "Spinning");
                 break;
             case BalanceLeds:
-                if (autoBalanceState.get(false)) {
+                if (autoBalanceState.get(true)) {
                     if (flashTimer.advanceIfElapsed(.5)) {
                         isFlashing = !isFlashing;
                     }
-                    if (isFlashing == true) {
+                    if (isFlashing) {
                         setColor(255, 0, 0, section);
                     } else {
                         setColor(0, 0, 0, section);
