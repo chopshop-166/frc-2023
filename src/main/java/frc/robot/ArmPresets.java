@@ -10,11 +10,11 @@ public enum ArmPresets {
     // Need to measure values
     MEDIUM_SCORE(3.8, 78),
 
-    HIGH_SCORE(18.5, 92),
+    HIGH_SCORE(18.5, 86),
 
     MEDIUM_SCORE_ACTUAL(3.8, 67),
 
-    HIGH_SCORE_ACTUAL(18.5, 80),
+    HIGH_SCORE_ACTUAL(18.5, 76.3),
 
     // Human Player Station = HPS
     HPS_PICKUP(0, 76),

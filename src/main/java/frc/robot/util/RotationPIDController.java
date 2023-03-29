@@ -11,7 +11,7 @@ public class RotationPIDController {
     }
 
     private double getError(double measurementDegrees, double setpointDegrees) {
-        double angleError = -(setpointDegrees - measurementDegrees);
+        double angleError = (setpointDegrees - measurementDegrees);
 
         if (Math.abs(angleError) > 180.0) {
             angleError = Math.signum(-angleError) * (360.0 - Math.abs(angleError));

@@ -3,11 +3,15 @@ package frc.robot;
 import static edu.wpi.first.wpilibj2.command.Commands.none;
 import static edu.wpi.first.wpilibj2.command.Commands.race;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
+import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 
 import com.chopshop166.chopshoplib.commands.FunctionalWaitCommand;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import frc.robot.auto.AutoPath;
 import frc.robot.auto.ConeStation;
 import frc.robot.auto.CubePickupLocation;
@@ -22,6 +26,8 @@ public class Auto {
     ArmExtend armExtend;
     ArmRotate armRotate;
     Intake intake;
+    NetworkTableInstance ntinst = NetworkTableInstance.getDefault();
+    StringSubscriber gamePieceSub = ntinst.getStringTopic("Game Piece").subscribe("Cone");
 
     // Pass in all subsystems
     public Auto(Drive drive, ArmExtend armExtend, ArmRotate armRotate, Intake intake) {
@@ -49,27 +55,12 @@ public class Auto {
                 armRotate.moveTo(scoreLevel), armExtend.moveTo(ArmPresets.ARM_STOWED));
     }
 
-    public CommandBase scoreCone(ArmPresets aboveLevel, ArmPresets scoreLevel) {
-        return sequence(
-                armRotate.moveTo(aboveLevel),
-                race(drive.driveToNearest(), new FunctionalWaitCommand(() -> 2)),
-                armScore(aboveLevel, scoreLevel));
-    }
-
-    public CommandBase scoreConeSimple() {
-        return race(new FunctionalWaitCommand(() -> 8),
-                sequence(
-                        armRotate.moveTo(ArmPresets.HIGH_SCORE),
-                        backUp(-1.0, 1.5),
-                        armScore(ArmPresets.HIGH_SCORE, ArmPresets.HIGH_SCORE_ACTUAL)));
-
-    }
-
     public CommandBase scoreConeSimpleSlow() {
         return race(new FunctionalWaitCommand(() -> 8),
                 sequence(
+                        backUp(1.0, 0.4),
                         armRotate.moveTo(ArmPresets.HIGH_SCORE),
-                        backUp(-1.0, 0.3),
+                        backUp(-1.0, 0.4),
                         armScore(ArmPresets.HIGH_SCORE, ArmPresets.HIGH_SCORE_ACTUAL)));
 
     }
@@ -112,12 +103,24 @@ public class Auto {
                 timingWait());
     }
 
+    public CommandBase scoreHighNode() {
+        return sequence(
+                armRotate.moveTo(ArmPresets.HIGH_SCORE),
+                new ConditionalCommand(
+                        armExtend.moveTo(ArmPresets.HIGH_SCORE).andThen(armRotate.moveTo(ArmPresets.HIGH_SCORE_ACTUAL))
+                                .andThen(armExtend.moveTo(ArmPresets.ARM_STOWED)),
+                        runOnce(() -> {
+                        }), () -> {
+                            return gamePieceSub.get() == "Cone";
+                        }));
+    }
+
     // SEQUENCES TO JUST SCORE A CONE - from starting positions
     private CommandBase startGridScoreCone(AutoPath upToStation, AutoPath backedUp) {
         return sequence(
                 prepareToScoreCone(),
                 upToStation.getPath(drive),
-                scoreCone(),
+                scoreHighNode(),
                 backedUp.getPath(drive),
                 stowArmCloseIntake());
     }
