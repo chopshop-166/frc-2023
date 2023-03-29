@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import org.littletonrobotics.junction.Logger;
-
 import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
 
 import edu.wpi.first.networktables.BooleanSubscriber;
@@ -9,6 +8,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
@@ -27,6 +27,12 @@ public class Led extends SmartSubsystemBase {
     public LedBehavior[] ledBehaviors = { LedBehavior.None, LedBehavior.None, LedBehavior.ColdFire };
     private int spinCounter;
     private int ledPosition = 1;
+    private boolean isFlashing;
+
+    private final Timer flashTimer = new Timer();
+
+    NetworkTableInstance inst = NetworkTableInstance.getDefault();
+    BooleanSubscriber autoBalanceState = inst.getBooleanTopic("Auto/Balance").subscribe(false);
 
     enum LedSection {
         Top(1),
@@ -52,6 +58,7 @@ public class Led extends SmartSubsystemBase {
         ColorAlliance,
         GrabbedPiece,
         IntakeSpinning,
+        BalanceLeds,
         None;
     }
 
@@ -134,10 +141,25 @@ public class Led extends SmartSubsystemBase {
                 ledBuffer.setRGB(ledBuffer.getLength() - ledPosition - 1, 0, 255, 0);
                 Logger.getInstance().recordOutput("IndicateLEDs", "Spinning");
                 break;
+            case BalanceLeds:
+                if (autoBalanceState.get(false)) {
+                    setColor(0, 255, 0, section);
+                } else {
+                    if (flashTimer.advanceIfElapsed(.5)) {
+                        isFlashing = !isFlashing;
+                    }
+                    if (isFlashing) {
+                        setColor(255, 0, 0, section);
+                    } else {
+                        setColor(0, 0, 0, section);
+                    }
+                }
+                break;
             case None:
                 break;
 
         }
+
     }
 
     public CommandBase colorAlliance() {
