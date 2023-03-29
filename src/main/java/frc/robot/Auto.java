@@ -3,6 +3,7 @@ package frc.robot;
 import static edu.wpi.first.wpilibj2.command.Commands.none;
 import static edu.wpi.first.wpilibj2.command.Commands.race;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
+import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 
 import com.chopshop166.chopshoplib.commands.FunctionalWaitCommand;
@@ -67,8 +68,7 @@ public class Auto {
                         armRotate.moveTo(ArmPresets.HIGH_SCORE),
                         backUp(-1.5, 0.15),
                         armScore(ArmPresets.HIGH_SCORE, ArmPresets.HIGH_SCORE_ACTUAL),
-                        backUp(1.0, 0.3),
-                        stowArmCloseIntake()));
+                        backUp(1.0, 0.3)));
 
     }
 
@@ -177,8 +177,9 @@ public class Auto {
         return sequence(
                 // armRotate.zeroVelocityCheck(),
                 scoreConeSimpleSlow(),
-                // backUp(0.3, 3.5),
-                drive.driveUntilTipped(true),
+                parallel(stowArmCloseIntake(),
+                        // backUp(0.3, 3.5),
+                        drive.driveUntilTipped(true)),
                 led.balancing(),
                 drive.balance()
 
