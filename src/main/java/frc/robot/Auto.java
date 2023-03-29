@@ -55,6 +55,22 @@ public class Auto {
                 armRotate.moveTo(scoreLevel), armExtend.moveTo(ArmPresets.ARM_STOWED));
     }
 
+    public CommandBase scoreCone(ArmPresets aboveLevel, ArmPresets scoreLevel) {
+        return sequence(
+                armRotate.moveTo(aboveLevel),
+                race(drive.driveToNearest(), new FunctionalWaitCommand(() -> 2)),
+                armScore(aboveLevel, scoreLevel));
+    }
+
+    public CommandBase scoreConeSimple() {
+        return race(new FunctionalWaitCommand(() -> 8),
+                sequence(
+                        armRotate.moveTo(ArmPresets.HIGH_SCORE),
+                        backUp(-1.0, 1.5),
+                        armScore(ArmPresets.HIGH_SCORE, ArmPresets.HIGH_SCORE_ACTUAL)));
+
+    }
+
     public CommandBase scoreConeSimpleSlow() {
         return race(new FunctionalWaitCommand(() -> 8),
                 sequence(
