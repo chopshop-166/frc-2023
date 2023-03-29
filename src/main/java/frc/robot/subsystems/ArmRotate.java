@@ -8,6 +8,7 @@ import com.chopshop166.chopshoplib.PersistenceCheck;
 import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.networktables.BooleanSubscriber;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.DoubleSubscriber;
@@ -29,7 +30,7 @@ public class ArmRotate extends SmartSubsystemBase {
     private final double DESCEND_SPEED = -0.3;
     final double armStartLength = 42.3;
     final double NO_FALL = 0.024;
-    final PIDController pid;
+    final ProfiledPIDController pid;
     final Data data = new Data();
     private double armLength;
 
@@ -65,15 +66,16 @@ public class ArmRotate extends SmartSubsystemBase {
     public CommandBase moveToAngle(double angle) {
         // When executed the arm will move. The encoder will update until the desired
         // value is reached, then the command will end.
-        PersistenceCheck setPointPersistenceCheck = new PersistenceCheck(20, pid::atSetpoint);
-        return cmd("Move To Set Angle").onExecute(() -> {
+        PersistenceCheck setPointPersistenceCheck = new PersistenceCheck(20, pid::atGoal);
+        return cmd("Move To Set Angle").onInitialize(() -> {
+            pid.reset(data.rotatingRelativeAngleDegrees, data.rotatingAngleVelocity);
+        }).onExecute(() -> {
             data.setPoint = pid.calculate(data.rotatingRelativeAngleDegrees, angle) + NO_FALL;
             Logger.getInstance().recordOutput("getPositionErrors", pid.getPositionError());
 
         }).runsUntil(setPointPersistenceCheck).onEnd(() -> {
             data.setPoint = NO_FALL;
         });
-
     }
 
     public CommandBase zeroVelocityCheck() {

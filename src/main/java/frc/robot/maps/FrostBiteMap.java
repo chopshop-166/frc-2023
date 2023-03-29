@@ -23,13 +23,16 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import frc.robot.maps.subsystems.ArmExtendMap;
 import frc.robot.maps.subsystems.ArmRotateMap;
 import frc.robot.maps.subsystems.IntakeData;
@@ -148,8 +151,8 @@ public class FrostBiteMap extends RobotMap {
         csmotor.getMotorController().setIdleMode(IdleMode.kCoast);
         csmotor.getEncoder().setPositionScaleFactor(1.125);
         csmotor.getEncoder().setVelocityScaleFactor(1.125 / 60);
-        PIDController pid = new PIDController(0.035, 0, 0.0001);
-        pid.setTolerance(1.5);
+        ProfiledPIDController pid = new ProfiledPIDController(0.035, 0, 0.0001, new Constraints(150, 250));
+        pid.setTolerance(2);
 
         CSEncoder encoder = new CSEncoder(2, 3, true);
         encoder.setDistancePerPulse(360.0 / 2048.0);
@@ -157,10 +160,10 @@ public class FrostBiteMap extends RobotMap {
         absEncoder.setDutyCycleRange(1.0 / 1025.0, 1024.0 / 1025.0);
         absEncoder.setDistancePerRotation(-360);
         // Adjust this to move the encoder zero point to the retracted position
-        absEncoder.setPositionOffset(325.5);
+        absEncoder.setPositionOffset(276);
         CSFusedEncoder fusedEncoder = new CSFusedEncoder(encoder, absEncoder);
 
-        return new ArmRotateMap(csmotor, 95, 10, 105, 0, 15, pid, fusedEncoder, 46.654, 42.3) {
+        return new ArmRotateMap(csmotor, 95, 10, 98, 0, 15, pid, fusedEncoder, 46.654, 42.3) {
             @Override
             public void setBrake() {
                 csmotor.getMotorController().setIdleMode(IdleMode.kBrake);
