@@ -11,6 +11,8 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -29,7 +31,7 @@ public class Valkyrie extends RobotMap {
     @Override
     public ArmRotateMap getArmRotateMap() {
         CSSparkMax motor = new CSSparkMax(18, MotorType.kBrushless);
-        PIDController pid = new PIDController(0.01, 0, 0);
+        ProfiledPIDController pid = new ProfiledPIDController(0.01, 0, 0, new Constraints(60, 10));
         DutyCycleEncoder mockArmEncoder = new DutyCycleEncoder(18);
         pid.setTolerance(1);
         return new ArmRotateMap(motor, 1, 10, 1, 10, 0, pid, new MockEncoder(), 0, 0);

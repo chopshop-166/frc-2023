@@ -7,11 +7,12 @@ import com.chopshop166.chopshoplib.motors.SmartMotorController;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
 import com.chopshop166.chopshoplib.sensors.MockEncoder;
 
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 
 public class ArmRotateMap {
     public final SmartMotorController motor;
-    public final PIDController pid;
+    public final ProfiledPIDController pid;
     public final double softMaxAngle;
     public final double softMinAngle;
     public final double bumperAngle;
@@ -23,11 +24,13 @@ public class ArmRotateMap {
     private double previousRate = 0;
 
     public ArmRotateMap() {
-        this(new SmartMotorController(), 0, 0, 0, 0, 0, new PIDController(0, 0, 0), new MockEncoder(), 0, 0);
+        this(new SmartMotorController(), 0, 0, 0, 0, 0, new ProfiledPIDController(0, 0, 0, new Constraints(0, 0)),
+                new MockEncoder(), 0, 0);
     }
 
     public ArmRotateMap(SmartMotorController motor, double softMaxAngle, double softMinAngle, double hardMaxAngle,
-            double hardMinAngle, double bumperAngle, PIDController pid, IEncoder encoder,
+            double hardMinAngle, double bumperAngle,
+            ProfiledPIDController pid, IEncoder encoder,
             double armPivotHeight, double armStartLength) {
         this.motor = motor;
         this.softMaxAngle = softMaxAngle;
