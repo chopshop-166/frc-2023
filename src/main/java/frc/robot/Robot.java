@@ -68,10 +68,10 @@ public class Robot extends CommandRobot {
     public CommandBase scoreBalance = auto.scoreConeBalance();
 
     @Autonomous
-    public CommandBase mobilityAuto = auto.axisConeMobility();
+    public CommandBase scoreLeaveBalance = auto.scoreConeLeaveAndBalance();
 
-    @Autonomous(name = "Score Simple")
-    public CommandBase score = auto.scoreConeSimpleSlow();
+    @Autonomous
+    public CommandBase mobilityAuto = auto.axisConeMobility();
 
     @Autonomous(name = "Score leave")
     public CommandBase scoreThenLeave = auto.leaveCommunityVersion2();

@@ -3,6 +3,7 @@ package frc.robot;
 import static edu.wpi.first.wpilibj2.command.Commands.none;
 import static edu.wpi.first.wpilibj2.command.Commands.race;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
+import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 
@@ -48,8 +49,7 @@ public class Auto {
 
     public CommandBase leaveCommunityVersion2() {
         return sequence(
-                scoreConeSimpleSlow(),
-                backUp(1.5, 3.0));
+                scoreConeSimpleSlow(backUp(1.5, 3.0)));
     }
 
     private CommandBase armScore(ArmPresets aboveLevel, ArmPresets scoreLevel) {
@@ -66,16 +66,48 @@ public class Auto {
     }
 
     // THE ONE THAT ACTUALLY WORKS
-    public CommandBase scoreConeSimpleSlow() {
+    public CommandBase scoreConeSimpleSlow(CommandBase commandWhileStow) {
         return race(new FunctionalWaitCommand(() -> 8),
                 sequence(
                         drive.setGyro180(),
-                        backUp(1.5, 0.15),
+                        backUp(1.5, 0.2),
                         armRotate.moveTo(ArmPresets.HIGH_SCORE),
-                        backUp(-1.5, 0.15),
+                        backUp(-1.5, 0.2),
                         armScore(ArmPresets.HIGH_SCORE, ArmPresets.HIGH_SCORE_ACTUAL),
-                        backUp(1.0, 0.3)));
+                        backUp(1.0, 0.3),
+                        parallel(stowArmCloseIntake(),
+                                commandWhileStow)));
 
+    }
+
+    // Score cone and back up onto charge station (from pos 1) and then balance
+    public CommandBase scoreConeBalance() {
+        return sequence(
+                // armRotate.zeroVelocityCheck(),
+                scoreConeSimpleSlow(drive.driveUntilTipped(true)),
+                led.balancing(),
+                drive.balance(),
+                led.starPower()
+
+        )
+                .withName("Score Cone Balance");
+    }
+
+    public CommandBase scoreConeLeaveAndBalance() {
+        return sequence(
+                // armRotate.zeroVelocityCheck(),
+                scoreConeSimpleSlow(drive.driveUntilTipped(true)),
+                drive.driveUntilNotTipped(true),
+                waitSeconds(0.5),
+                backUp(1.0, 3),
+                waitSeconds(2),
+                drive.driveUntilTipped(false),
+                led.balancing(),
+                drive.balance(),
+                led.starPower()
+
+        )
+                .withName("Score Cone, Leave, and Balance");
     }
 
     public CommandBase prepareToScoreCone() {
@@ -187,28 +219,11 @@ public class Auto {
     // .withName("Back out of community auto");
     // }
 
-    // Score cone and back up onto charge station (from pos 1) and then balance
-    public CommandBase scoreConeBalance() {
-        return sequence(
-                // armRotate.zeroVelocityCheck(),
-                scoreConeSimpleSlow(),
-                parallel(stowArmCloseIntake(),
-                        // backUp(0.3, 3.5),
-                        drive.driveUntilTipped(true)),
-                led.balancing(),
-                drive.balance(),
-                led.starPower()
-
-        )
-                .withName("Score Cone Balance");
-    }
-
     public CommandBase axisConeMobility() {
         return sequence(
                 drive.setGyro180(),
                 backUp(1, 0.3),
-                scoreConeSimpleSlow(),
-                backUp(1, 0.3),
+                scoreConeSimpleSlow(backUp(1, 0.3)),
                 race(new FunctionalWaitCommand(() -> 3),
                         armRotate.moveTo(ArmPresets.ARM_STOWED)),
                 backUp(1.5, 3.5))

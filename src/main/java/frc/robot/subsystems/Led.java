@@ -146,14 +146,17 @@ public class Led extends SmartSubsystemBase {
             case BalanceLeds:
                 if (autoBalanceState.get(false)) {
                     setColor(0, 255, 0, section);
+                    Logger.getInstance().recordOutput("IndicateLEDs", "Green");
                 } else {
                     if (flashTimer.advanceIfElapsed(.5)) {
                         isFlashing = !isFlashing;
                     }
                     if (isFlashing) {
                         setColor(255, 0, 0, section);
+                        Logger.getInstance().recordOutput("IndicateLEDs", "Red");
                     } else {
                         setColor(0, 0, 0, section);
+                        Logger.getInstance().recordOutput("IndicateLEDs", "Off");
                     }
                 }
                 break;
