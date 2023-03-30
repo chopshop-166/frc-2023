@@ -227,7 +227,7 @@ public class Drive extends SmartSubsystemBase {
         _move(translateXSpeed, translateYSpeed, rotationSpeed, isRobotCentric);
     }
 
-    private void move(final double xSpeed, final double ySpeed,
+    public void move(final double xSpeed, final double ySpeed,
             final double rotation) {
         _move(xSpeed, ySpeed, rotation, false);
     }

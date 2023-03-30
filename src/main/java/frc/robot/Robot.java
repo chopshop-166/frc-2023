@@ -73,6 +73,9 @@ public class Robot extends CommandRobot {
     @Autonomous(name = "Score Simple")
     public CommandBase score = auto.scoreConeSimpleSlow();
 
+    @Autonomous(name = "Score leave")
+    public CommandBase scoreThenLeave = auto.leaveCommunityVersion2();
+
     @Autonomous(name = "Piecemeal Auto")
     public CommandBase buildCommand = new ProxyCommand(() -> {
         ConeStation conePos = conePosChooser.getSelected();

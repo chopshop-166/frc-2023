@@ -46,6 +46,12 @@ public class Auto {
                 new FunctionalWaitCommand(() -> seconds)).andThen(drive.safeStateCmd());
     }
 
+    public CommandBase leaveCommunityVersion2() {
+        return sequence(
+                scoreConeSimpleSlow(),
+                backUp(1.5, 3.0));
+    }
+
     private CommandBase armScore(ArmPresets aboveLevel, ArmPresets scoreLevel) {
         return sequence(
                 armRotate.moveTo(aboveLevel), armExtend.moveTo(aboveLevel),
@@ -171,6 +177,15 @@ public class Auto {
 
         ).withName(coneScoreCmd.getName() + " " + pickupCubeCmd.getName() + " " + scoreCubeCmd.getName());
     }
+
+    // public CommandBase CommunityAuto() {
+    // return sequence(
+    // // armRotate.zeroVelocityCheck(),
+    // scoreConeSimpleSlow(),
+    // parallel(stowArmCloseIntake(),
+    // drive.move(1.0,1.0,180)))
+    // .withName("Back out of community auto");
+    // }
 
     // Score cone and back up onto charge station (from pos 1) and then balance
     public CommandBase scoreConeBalance() {
