@@ -28,6 +28,7 @@ public class Led extends SmartSubsystemBase {
     private int spinCounter;
     private int ledPosition = 1;
     private boolean isFlashing;
+    private int rainbowFirstPixelHue = 0;
 
     private final Timer flashTimer = new Timer();
 
@@ -59,6 +60,7 @@ public class Led extends SmartSubsystemBase {
         GrabbedPiece,
         IntakeSpinning,
         BalanceLeds,
+        StarPower,
         None;
     }
 
@@ -144,20 +146,25 @@ public class Led extends SmartSubsystemBase {
             case BalanceLeds:
                 if (autoBalanceState.get(false)) {
                     setColor(0, 255, 0, section);
-                    Logger.getInstance().recordOutput("IndicateLEDs", "Green");
                 } else {
                     if (flashTimer.advanceIfElapsed(.5)) {
                         isFlashing = !isFlashing;
                     }
                     if (isFlashing) {
                         setColor(255, 0, 0, section);
-                        Logger.getInstance().recordOutput("IndicateLEDs", "Red");
                     } else {
                         setColor(0, 0, 0, section);
-                        Logger.getInstance().recordOutput("IndicateLEDs", "Off");
                     }
                 }
                 break;
+            case StarPower:
+                for (var i = 0; i < ledBuffer.getLength(); i++) {
+                    final var hue = (rainbowFirstPixelHue + (i * 180 / ledBuffer.getLength())) % 180;
+                    ledBuffer.setHSV(i, (int) hue, 255, 128);
+
+                }
+                rainbowFirstPixelHue += 3;
+                rainbowFirstPixelHue %= 180;
             case None:
                 break;
 
@@ -270,6 +277,13 @@ public class Led extends SmartSubsystemBase {
             ledBehaviors[LedSection.Bottom.getSection()] = LedBehavior.None;
             ledBehaviors[LedSection.All.getSection()] = LedBehavior.ColdFire;
         }).runsWhenDisabled(true);
+    }
+
+    public CommandBase starPower() {
+        return runOnce(() -> {
+            ledBehaviors[LedSection.All.getSection()] = LedBehavior.StarPower;
+        });
+
     }
 
     @Override

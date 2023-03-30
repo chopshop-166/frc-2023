@@ -181,7 +181,8 @@ public class Auto {
                         // backUp(0.3, 3.5),
                         drive.driveUntilTipped(true)),
                 led.balancing(),
-                drive.balance()
+                drive.balance(),
+                led.starPower()
 
         )
                 .withName("Score Cone Balance");
