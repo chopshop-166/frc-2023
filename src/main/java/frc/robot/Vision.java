@@ -81,7 +81,7 @@ public class Vision {
                 SmartDashboard.putNumber("Tag ID", tagId);
                 Optional<Pose3d> opt = aprilTags.getTagPose(tagId);
 
-                if (opt.isPresent() && target.getPoseAmbiguity() < 0.3) {
+                if (opt.isPresent() && target.getPoseAmbiguity() < 0.3 && false) {
                     // Reverse the pose to determine the position on the field
                     Pose2d pose = opt.get().plus(cameraToTarget.inverse())
                             .plus(cameraToRobot.inverse()).toPose2d();

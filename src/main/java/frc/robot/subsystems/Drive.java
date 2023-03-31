@@ -200,7 +200,7 @@ public class Drive extends SmartSubsystemBase {
     private void deadbandMove(final double xSpeed, final double ySpeed,
             final double rotation, boolean isRobotCentric) {
 
-        var deadband = RobotUtils.scalingDeadband(0.15);
+        var deadband = RobotUtils.scalingDeadband(0.05);
         double rotationInput = deadband.applyAsDouble(rotation);
         double xInput = deadband.applyAsDouble(xSpeed);
         double yInput = deadband.applyAsDouble(ySpeed);
