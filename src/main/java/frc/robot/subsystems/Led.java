@@ -77,6 +77,7 @@ public class Led extends SmartSubsystemBase {
 
         heat = new byte[ledBuffer.getLength() / 2];
 
+        flashTimer.start();
     }
 
     public void setColor(int r, int g, int b, LedSection section) {
