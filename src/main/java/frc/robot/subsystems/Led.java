@@ -32,8 +32,9 @@ public class Led extends SmartSubsystemBase {
 
     private final Timer flashTimer = new Timer();
 
-    NetworkTableInstance inst = NetworkTableInstance.getDefault();
-    BooleanSubscriber autoBalanceState = inst.getBooleanTopic("Auto/Balance").subscribe(false);
+    NetworkTableInstance ntinst = NetworkTableInstance.getDefault();
+    BooleanSubscriber groundSub = ntinst.getBooleanTopic("Arm/Below Ground").subscribe(false);
+    BooleanSubscriber autoBalanceState = ntinst.getBooleanTopic("Auto/Balance").subscribe(false);
 
     enum LedSection {
         Top(1),
@@ -299,9 +300,6 @@ public class Led extends SmartSubsystemBase {
     public void safeState() {
 
     }
-
-    NetworkTableInstance ntinst = NetworkTableInstance.getDefault();
-    BooleanSubscriber groundSub = ntinst.getBooleanTopic("Arm/Below Ground").subscribe(false);
 
     @Override
     public void periodic() {
