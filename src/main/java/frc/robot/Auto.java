@@ -48,8 +48,7 @@ public class Auto {
     }
 
     public CommandBase leaveCommunityVersion2() {
-        return sequence(
-                scoreConeSimpleSlow(backUp(1.5, 3.0)));
+        return (scoreConeSimpleSlow(backUp(1.5, 3.0)));
     }
 
     private CommandBase armScore(ArmPresets aboveLevel, ArmPresets scoreLevel) {
@@ -209,15 +208,6 @@ public class Auto {
 
         ).withName(coneScoreCmd.getName() + " " + pickupCubeCmd.getName() + " " + scoreCubeCmd.getName());
     }
-
-    // public CommandBase CommunityAuto() {
-    // return sequence(
-    // // armRotate.zeroVelocityCheck(),
-    // scoreConeSimpleSlow(),
-    // parallel(stowArmCloseIntake(),
-    // drive.move(1.0,1.0,180)))
-    // .withName("Back out of community auto");
-    // }
 
     public CommandBase axisConeMobility() {
         return sequence(
