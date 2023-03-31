@@ -28,11 +28,13 @@ public class Led extends SmartSubsystemBase {
     private int spinCounter;
     private int ledPosition = 1;
     private boolean isFlashing;
+    private int rainbowFirstPixelHue = 0;
 
     private final Timer flashTimer = new Timer();
 
-    NetworkTableInstance inst = NetworkTableInstance.getDefault();
-    BooleanSubscriber autoBalanceState = inst.getBooleanTopic("Auto/Balance").subscribe(false);
+    NetworkTableInstance ntinst = NetworkTableInstance.getDefault();
+    BooleanSubscriber groundSub = ntinst.getBooleanTopic("Arm/Below Ground").subscribe(false);
+    BooleanSubscriber autoBalanceState = ntinst.getBooleanTopic("Auto/Balance").subscribe(false);
 
     enum LedSection {
         Top(1),
@@ -59,6 +61,7 @@ public class Led extends SmartSubsystemBase {
         GrabbedPiece,
         IntakeSpinning,
         BalanceLeds,
+        StarPower,
         None;
     }
 
@@ -75,6 +78,7 @@ public class Led extends SmartSubsystemBase {
 
         heat = new byte[ledBuffer.getLength() / 2];
 
+        flashTimer.start();
     }
 
     public void setColor(int r, int g, int b, LedSection section) {
@@ -144,17 +148,28 @@ public class Led extends SmartSubsystemBase {
             case BalanceLeds:
                 if (autoBalanceState.get(false)) {
                     setColor(0, 255, 0, section);
+                    Logger.getInstance().recordOutput("IndicateLEDs", "Green");
                 } else {
                     if (flashTimer.advanceIfElapsed(.5)) {
                         isFlashing = !isFlashing;
                     }
                     if (isFlashing) {
                         setColor(255, 0, 0, section);
+                        Logger.getInstance().recordOutput("IndicateLEDs", "Red");
                     } else {
                         setColor(0, 0, 0, section);
+                        Logger.getInstance().recordOutput("IndicateLEDs", "Off");
                     }
                 }
                 break;
+            case StarPower:
+                for (var i = 0; i < ledBuffer.getLength(); i++) {
+                    final var hue = (rainbowFirstPixelHue + (i * 180 / ledBuffer.getLength())) % 180;
+                    ledBuffer.setHSV(i, (int) hue, 255, 128);
+
+                }
+                rainbowFirstPixelHue += 3;
+                rainbowFirstPixelHue %= 180;
             case None:
                 break;
 
@@ -201,6 +216,13 @@ public class Led extends SmartSubsystemBase {
     public CommandBase grabbedPiece() {
         return runOnce(() -> {
             ledBehaviors[LedSection.Bottom.getSection()] = LedBehavior.GrabbedPiece;
+            ledBehaviors[LedSection.All.getSection()] = LedBehavior.None;
+        });
+    }
+
+    public CommandBase balancing() {
+        return runOnce(() -> {
+            ledBehaviors[LedSection.Bottom.getSection()] = LedBehavior.BalanceLeds;
             ledBehaviors[LedSection.All.getSection()] = LedBehavior.None;
         });
     }
@@ -262,6 +284,13 @@ public class Led extends SmartSubsystemBase {
         }).runsWhenDisabled(true);
     }
 
+    public CommandBase starPower() {
+        return runOnce(() -> {
+            ledBehaviors[LedSection.All.getSection()] = LedBehavior.StarPower;
+        });
+
+    }
+
     @Override
     public void reset() {
         // Nothing to reset here
@@ -271,9 +300,6 @@ public class Led extends SmartSubsystemBase {
     public void safeState() {
 
     }
-
-    NetworkTableInstance ntinst = NetworkTableInstance.getDefault();
-    BooleanSubscriber groundSub = ntinst.getBooleanTopic("Arm/Below Ground").subscribe(false);
 
     @Override
     public void periodic() {

@@ -10,8 +10,8 @@ public class AutoConstants {
     public static final Rotation2d ROTATION_0 = Rotation2d.fromDegrees(0);
     public static final Rotation2d ROTATION_180 = Rotation2d.fromDegrees(180);
 
-    public static final double UP_TO_CONE_X = 2.00;
+    public static final double UP_TO_CONE_X = 1.78;
     public static final double BACKED_UP_X = 2.25;
-    public static final double Y_DIFFERENCE = 0.2;
+    public static final double Y_DIFFERENCE = 0.10;
     public static final double OUT_OF_COMMUNITY_X = 5.50;
 }

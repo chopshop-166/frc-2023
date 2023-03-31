@@ -110,7 +110,7 @@ public class FrostBiteMap extends RobotMap {
 
         final double maxRotationRadianPerSecond = Math.PI;
 
-        final DrivePID pid = new DrivePID(1.5, 0.001, 0, 0.01, 0.00001, 0);
+        final DrivePID pid = new DrivePID(1.2, 0.001, 0, 0.01, 0.00001, 0);
 
         final Transform3d cameraPosition = new Transform3d(
                 // These probably need to be refined
@@ -187,7 +187,7 @@ public class FrostBiteMap extends RobotMap {
         motor.getMotorController().burnFlash();
         motor.getEncoder().setPositionScaleFactor((1.273 * Math.PI) / 10);
         motor.getEncoder().setVelocityScaleFactor((1.273 * Math.PI) / 10);
-        PIDController pid = new PIDController(0.06, 0.05, 0.0);
+        PIDController pid = new PIDController(0.08, 0.05, 0.0);
         pid.setTolerance(0.5);
         return new ArmExtendMap(motor, 18.5, 3, 19.8, 0.3, pid, 46.654, 42.3);
     }

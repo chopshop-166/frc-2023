@@ -88,6 +88,7 @@ public enum AutoPath {
 
     OUT_OF_COMMUNITY_1_2_3(0.2,
             new Pose2d(2.0, 4.9, AutoConstants.ROTATION_180),
+
             new Pose2d(AutoConstants.OUT_OF_COMMUNITY_X, 4.9, AutoConstants.ROTATION_180)),
 
     OUT_OF_COMMUNITY_4_5_6(0.2,
