@@ -29,6 +29,8 @@ import frc.robot.auto.ConeStation;
 import frc.robot.auto.CubePickupLocation;
 import frc.robot.maps.RobotMap;
 // $Imports$
+import frc.robot.subsystems.BalanceArm;
+
 import frc.robot.subsystems.ArmExtend;
 import frc.robot.subsystems.ArmRotate;
 import frc.robot.subsystems.Drive;
@@ -51,6 +53,8 @@ public class Robot extends CommandRobot {
     StringSubscriber gamePieceSub = ntinst.getStringTopic("Game Piece").subscribe("Cone");
 
     // $Subsystems$
+    BalanceArm balanceArm = new BalanceArm(map.getBalanceArmMap());
+
     private ArmExtend armExtend = new ArmExtend(map.getArmMap());
 
     Intake intake = new Intake(map.getIntakeMap());
