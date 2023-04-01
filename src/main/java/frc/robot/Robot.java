@@ -135,13 +135,11 @@ public class Robot extends CommandRobot {
     }
 
     public CommandBase stowArm = sequence(
+            led.setOrange(),
             intake.coneGrab(),
-            new ConditionalCommand(
-                    (armExtend.moveTo(ArmPresets.ARM_STOWED)), runOnce(() -> {
-                    }), () -> {
-                        return armExtend.data.distanceInches > 1;
-                    }),
-            (armExtend.zeroVelocityCheck()), (armRotate.moveTo(ArmPresets.ARM_STOWED)));
+            armExtend.retract(0.4),
+            armRotate.moveTo(ArmPresets.ARM_STOWED),
+            led.colorAlliance());
 
     public CommandBase pickUpGamePiece = sequence(
             new ConditionalCommand(
@@ -233,7 +231,8 @@ public class Robot extends CommandRobot {
                 .whileTrue(scoreMidNode);
         // stow arm when it is extended past 2 inches
         copilotController.povLeft()
-                .whileTrue(stowArm);
+                .whileTrue(stowArm)
+                .onFalse(led.colorAlliance());
         copilotController.povDown()
                 .whileTrue(pickUpGamePiece);
 

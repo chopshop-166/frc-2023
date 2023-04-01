@@ -132,15 +132,16 @@ public class FrostBiteMap extends RobotMap {
 
     @Override
     public BalanceArmMap getBalanceArmMap() {
-        RevDSolenoid solenoid = new RevDSolenoid(4, 5);
-        return new BalanceArmMap(solenoid);
+        RevDSolenoid solenoid = new RevDSolenoid(1, 6);
+        // return new BalanceArmMap(solenoid);
+        return new BalanceArmMap();
     }
 
     @Override
     public IntakeData.Map getIntakeMap() {
         CSTalonSRX intakeMotor = new CSTalonSRX(9);
         intakeMotor.setInverted(true);
-        RevDSolenoid intakeSolenoid = new RevDSolenoid(6, 7);
+        RevDSolenoid intakeSolenoid = new RevDSolenoid(7, 0);
         intakeMotor.getMotorController().configContinuousCurrentLimit(35);
         intakeMotor.getMotorController().configPeakCurrentLimit(35);
 
