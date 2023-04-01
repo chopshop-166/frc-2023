@@ -10,6 +10,8 @@ import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.networktables.StringSubscriber;
@@ -215,6 +217,11 @@ public class Robot extends CommandRobot {
 
     @Override
     public void configureButtonBindings() {
+        // ! TEST STUFF DELETE LATER
+        driveController.x().onTrue(drive.driveRelative(
+                new Translation2d(Units.inchesToMeters(3), 0)));
+        // ! -----------------
+
         // DRIVE CONTROLLER
         // Drive
         driveController.rightBumper().onTrue(drive.setSpeedCoef(0.25, 0.35)).onFalse(drive.setSpeedCoef(1, 1));

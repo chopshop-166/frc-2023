@@ -81,7 +81,7 @@ public class Vision {
                 SmartDashboard.putNumber("Tag ID", tagId);
                 Optional<Pose3d> opt = aprilTags.getTagPose(tagId);
 
-                if (opt.isPresent() && target.getPoseAmbiguity() < 0.3 && false) {
+                if (opt.isPresent() && target.getPoseAmbiguity() < 0.3) {
                     // Reverse the pose to determine the position on the field
                     Pose2d pose = opt.get().plus(cameraToTarget.inverse())
                             .plus(cameraToRobot.inverse()).toPose2d();
@@ -95,7 +95,8 @@ public class Vision {
                     if (sawTag) {
                         distance = prevPose.getTranslation().getDistance(pose.getTranslation());
                     } else {
-                        driveMap.gyro().setAngle(pose.getRotation().getDegrees() + (isBlue ? 0 : 180));
+                        // driveMap.gyro().setAngle(pose.getRotation().getDegrees() + (isBlue ? 0 :
+                        // 180));
 
                         estimator.resetPosition(
                                 Rotation2d.fromDegrees(driveMap.gyro().getAngle() - 180),

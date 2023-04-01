@@ -160,7 +160,7 @@ public class FrostBiteMap extends RobotMap {
         absEncoder.setDutyCycleRange(1.0 / 1025.0, 1024.0 / 1025.0);
         absEncoder.setDistancePerRotation(-360);
         // Adjust this to move the encoder zero point to the retracted position
-        absEncoder.setPositionOffset(276);
+        absEncoder.setPositionOffset(278.6);
         CSFusedEncoder fusedEncoder = new CSFusedEncoder(encoder, absEncoder);
 
         return new ArmRotateMap(csmotor, 95, 10, 98, 0, 15, pid, fusedEncoder, 46.654, 42.3) {
