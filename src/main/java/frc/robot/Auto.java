@@ -20,6 +20,7 @@ import frc.robot.auto.ConeStation;
 import frc.robot.auto.CubePickupLocation;
 import frc.robot.subsystems.ArmExtend;
 import frc.robot.subsystems.ArmRotate;
+import frc.robot.subsystems.BalanceArm;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Led;
@@ -30,17 +31,19 @@ public class Auto {
     ArmExtend armExtend;
     ArmRotate armRotate;
     Intake intake;
+    BalanceArm balanceArm;
     Led led;
     NetworkTableInstance ntinst = NetworkTableInstance.getDefault();
     StringSubscriber gamePieceSub = ntinst.getStringTopic("Game Piece").subscribe("Cone");
 
     // Pass in all subsystems
-    public Auto(Drive drive, ArmExtend armExtend, ArmRotate armRotate, Intake intake, Led led) {
+    public Auto(Drive drive, ArmExtend armExtend, ArmRotate armRotate, Intake intake, Led led, BalanceArm balanceArm) {
         this.drive = drive;
         this.armExtend = armExtend;
         this.armRotate = armRotate;
         this.intake = intake;
         this.led = led;
+        this.balanceArm = balanceArm;
     }
 
     private CommandBase backUp(double speed, double seconds) {
@@ -87,10 +90,12 @@ public class Auto {
     public CommandBase scoreConeBalance() {
         return sequence(
                 // armRotate.zeroVelocityCheck(),
+                balanceArm.pushDown(),
                 scoreConeSimpleSlow(drive.driveUntilTipped(true)),
                 led.balancing(),
                 drive.balance(),
-                led.starPower()
+                led.starPower(),
+                balanceArm.pushUp()
 
         )
                 .withName("Score Cone Balance");

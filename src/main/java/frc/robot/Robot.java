@@ -63,7 +63,7 @@ public class Robot extends CommandRobot {
     private Led led = new Led(map.getLedMap());
     private ArmRotate armRotate = new ArmRotate(map.getArmRotateMap());
 
-    private Auto auto = new Auto(drive, armExtend, armRotate, intake, led);
+    private Auto auto = new Auto(drive, armExtend, armRotate, intake, led, balanceArm);
     private Compressor compressor = new Compressor(PneumaticsModuleType.REVPH);
 
     @Autonomous(defaultAuto = true)
@@ -224,7 +224,8 @@ public class Robot extends CommandRobot {
 
         driveController.y().whileTrue(drive.balance());
 
-        driveController.x().onTrue(balanceArm.pushDown()).onFalse(balanceArm.pushUp());
+        (new Trigger(() -> driveController.getRightTriggerAxis() > 0.5))
+                .onTrue(balanceArm.pushDown()).onFalse(balanceArm.pushUp());
         // Arm
 
         // COPILOT CONTROLLER
