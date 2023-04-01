@@ -66,9 +66,9 @@ public class Robot extends CommandRobot {
     private Auto auto = new Auto(drive, armExtend, armRotate, intake, led, balanceArm);
     private Compressor compressor = new Compressor(PneumaticsModuleType.REVPH);
 
-    @Autonomous(defaultAuto = true)
+    @Autonomous(name = "No Auto")
     public CommandBase noAuto = runOnce(() -> {
-    }).withName("No Auto");
+    });
 
     @Autonomous(name = "Score then balance")
     public CommandBase scoreBalance = auto.scoreConeBalance();
@@ -76,11 +76,8 @@ public class Robot extends CommandRobot {
     @Autonomous
     public CommandBase scoreLeaveBalance = auto.scoreConeLeaveAndBalance();
 
-    @Autonomous
-    public CommandBase mobilityAuto = auto.axisConeMobility();
-
-    @Autonomous(name = "Score leave")
-    public CommandBase scoreThenLeave = auto.leaveCommunityVersion2();
+    @Autonomous(defaultAuto = true, name = "(MAIN) Score leave")
+    public CommandBase scoreThenLeave = auto.leaveCommunity();
 
     @Autonomous(name = "Piecemeal Auto")
     public CommandBase buildCommand = new ProxyCommand(() -> {
@@ -90,41 +87,24 @@ public class Robot extends CommandRobot {
         return auto.combinedAuto(conePos, cubePos, cubeScorePos);
     });
 
-    private CommandBase driveScoreHigh = sequence(
-            armRotate.moveTo(ArmPresets.HIGH_SCORE), drive.driveToNearest(), armExtend.moveTo(ArmPresets.HIGH_SCORE),
-            intake.coneRelease());
-
-    private CommandBase driveScoreHighNode = sequence(
-            armRotate.moveTo(ArmPresets.HIGH_SCORE), drive.driveToNearest(),
-            new ConditionalCommand(
-                    armExtend.moveTo(ArmPresets.HIGH_SCORE).andThen(armRotate.moveTo(ArmPresets.HIGH_SCORE_ACTUAL))
-                            .andThen(armExtend.moveTo(ArmPresets.ARM_STOWED)),
-                    runOnce(() -> {
-                    }), () -> true));
-
     public CommandBase driveScoreMidNode = sequence(
-            armRotate.moveTo(ArmPresets.MEDIUM_SCORE), drive.driveToNearest(),
-            new ConditionalCommand(
-                    armExtend.moveTo(ArmPresets.MEDIUM_SCORE).andThen(armRotate.moveTo(ArmPresets.MEDIUM_SCORE_ACTUAL))
-                            .andThen(armExtend.moveTo(ArmPresets.ARM_STOWED)),
-                    runOnce(() -> {
-                    }), () -> true));
+            armRotate.moveTo(ArmPresets.MEDIUM_SCORE),
+            drive.driveToNearest(),
+            armExtend.moveTo(ArmPresets.MEDIUM_SCORE),
+            armRotate.moveTo(ArmPresets.MEDIUM_SCORE_ACTUAL),
+            armExtend.moveTo(ArmPresets.ARM_STOWED));
 
     public CommandBase scoreMidNode = sequence(
             armRotate.moveTo(ArmPresets.MEDIUM_SCORE),
-            new ConditionalCommand(
-                    armExtend.moveTo(ArmPresets.MEDIUM_SCORE).andThen(armRotate.moveTo(ArmPresets.MEDIUM_SCORE_ACTUAL))
-                            .andThen(armExtend.moveTo(ArmPresets.ARM_STOWED)),
-                    runOnce(() -> {
-                    }), () -> true));
+            armExtend.moveTo(ArmPresets.MEDIUM_SCORE),
+            armRotate.moveTo(ArmPresets.MEDIUM_SCORE_ACTUAL),
+            armExtend.moveTo(ArmPresets.ARM_STOWED));
 
     public CommandBase scoreHighNode = sequence(
             armRotate.moveTo(ArmPresets.HIGH_SCORE),
-            new ConditionalCommand(
-                    armExtend.moveTo(ArmPresets.HIGH_SCORE).andThen(armRotate.moveTo(ArmPresets.HIGH_SCORE_ACTUAL))
-                            .andThen(armExtend.moveTo(ArmPresets.ARM_STOWED)),
-                    runOnce(() -> {
-                    }), () -> true));
+            armExtend.moveTo(ArmPresets.HIGH_SCORE),
+            armRotate.moveTo(ArmPresets.HIGH_SCORE_ACTUAL),
+            armExtend.moveTo(ArmPresets.ARM_STOWED));
 
     public CommandBase grabCube() {
         return sequence(runOnce(() -> {

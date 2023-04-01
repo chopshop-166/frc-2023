@@ -46,14 +46,14 @@ public class Auto {
         this.balanceArm = balanceArm;
     }
 
-    private CommandBase backUp(double speed, double seconds) {
+    private CommandBase moveFor(double speed, double seconds) {
         return race(
                 drive.driveRaw(() -> 0, () -> -speed, () -> 0),
                 new FunctionalWaitCommand(() -> seconds)).andThen(drive.safeStateCmd());
     }
 
-    public CommandBase leaveCommunityVersion2() {
-        return (scoreConeSimpleSlow(
+    public CommandBase leaveCommunity() {
+        return (scoreConeWhile(
                 drive.driveRelative(new Translation2d(4, 0), 6)));
     }
 
@@ -63,15 +63,8 @@ public class Auto {
                 armRotate.moveTo(scoreLevel), armExtend.moveTo(ArmPresets.ARM_STOWED));
     }
 
-    public CommandBase scoreCone(ArmPresets aboveLevel, ArmPresets scoreLevel) {
-        return sequence(
-                armRotate.moveTo(aboveLevel),
-                race(drive.driveToNearest(), new FunctionalWaitCommand(() -> 2)),
-                armScore(aboveLevel, scoreLevel));
-    }
-
     // THE ONE THAT ACTUALLY WORKS
-    public CommandBase scoreConeSimpleSlow(CommandBase commandWhileStow) {
+    public CommandBase scoreConeWhile(CommandBase commandWhileStow) {
         return race(new FunctionalWaitCommand(() -> 12),
                 sequence(
                         drive.setGyro180(),
@@ -80,7 +73,7 @@ public class Auto {
                         // backUp(-1.5, 0.2),
                         drive.driveRelative(new Translation2d(-Units.inchesToMeters(4), 0), 2),
                         armScore(ArmPresets.HIGH_SCORE, ArmPresets.HIGH_SCORE_ACTUAL),
-                        backUp(1.0, 0.3),
+                        moveFor(1.0, 0.3),
                         parallel(stowArmCloseIntake(),
                                 commandWhileStow)));
 
@@ -91,7 +84,7 @@ public class Auto {
         return sequence(
                 // armRotate.zeroVelocityCheck(),
                 balanceArm.pushDown(),
-                scoreConeSimpleSlow(drive.driveUntilTipped(true)),
+                scoreConeWhile(drive.driveUntilTipped(true)),
                 led.balancing(),
                 drive.balance(),
                 led.starPower(),
@@ -104,10 +97,10 @@ public class Auto {
     public CommandBase scoreConeLeaveAndBalance() {
         return sequence(
                 // armRotate.zeroVelocityCheck(),
-                scoreConeSimpleSlow(drive.driveUntilTipped(true)),
+                scoreConeWhile(drive.driveUntilTipped(true)),
                 drive.driveUntilNotTipped(true),
                 waitSeconds(0.5),
-                backUp(1.0, 3),
+                moveFor(1.0, 3),
                 waitSeconds(2),
                 drive.driveUntilTipped(false),
                 led.balancing(),
@@ -122,16 +115,8 @@ public class Auto {
         return sequence(
                 // armRotate.zeroVelocityCheck(),
                 armExtend.zeroVelocityCheck(),
-                backUp(0.5, 0.5),
+                moveFor(0.5, 0.5),
                 armRotate.moveTo(ArmPresets.HIGH_SCORE));
-    }
-
-    public CommandBase scoreCone() {
-        return sequence(
-                armExtend.moveTo(ArmPresets.HIGH_SCORE),
-                timingWait(),
-                intake.coneRelease(),
-                timingWait());
     }
 
     public CommandBase stowArmCloseIntake() {
@@ -216,18 +201,6 @@ public class Auto {
         // , drive.balance()
 
         ).withName(coneScoreCmd.getName() + " " + pickupCubeCmd.getName() + " " + scoreCubeCmd.getName());
-    }
-
-    public CommandBase axisConeMobility() {
-        return sequence(
-                drive.setGyro180(),
-                backUp(1, 0.3),
-                scoreConeSimpleSlow(backUp(1, 0.3)),
-                race(new FunctionalWaitCommand(() -> 3),
-                        armRotate.moveTo(ArmPresets.ARM_STOWED)),
-                backUp(1.5, 3.5))
-
-                .withName("(TEST) One Cone Mobolity");
     }
 
     private CommandBase timingWait() {
