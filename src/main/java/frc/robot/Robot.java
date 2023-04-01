@@ -213,10 +213,6 @@ public class Robot extends CommandRobot {
 
     @Override
     public void configureButtonBindings() {
-        // ! TEST STUFF DELETE LATER
-        driveController.x().onTrue(drive.driveRelative(
-                new Translation2d(Units.inchesToMeters(4), 0), 2.0));
-        // ! -----------------
 
         // DRIVE CONTROLLER
         // Drive
@@ -227,6 +223,8 @@ public class Robot extends CommandRobot {
                 driveController::getLeftY, driveController::getRightX));
 
         driveController.y().whileTrue(drive.balance());
+
+        driveController.x().onTrue(balanceArm.pushDown()).onFalse(balanceArm.pushUp());
         // Arm
 
         // COPILOT CONTROLLER

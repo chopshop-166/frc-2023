@@ -8,22 +8,28 @@ import com.chopshop166.chopshoplib.pneumatics.IDSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.maps.subsystems.BalanceArmMap;
+import frc.robot.maps.subsystems.BalanceArmMap.Data;
 
 public class BalanceArm extends SmartSubsystemBase {
 
     private BalanceArmMap map;
-    private IDSolenoid solenoid;
-    private boolean state;
+    Data data = new Data();
 
     public BalanceArm(BalanceArmMap map) {
         this.map = map;
-        this.solenoid = map.getSolenoid();
     }
 
-    public CommandBase pushStation(boolean down) {
+    public CommandBase pushDown() {
+        return pushStation(Value.kForward);
+    }
+
+    public CommandBase pushUp() {
+        return pushStation(Value.kReverse);
+    }
+
+    private CommandBase pushStation(Value val) {
         return runOnce(() -> {
-            solenoid.set(down ? Value.kForward : Value.kReverse);
-            this.state = down;
+            data.solenoidSetPoint = val;
         });
     }
 
@@ -41,6 +47,6 @@ public class BalanceArm extends SmartSubsystemBase {
     public void periodic() {
         // This method will be called once per scheduler run
         // Use this for any background processing
-        Logger.getInstance().recordOutput("BalanceArm/pushingDown", false);
+        this.map.updateData(data);
     }
 }

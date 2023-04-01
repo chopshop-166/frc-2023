@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import frc.robot.maps.subsystems.ArmExtendMap;
 import frc.robot.maps.subsystems.ArmRotateMap;
+import frc.robot.maps.subsystems.BalanceArmMap;
 import frc.robot.maps.subsystems.IntakeData;
 import frc.robot.maps.subsystems.LedMap;
 import frc.robot.maps.subsystems.SwerveDriveMap;
@@ -127,6 +128,12 @@ public class FrostBiteMap extends RobotMap {
                 maxDriveSpeedMetersPerSecond,
                 maxRotationRadianPerSecond, pigeonGyro2, pid, cameraPosition, "eyes");
 
+    }
+
+    @Override
+    public BalanceArmMap getBalanceArmMap() {
+        RevDSolenoid solenoid = new RevDSolenoid(4, 5);
+        return new BalanceArmMap(solenoid);
     }
 
     @Override
