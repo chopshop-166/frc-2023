@@ -1,14 +1,16 @@
 package frc.robot;
 
 import static edu.wpi.first.wpilibj2.command.Commands.none;
+import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 import static edu.wpi.first.wpilibj2.command.Commands.race;
+import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
-import static edu.wpi.first.wpilibj2.command.Commands.parallel;
-import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 
 import com.chopshop166.chopshoplib.commands.FunctionalWaitCommand;
 
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -48,7 +50,8 @@ public class Auto {
     }
 
     public CommandBase leaveCommunityVersion2() {
-        return (scoreConeSimpleSlow(backUp(1.5, 3.0)));
+        return (scoreConeSimpleSlow(
+                drive.driveRelative(new Translation2d(4, 0), 6)));
     }
 
     private CommandBase armScore(ArmPresets aboveLevel, ArmPresets scoreLevel) {
@@ -66,12 +69,13 @@ public class Auto {
 
     // THE ONE THAT ACTUALLY WORKS
     public CommandBase scoreConeSimpleSlow(CommandBase commandWhileStow) {
-        return race(new FunctionalWaitCommand(() -> 8),
+        return race(new FunctionalWaitCommand(() -> 12),
                 sequence(
                         drive.setGyro180(),
                         // backUp(1.5, 0.2),
                         armRotate.moveTo(ArmPresets.HIGH_SCORE),
-                        backUp(-1.5, 0.2),
+                        // backUp(-1.5, 0.2),
+                        drive.driveRelative(new Translation2d(-Units.inchesToMeters(4), 0), 2),
                         armScore(ArmPresets.HIGH_SCORE, ArmPresets.HIGH_SCORE_ACTUAL),
                         backUp(1.0, 0.3),
                         parallel(stowArmCloseIntake(),

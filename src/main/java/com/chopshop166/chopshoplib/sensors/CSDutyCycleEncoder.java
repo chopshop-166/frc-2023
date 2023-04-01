@@ -44,7 +44,7 @@ public class CSDutyCycleEncoder extends DutyCycleEncoder implements IAbsolutePos
         if (distance == -this.positionOffset) {
             return 0;
         }
-        return distance;
+        return distance % 360.0;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.wpilibj2.command.Commands.race;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 
 import java.util.function.DoubleSupplier;
@@ -9,6 +10,7 @@ import org.littletonrobotics.junction.Logger;
 
 import com.chopshop166.chopshoplib.PersistenceCheck;
 import com.chopshop166.chopshoplib.RobotUtils;
+import com.chopshop166.chopshoplib.commands.FunctionalWaitCommand;
 import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -178,14 +180,16 @@ public class Drive extends SmartSubsystemBase {
 
     private Pose2d relativeTarget = new Pose2d();
 
-    public CommandBase driveRelative(Translation2d translation) {
+    public CommandBase driveRelative(Translation2d translation, double timeoutSeconds) {
         return sequence(
                 runOnce(() -> {
                     relativeTarget = new Pose2d(
                             pose.getX() + translation.getX(),
                             pose.getY() + translation.getY(),
                             pose.getRotation());
-                }), driveTo(() -> relativeTarget, 0.1));
+                }),
+                race(new FunctionalWaitCommand(() -> timeoutSeconds),
+                        driveTo(() -> relativeTarget, 0.01)));
     }
 
     private void deadbandMove(final double xSpeed, final double ySpeed,
@@ -335,7 +339,7 @@ public class Drive extends SmartSubsystemBase {
                 move(0.0, UNTIL_NOT_TIPPED_SPEED, 0.0);
             }
 
-        }).runsUntil(() -> Math.abs(this.getTilt()) > 6);
+        }).runsUntil(() -> Math.abs(this.getTilt()) < 6);
     }
 
     public double getTilt() {

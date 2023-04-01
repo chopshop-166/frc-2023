@@ -96,9 +96,7 @@ public class Robot extends CommandRobot {
                     armExtend.moveTo(ArmPresets.HIGH_SCORE).andThen(armRotate.moveTo(ArmPresets.HIGH_SCORE_ACTUAL))
                             .andThen(armExtend.moveTo(ArmPresets.ARM_STOWED)),
                     runOnce(() -> {
-                    }), () -> {
-                        return gamePieceSub.get() == "Cone";
-                    }));
+                    }), () -> true));
 
     public CommandBase driveScoreMidNode = sequence(
             armRotate.moveTo(ArmPresets.MEDIUM_SCORE), drive.driveToNearest(),
@@ -106,9 +104,7 @@ public class Robot extends CommandRobot {
                     armExtend.moveTo(ArmPresets.MEDIUM_SCORE).andThen(armRotate.moveTo(ArmPresets.MEDIUM_SCORE_ACTUAL))
                             .andThen(armExtend.moveTo(ArmPresets.ARM_STOWED)),
                     runOnce(() -> {
-                    }), () -> {
-                        return gamePieceSub.get() == "Cone";
-                    }));
+                    }), () -> true));
 
     public CommandBase scoreMidNode = sequence(
             armRotate.moveTo(ArmPresets.MEDIUM_SCORE),
@@ -116,9 +112,7 @@ public class Robot extends CommandRobot {
                     armExtend.moveTo(ArmPresets.MEDIUM_SCORE).andThen(armRotate.moveTo(ArmPresets.MEDIUM_SCORE_ACTUAL))
                             .andThen(armExtend.moveTo(ArmPresets.ARM_STOWED)),
                     runOnce(() -> {
-                    }), () -> {
-                        return gamePieceSub.get() == "Cone";
-                    }));
+                    }), () -> true));
 
     public CommandBase scoreHighNode = sequence(
             armRotate.moveTo(ArmPresets.HIGH_SCORE),
@@ -126,9 +120,7 @@ public class Robot extends CommandRobot {
                     armExtend.moveTo(ArmPresets.HIGH_SCORE).andThen(armRotate.moveTo(ArmPresets.HIGH_SCORE_ACTUAL))
                             .andThen(armExtend.moveTo(ArmPresets.ARM_STOWED)),
                     runOnce(() -> {
-                    }), () -> {
-                        return gamePieceSub.get() == "Cone";
-                    }));
+                    }), () -> true));
 
     public CommandBase grabCube() {
         return sequence(runOnce(() -> {
@@ -219,7 +211,7 @@ public class Robot extends CommandRobot {
     public void configureButtonBindings() {
         // ! TEST STUFF DELETE LATER
         driveController.x().onTrue(drive.driveRelative(
-                new Translation2d(Units.inchesToMeters(3), 0)));
+                new Translation2d(Units.inchesToMeters(4), 0), 2.0));
         // ! -----------------
 
         // DRIVE CONTROLLER

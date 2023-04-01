@@ -17,7 +17,7 @@ public enum ArmPresets {
     HIGH_SCORE_ACTUAL(18.5, 76.3),
 
     // Human Player Station = HPS
-    HPS_PICKUP(0, 76),
+    HPS_PICKUP(0, 73),
 
     ARM_STOWED(1, 2),
 
