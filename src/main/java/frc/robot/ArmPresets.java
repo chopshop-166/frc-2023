@@ -8,29 +8,36 @@ package frc.robot;
  */
 public enum ArmPresets {
     // Need to measure values
-    MEDIUM_SCORE(3.8, 78),
+    MEDIUM_SCORE(3.8, 78,
+            78),
 
-    HIGH_SCORE(18.5, 86),
+    HIGH_SCORE(18.5, 94,
+            86),
 
-    MEDIUM_SCORE_ACTUAL(3.8, 62),
+    MEDIUM_SCORE_ACTUAL(3.8, 62,
+            62),
 
-    HIGH_SCORE_ACTUAL(18.5, 76.3),
+    HIGH_SCORE_ACTUAL(18.5, 80,
+            76.3),
 
     // Human Player Station = HPS
-    HPS_PICKUP(0, 72),
+    HPS_PICKUP(0, 76,
+            72),
 
-    ARM_STOWED(1, 2),
+    ARM_STOWED(1, 2, 2),
 
-    CUBE_PICKUP(3, 17),
+    CUBE_PICKUP(3, 17, 17),
 
-    CONE_PICKUP(8.9, 33);
+    CONE_PICKUP(8.9, 33, 33);
 
     private double length;
     private double angle;
+    private double absoluteAngle;
 
-    private ArmPresets(double length, double angle) {
+    private ArmPresets(double length, double angle, double absoluteAngle) {
         this.length = length;
         this.angle = angle;
+        this.absoluteAngle = absoluteAngle;
     }
 
     /**
@@ -48,7 +55,11 @@ public enum ArmPresets {
      * @return Arm angle in degrees
      */
     public double getAngle() {
-        return angle;
+        return getAngle(false);
+    }
+
+    public double getAngle(boolean absolute) {
+        return absolute ? absoluteAngle : angle;
     }
 
 }

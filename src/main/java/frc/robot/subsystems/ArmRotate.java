@@ -7,12 +7,12 @@ import org.littletonrobotics.junction.Logger;
 import com.chopshop166.chopshoplib.PersistenceCheck;
 import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.networktables.BooleanSubscriber;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.ArmPresets;
@@ -20,7 +20,7 @@ import frc.robot.maps.subsystems.ArmRotateMap;
 import frc.robot.maps.subsystems.ArmRotateMap.Data;
 
 public class ArmRotate extends SmartSubsystemBase {
-
+    private boolean useAbsolute = false;
     private ArmRotateMap map;
     final double RAISE_SPEED = 0.5;
     final double LOWER_SPEED = 0.4;
@@ -46,6 +46,10 @@ public class ArmRotate extends SmartSubsystemBase {
         pid = map.pid;
     }
 
+    private double getArmAngle() {
+        return useAbsolute ? (data.rotatingRelativeAngleDegrees) : (data.degrees);
+    }
+
     public CommandBase move(DoubleSupplier rotationSpeed) {
         return run(() -> {
             double speedCoef = RAISE_SPEED;
@@ -57,7 +61,7 @@ public class ArmRotate extends SmartSubsystemBase {
     }
 
     public boolean intakeBelowGround() {
-        double armZ = (Math.cos(Math.toRadians(data.rotatingRelativeAngleDegrees)) * (armLength + armStartLength));
+        double armZ = (Math.cos(Math.toRadians(getArmAngle())) * (armLength + armStartLength));
 
         return PIVOT_HEIGHT - INTAKE_DEPTH_LIMIT < armZ;
 
@@ -68,9 +72,9 @@ public class ArmRotate extends SmartSubsystemBase {
         // value is reached, then the command will end.
         PersistenceCheck setPointPersistenceCheck = new PersistenceCheck(20, pid::atGoal);
         return cmd("Move To Set Angle").onInitialize(() -> {
-            pid.reset(data.rotatingRelativeAngleDegrees, data.rotatingAngleVelocity);
+            pid.reset(getArmAngle(), data.rotatingAngleVelocity);
         }).onExecute(() -> {
-            data.setPoint = pid.calculate(data.rotatingRelativeAngleDegrees, angle) + NO_FALL;
+            data.setPoint = pid.calculate(getArmAngle(), angle) + NO_FALL;
             Logger.getInstance().recordOutput("getPositionErrors", pid.getPositionError());
 
         }).runsUntil(setPointPersistenceCheck).onEnd(() -> {
@@ -90,6 +94,12 @@ public class ArmRotate extends SmartSubsystemBase {
         });
     }
 
+    public CommandBase toggleAbsolute() {
+        return runOnce(() -> {
+            useAbsolute = !useAbsolute;
+        });
+    }
+
     public CommandBase resetZero() {
         return runEnd(() -> {
             data.setPoint = DESCEND_SPEED;
@@ -100,7 +110,7 @@ public class ArmRotate extends SmartSubsystemBase {
     }
 
     public CommandBase moveTo(ArmPresets level) {
-        return moveToAngle(level.getAngle());
+        return moveToAngle(level.getAngle(useAbsolute));
     }
 
     public CommandBase resetAngle() {
@@ -141,8 +151,9 @@ public class ArmRotate extends SmartSubsystemBase {
         // Use this for any background processing
         this.map.updateData(data);
         Logger.getInstance().processInputs(getName(), data);
-        anglePub.set(data.rotatingRelativeAngleDegrees);
+        anglePub.set(getArmAngle());
         armLength = lengthSub.get();
+        SmartDashboard.putBoolean("Using Absolute", useAbsolute);
     }
 
     private double limits(double speed) {
@@ -151,18 +162,18 @@ public class ArmRotate extends SmartSubsystemBase {
             return NO_FALL;
         }
 
-        if (!intakeSub.get() && speed < 0 && data.rotatingRelativeAngleDegrees < map.bumperAngle) {
+        if (!intakeSub.get() && speed < 0 && getArmAngle() < map.bumperAngle) {
             return 0;
         }
-        if ((data.rotatingRelativeAngleDegrees > this.map.hardMaxAngle && speed > 0)
-                || (data.rotatingRelativeAngleDegrees < this.map.hardMinAngle && speed < 0)) {
+        if ((getArmAngle() > this.map.hardMaxAngle && speed > 0)
+                || (getArmAngle() < this.map.hardMinAngle && speed < 0)) {
             return data.setPoint = 0;
         }
-        if ((data.rotatingRelativeAngleDegrees > this.map.softMaxAngle && speed > 0) ||
-                (data.rotatingRelativeAngleDegrees < this.map.softMinAngle && speed < 0)) {
+        if ((getArmAngle() > this.map.softMaxAngle && speed > 0) ||
+                (getArmAngle() < this.map.softMinAngle && speed < 0)) {
             return (speed * SLOW_DOWN);
         }
-        if (data.rotatingRelativeAngleDegrees > 13) {
+        if (getArmAngle() > 13) {
             return (speed + NO_FALL);
         }
 

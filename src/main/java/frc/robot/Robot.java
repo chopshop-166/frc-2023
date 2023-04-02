@@ -10,8 +10,6 @@ import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.networktables.StringSubscriber;
@@ -28,11 +26,10 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.auto.ConeStation;
 import frc.robot.auto.CubePickupLocation;
 import frc.robot.maps.RobotMap;
-// $Imports$
-import frc.robot.subsystems.BalanceArm;
-
 import frc.robot.subsystems.ArmExtend;
 import frc.robot.subsystems.ArmRotate;
+// $Imports$
+import frc.robot.subsystems.BalanceArm;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Led;
@@ -212,12 +209,12 @@ public class Robot extends CommandRobot {
                 .onTrue(rumbleOn().andThen(led.intakeSpinning(), intake.grab(), rumbleOff(),
                         led.grabbedPiece()));
         copilotController.b().onTrue(intake.toggle().andThen(rumbleAndIntakeSpinningOff()));
-        copilotController.x().whileTrue(rumbleAndIntakeSpinningOff().andThen(intake.cubeRelease()));
+        copilotController.x().onTrue(rumbleAndIntakeSpinningOff()).whileTrue(intake.cubeRelease());
 
         // Arm
         // extend and rotate are in default commands
         new Trigger(DriverStation::isEnabled).onTrue(armRotate.brakeMode());
-        copilotController.start().onTrue(armExtend.zeroVelocityCheck());
+        // copilotController.start().onTrue(armRotate.toggleAbsolute());
         copilotController.back().whileTrue(armRotate.resetZero());
 
         // Automatic
