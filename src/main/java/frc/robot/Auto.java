@@ -9,6 +9,7 @@ import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 
 import com.chopshop166.chopshoplib.commands.FunctionalWaitCommand;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -54,7 +55,9 @@ public class Auto {
 
     public CommandBase leaveCommunity() {
         return (scoreConeWhile(
-                drive.driveRelative(new Translation2d(4, 0), 6)));
+                drive.driveRelative(new Translation2d(4, 0), 6)
+                        .andThen(drive.rotateToAngle(Rotation2d.fromDegrees(180), () -> 0,
+                                () -> 0))));
     }
 
     private CommandBase armScore(ArmPresets aboveLevel, ArmPresets scoreLevel) {

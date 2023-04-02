@@ -199,6 +199,12 @@ public class Robot extends CommandRobot {
 
         driveController.y().whileTrue(drive.balance());
 
+        driveController.povUp().onTrue(drive.driveRelative(
+                new Translation2d(
+                        Units.inchesToMeters(3),
+                        0),
+                5));
+
         (new Trigger(() -> driveController.getRightTriggerAxis() > 0.5))
                 .onTrue(balanceArm.pushDown()).onFalse(balanceArm.pushUp());
         // Arm

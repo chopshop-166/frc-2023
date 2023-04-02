@@ -1,36 +1,48 @@
 package frc.robot.util;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class DrivePID {
-    private PIDController xPid;
-    private PIDController yPid;
-    private RotationPIDController anglePid;
+    private final ProfiledPIDController xPid;
+    private final ProfiledPIDController yPid;
+    private final RotationPIDController anglePid;
+    private final Constraints constraints;
 
     public DrivePID() {
-        this(0, 0, 0, 0, 0, 0);
+        this(0, 0, 0, 0, 0, 0, new Constraints(0, 0));
     }
 
     /**
      * Wrapper for three PIDController objects, for each cardinal direction and
      * rotation.
      * 
-     * @param positionP kP for x and y positions
-     * @param positionI kI for x and y positions
-     * @param positionD kD for x and y positions
-     * @param angleP    kP for angle
-     * @param angleI    kI for angle
-     * @param angleD    kD for angle
+     * @param positionP   kP for x and y positions
+     * @param positionI   kI for x and y positions
+     * @param positionD   kD for x and y positions
+     * @param angleP      kP for angle
+     * @param angleI      kI for angle
+     * @param angleD      kD for angle
+     * @param constraints Constraints for the profiled PID controllers
      */
-    public DrivePID(double positionP, double positionI, double positionD, double angleP, double angleI, double angleD) {
-        xPid = new PIDController(positionP, positionI, positionD);
-        yPid = new PIDController(positionP, positionI, positionD);
+    public DrivePID(double positionP, double positionI, double positionD, double angleP, double angleI, double angleD,
+            Constraints constraints) {
+        xPid = new ProfiledPIDController(positionP, positionI, positionD, constraints);
+        yPid = new ProfiledPIDController(positionP, positionI, positionD, constraints);
         anglePid = new RotationPIDController(angleP, angleI, angleD);
+        this.constraints = constraints;
+    }
+
+    public void reset(Translation2d measurement) {
+        xPid.reset(measurement.getX());
+        yPid.reset(measurement.getY());
+        anglePid.reset();
     }
 
     /**
@@ -76,8 +88,8 @@ public class DrivePID {
      * 
      * @return the translation PID Controller
      */
-    public PIDController copyTranslationPidController() {
-        return new PIDController(xPid.getP(), xPid.getI(), xPid.getD());
+    public ProfiledPIDController copyTranslationPidController() {
+        return new ProfiledPIDController(xPid.getP(), xPid.getI(), xPid.getD(), constraints);
     }
 
     /**

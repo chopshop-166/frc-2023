@@ -28,6 +28,10 @@ public class RotationPIDController {
         return Units.degreesToRadians(Math.abs(getError(measurementDegrees, setpointDegrees))) < tolerance;
     }
 
+    public void reset() {
+        pid.reset();
+    }
+
     public double getError() {
         return pid.getPositionError();
     }

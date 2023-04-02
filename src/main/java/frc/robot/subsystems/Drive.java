@@ -187,6 +187,7 @@ public class Drive extends SmartSubsystemBase {
                             pose.getX() + translation.getX(),
                             pose.getY() + translation.getY(),
                             pose.getRotation());
+                    drivePID.reset(pose.getTranslation());
                 }),
                 race(new FunctionalWaitCommand(() -> timeoutSeconds),
                         driveTo(() -> relativeTarget, 0.01)));
@@ -195,7 +196,8 @@ public class Drive extends SmartSubsystemBase {
     private void deadbandMove(final double xSpeed, final double ySpeed,
             final double rotation, boolean isRobotCentric) {
 
-        var deadband = RobotUtils.scalingDeadband(0.05);
+        var deadband = RobotUtils.scalingDeadband(
+                (DriverStation.isFMSAttached()) ? 0.05 : 0.15);
         double rotationInput = deadband.applyAsDouble(rotation);
         double xInput = deadband.applyAsDouble(xSpeed);
         double yInput = deadband.applyAsDouble(ySpeed);
