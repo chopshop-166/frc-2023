@@ -204,7 +204,7 @@ public class Drive extends SmartSubsystemBase {
 
         if (Math.abs(rotationInput) < 0.1
                 && !(Math.abs(xInput) < 0.1 && Math.abs(yInput) < 0.1)) {
-            rotationInput = correctionPID.calculate(latestAngle, map.gyro().getAngle());
+            rotationInput = correctionPID.calculate(map.gyro().getAngle(), latestAngle);
             rotationInput = (Math.abs(rotationInput) > 0.02) ? rotationInput : 0;
             Logger.getInstance().recordOutput("pidOutput", rotationInput);
             Logger.getInstance().recordOutput("pidError", correctionPID.getError());
