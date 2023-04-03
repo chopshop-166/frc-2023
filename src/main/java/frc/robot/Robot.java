@@ -140,7 +140,12 @@ public class Robot extends CommandRobot {
 
     public CommandBase pickUpGamePiece = sequence(
             new ConditionalCommand(
-                    armRotate.moveTo(ArmPresets.CONE_PICKUP), armRotate.moveTo(ArmPresets.CUBE_PICKUP), () -> {
+                    sequence(
+                            armRotate.moveTo(ArmPresets.CONE_PICKUP), armExtend.moveTo(ArmPresets.CONE_PICKUP)),
+                    sequence(
+                            armRotate.moveTo(ArmPresets.CUBE_PICKUP), armExtend.moveTo(
+                                    ArmPresets.CUBE_PICKUP)),
+                    () -> {
                         return gamePieceSub.get() == "Cone";
                     }));
 
