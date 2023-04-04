@@ -57,16 +57,6 @@ public class Drive extends SmartSubsystemBase {
     NetworkTableInstance inst = NetworkTableInstance.getDefault();
     BooleanPublisher autoBalanceState = inst.getBooleanTopic("Auto/Balance").publish();
 
-    private Pose2d invertSide(Pose2d bluePose) {
-        return bluePose;
-        // if (isBlue) {
-        // }
-        // return new Pose2d(
-        // Field.LENGTH - bluePose.getX(),
-        // bluePose.getY(),
-        // Rotation2d.fromDegrees(bluePose.getRotation().getDegrees() + 180));
-    }
-
     private static final double blueX = 1.8;
     private static final Rotation2d rotation0 = Rotation2d.fromDegrees(0);
     private static final Rotation2d rotation180 = Rotation2d.fromDegrees(180);
@@ -274,13 +264,13 @@ public class Drive extends SmartSubsystemBase {
 
     public CommandBase driveTo(Supplier<Pose2d> targetPose, double tolerance) {
         return cmd().onExecute(() -> {
-            Pose2d flipped = invertSide(targetPose.get());
+            Pose2d flipped = targetPose.get();
             Transform2d fb = drivePID.calculate(pose, flipped);
 
             move(fb.getX(), fb.getY(), -fb.getRotation().getDegrees());
 
             Logger.getInstance().recordOutput("targetPose", flipped);
-        }).runsUntil(() -> drivePID.isFinished(pose, invertSide(targetPose.get()), tolerance)).onEnd(this::safeState);
+        }).runsUntil(() -> drivePID.isFinished(pose, targetPose.get(), tolerance)).onEnd(this::safeState);
 
     }
 
@@ -306,12 +296,12 @@ public class Drive extends SmartSubsystemBase {
     public CommandBase driveToNearest() {
         return new ProxyCommand(
                 () -> {
-                    Pose2d closestPose = invertSide(GridPosition.values()[0].getPose());
+                    Pose2d closestPose = GridPosition.values()[0].getPose();
                     for (GridPosition position : GridPosition.values()) {
                         // Only flip for the distance check, isn't needed for the actual driveTo since
                         // that also flips it
-                        if (invertSide(position.getPose()).getTranslation()
-                                .getDistance(pose.getTranslation()) < invertSide(closestPose)
+                        if (position.getPose().getTranslation()
+                                .getDistance(pose.getTranslation()) < closestPose
                                         .getTranslation().getDistance(pose.getTranslation())) {
                             closestPose = position.getPose();
                         }
