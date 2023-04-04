@@ -7,12 +7,14 @@ public class CSFusedEncoder implements IEncoder {
     private final double ENCODER_THRESHOLD_DEGREES = 2;
     IEncoder relativeEncoder;
     IAbsolutePosition absolutePos;
+    IEncoder motorEncoder;
 
     double relativeEncoderOffset;
 
-    public CSFusedEncoder(IEncoder relativeEncoder, IAbsolutePosition absPosition) {
+    public CSFusedEncoder(IEncoder relativeEncoder, IAbsolutePosition absPosition, IEncoder motorEncoder) {
         this.relativeEncoder = relativeEncoder;
         this.absolutePos = absPosition;
+        this.motorEncoder = motorEncoder;
         this.relativeEncoderOffset = this.absolutePos.getAbsolutePosition();
     }
 

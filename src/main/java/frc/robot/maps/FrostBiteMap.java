@@ -173,7 +173,7 @@ public class FrostBiteMap extends RobotMap {
         // Adjust this to move the encoder zero point to the retracted position
         absEncoder.setPositionOffset(91.89780758483522);
 
-        CSFusedEncoder fusedEncoder = new CSFusedEncoder(encoder, absEncoder);
+        CSFusedEncoder fusedEncoder = new CSFusedEncoder(encoder, absEncoder, csmotor.getEncoder());
 
         return new ArmRotateMap(csmotor, 95, 10, 98, 0, 15, pid, fusedEncoder, 46.654, 42.3) {
             @Override
