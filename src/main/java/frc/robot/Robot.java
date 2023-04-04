@@ -26,9 +26,10 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.auto.ConeStation;
 import frc.robot.auto.CubePickupLocation;
 import frc.robot.maps.RobotMap;
-// $Imports$
 import frc.robot.subsystems.ArmExtend;
 import frc.robot.subsystems.ArmRotate;
+// $Imports$
+import frc.robot.subsystems.BalanceArm;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Led;
@@ -49,6 +50,8 @@ public class Robot extends CommandRobot {
     StringSubscriber gamePieceSub = ntinst.getStringTopic("Game Piece").subscribe("Cone");
 
     // $Subsystems$
+    BalanceArm balanceArm = new BalanceArm(map.getBalanceArmMap());
+
     private ArmExtend armExtend = new ArmExtend(map.getArmMap());
 
     Intake intake = new Intake(map.getIntakeMap());
@@ -57,12 +60,12 @@ public class Robot extends CommandRobot {
     private Led led = new Led(map.getLedMap());
     private ArmRotate armRotate = new ArmRotate(map.getArmRotateMap());
 
-    private Auto auto = new Auto(drive, armExtend, armRotate, intake, led);
+    private Auto auto = new Auto(drive, armExtend, armRotate, intake, led, balanceArm);
     private Compressor compressor = new Compressor(PneumaticsModuleType.REVPH);
 
-    @Autonomous(defaultAuto = true)
+    @Autonomous(name = "No Auto")
     public CommandBase noAuto = runOnce(() -> {
-    }).withName("No Auto");
+    });
 
     @Autonomous(name = "Score then balance")
     public CommandBase scoreBalance = auto.scoreConeBalance();
@@ -70,11 +73,8 @@ public class Robot extends CommandRobot {
     @Autonomous
     public CommandBase scoreLeaveBalance = auto.scoreConeLeaveAndBalance();
 
-    @Autonomous
-    public CommandBase mobilityAuto = auto.axisConeMobility();
-
-    @Autonomous(name = "Score leave")
-    public CommandBase scoreThenLeave = auto.leaveCommunityVersion2();
+    @Autonomous(defaultAuto = true, name = "(MAIN) Score leave")
+    public CommandBase scoreThenLeave = auto.leaveCommunity();
 
     @Autonomous(name = "Piecemeal Auto")
     public CommandBase buildCommand = new ProxyCommand(() -> {
@@ -84,49 +84,24 @@ public class Robot extends CommandRobot {
         return auto.combinedAuto(conePos, cubePos, cubeScorePos);
     });
 
-    private CommandBase driveScoreHigh = sequence(
-            armRotate.moveTo(ArmPresets.HIGH_SCORE), drive.driveToNearest(), armExtend.moveTo(ArmPresets.HIGH_SCORE),
-            intake.coneRelease());
-
-    private CommandBase driveScoreHighNode = sequence(
-            armRotate.moveTo(ArmPresets.HIGH_SCORE), drive.driveToNearest(),
-            new ConditionalCommand(
-                    armExtend.moveTo(ArmPresets.HIGH_SCORE).andThen(armRotate.moveTo(ArmPresets.HIGH_SCORE_ACTUAL))
-                            .andThen(armExtend.moveTo(ArmPresets.ARM_STOWED)),
-                    runOnce(() -> {
-                    }), () -> {
-                        return gamePieceSub.get() == "Cone";
-                    }));
-
     public CommandBase driveScoreMidNode = sequence(
-            armRotate.moveTo(ArmPresets.MEDIUM_SCORE), drive.driveToNearest(),
-            new ConditionalCommand(
-                    armExtend.moveTo(ArmPresets.MEDIUM_SCORE).andThen(armRotate.moveTo(ArmPresets.MEDIUM_SCORE_ACTUAL))
-                            .andThen(armExtend.moveTo(ArmPresets.ARM_STOWED)),
-                    runOnce(() -> {
-                    }), () -> {
-                        return gamePieceSub.get() == "Cone";
-                    }));
+            armRotate.moveTo(ArmPresets.MEDIUM_SCORE),
+            drive.driveToNearest(),
+            armExtend.moveTo(ArmPresets.MEDIUM_SCORE),
+            armRotate.moveTo(ArmPresets.MEDIUM_SCORE_ACTUAL),
+            armExtend.moveTo(ArmPresets.ARM_STOWED));
 
     public CommandBase scoreMidNode = sequence(
             armRotate.moveTo(ArmPresets.MEDIUM_SCORE),
-            new ConditionalCommand(
-                    armExtend.moveTo(ArmPresets.MEDIUM_SCORE).andThen(armRotate.moveTo(ArmPresets.MEDIUM_SCORE_ACTUAL))
-                            .andThen(armExtend.moveTo(ArmPresets.ARM_STOWED)),
-                    runOnce(() -> {
-                    }), () -> {
-                        return gamePieceSub.get() == "Cone";
-                    }));
+            armExtend.moveTo(ArmPresets.MEDIUM_SCORE),
+            armRotate.moveTo(ArmPresets.MEDIUM_SCORE_ACTUAL),
+            armExtend.moveTo(ArmPresets.ARM_STOWED));
 
     public CommandBase scoreHighNode = sequence(
             armRotate.moveTo(ArmPresets.HIGH_SCORE),
-            new ConditionalCommand(
-                    armExtend.moveTo(ArmPresets.HIGH_SCORE).andThen(armRotate.moveTo(ArmPresets.HIGH_SCORE_ACTUAL))
-                            .andThen(armExtend.moveTo(ArmPresets.ARM_STOWED)),
-                    runOnce(() -> {
-                    }), () -> {
-                        return gamePieceSub.get() == "Cone";
-                    }));
+            armExtend.moveTo(ArmPresets.HIGH_SCORE),
+            armRotate.moveTo(ArmPresets.HIGH_SCORE_ACTUAL),
+            armExtend.moveTo(ArmPresets.ARM_STOWED));
 
     public CommandBase grabCube() {
         return sequence(runOnce(() -> {
@@ -157,17 +132,20 @@ public class Robot extends CommandRobot {
     }
 
     public CommandBase stowArm = sequence(
+            led.setOrange(),
             intake.coneGrab(),
-            new ConditionalCommand(
-                    (armExtend.moveTo(ArmPresets.ARM_STOWED)), runOnce(() -> {
-                    }), () -> {
-                        return armExtend.data.distanceInches > 1;
-                    }),
-            (armExtend.zeroVelocityCheck()), (armRotate.moveTo(ArmPresets.ARM_STOWED)));
+            armExtend.retract(0.4),
+            armRotate.moveTo(ArmPresets.ARM_STOWED),
+            led.colorAlliance());
 
     public CommandBase pickUpGamePiece = sequence(
             new ConditionalCommand(
-                    armRotate.moveTo(ArmPresets.CONE_PICKUP), armRotate.moveTo(ArmPresets.CUBE_PICKUP), () -> {
+                    sequence(
+                            armRotate.moveTo(ArmPresets.CONE_PICKUP), armExtend.moveTo(ArmPresets.CONE_PICKUP)),
+                    sequence(
+                            armRotate.moveTo(ArmPresets.CUBE_PICKUP), armExtend.moveTo(
+                                    ArmPresets.CUBE_PICKUP)),
+                    () -> {
                         return gamePieceSub.get() == "Cone";
                     }));
 
@@ -215,6 +193,7 @@ public class Robot extends CommandRobot {
 
     @Override
     public void configureButtonBindings() {
+
         // DRIVE CONTROLLER
         // Drive
         driveController.rightBumper().onTrue(drive.setSpeedCoef(0.25, 0.35)).onFalse(drive.setSpeedCoef(1, 1));
@@ -224,6 +203,9 @@ public class Robot extends CommandRobot {
                 driveController::getLeftY, driveController::getRightX));
 
         driveController.y().whileTrue(drive.balance());
+
+        (new Trigger(() -> driveController.getRightTriggerAxis() > 0.5))
+                .onTrue(balanceArm.pushDown()).onFalse(balanceArm.pushUp());
         // Arm
 
         // COPILOT CONTROLLER
@@ -232,12 +214,12 @@ public class Robot extends CommandRobot {
                 .onTrue(rumbleOn().andThen(led.intakeSpinning(), intake.grab(), rumbleOff(),
                         led.grabbedPiece()));
         copilotController.b().onTrue(intake.toggle().andThen(rumbleAndIntakeSpinningOff()));
-        copilotController.x().whileTrue(rumbleAndIntakeSpinningOff().andThen(intake.cubeRelease()));
+        copilotController.x().onTrue(rumbleAndIntakeSpinningOff()).whileTrue(intake.cubeRelease());
 
         // Arm
         // extend and rotate are in default commands
         new Trigger(DriverStation::isEnabled).onTrue(armRotate.brakeMode());
-        copilotController.start().onTrue(armExtend.zeroVelocityCheck());
+        // copilotController.start().onTrue(armRotate.toggleAbsolute());
         copilotController.back().whileTrue(armRotate.resetZero());
 
         // Automatic
@@ -251,7 +233,8 @@ public class Robot extends CommandRobot {
                 .whileTrue(scoreMidNode);
         // stow arm when it is extended past 2 inches
         copilotController.povLeft()
-                .whileTrue(stowArm);
+                .whileTrue(stowArm)
+                .onFalse(led.colorAlliance());
         copilotController.povDown()
                 .whileTrue(pickUpGamePiece);
 

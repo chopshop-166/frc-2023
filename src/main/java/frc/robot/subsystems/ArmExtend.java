@@ -47,6 +47,14 @@ public class ArmExtend extends SmartSubsystemBase {
                 * (data.distanceInches + 42.3);
     }
 
+    public CommandBase retract(double speed) {
+        return cmd().onInitialize(() -> {
+            data.setPoint = -speed;
+        }).runsUntil(() -> data.distanceInches < 2.0).onEnd(() -> {
+            data.setPoint = 0.0;
+        });
+    }
+
     // Manually sets the arm extension
     public CommandBase manual(DoubleSupplier motorSpeed) {
         return run(() -> {

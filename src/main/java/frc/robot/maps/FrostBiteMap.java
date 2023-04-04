@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import frc.robot.maps.subsystems.ArmExtendMap;
 import frc.robot.maps.subsystems.ArmRotateMap;
+import frc.robot.maps.subsystems.BalanceArmMap;
 import frc.robot.maps.subsystems.IntakeData;
 import frc.robot.maps.subsystems.LedMap;
 import frc.robot.maps.subsystems.SwerveDriveMap;
@@ -110,7 +111,10 @@ public class FrostBiteMap extends RobotMap {
 
         final double maxRotationRadianPerSecond = Math.PI;
 
-        final DrivePID pid = new DrivePID(1.2, 0.001, 0, 0.01, 0.00001, 0);
+        final DrivePID pid = new DrivePID(
+                1.2, 0.002, 0.0,
+                0.01, 0.00001, 0,
+                new Constraints(1.5, 2.5));
 
         final Transform3d cameraPosition = new Transform3d(
                 // These probably need to be refined
@@ -130,10 +134,17 @@ public class FrostBiteMap extends RobotMap {
     }
 
     @Override
+    public BalanceArmMap getBalanceArmMap() {
+        RevDSolenoid solenoid = new RevDSolenoid(1, 6);
+        // return new BalanceArmMap(solenoid);
+        return new BalanceArmMap();
+    }
+
+    @Override
     public IntakeData.Map getIntakeMap() {
         CSTalonSRX intakeMotor = new CSTalonSRX(9);
         intakeMotor.setInverted(true);
-        RevDSolenoid intakeSolenoid = new RevDSolenoid(6, 7);
+        RevDSolenoid intakeSolenoid = new RevDSolenoid(7, 0);
         intakeMotor.getMotorController().configContinuousCurrentLimit(35);
         intakeMotor.getMotorController().configPeakCurrentLimit(35);
 
@@ -151,7 +162,7 @@ public class FrostBiteMap extends RobotMap {
         csmotor.getMotorController().setIdleMode(IdleMode.kCoast);
         csmotor.getEncoder().setPositionScaleFactor(1.125);
         csmotor.getEncoder().setVelocityScaleFactor(1.125 / 60);
-        ProfiledPIDController pid = new ProfiledPIDController(0.035, 0, 0.0001, new Constraints(150, 250));
+        ProfiledPIDController pid = new ProfiledPIDController(0.035, 0, 0.0, new Constraints(150, 250));
         pid.setTolerance(2);
 
         CSEncoder encoder = new CSEncoder(2, 3, true);
@@ -160,7 +171,8 @@ public class FrostBiteMap extends RobotMap {
         absEncoder.setDutyCycleRange(1.0 / 1025.0, 1024.0 / 1025.0);
         absEncoder.setDistancePerRotation(-360);
         // Adjust this to move the encoder zero point to the retracted position
-        absEncoder.setPositionOffset(276);
+        absEncoder.setPositionOffset(30.29);
+
         CSFusedEncoder fusedEncoder = new CSFusedEncoder(encoder, absEncoder);
 
         return new ArmRotateMap(csmotor, 95, 10, 98, 0, 15, pid, fusedEncoder, 46.654, 42.3) {

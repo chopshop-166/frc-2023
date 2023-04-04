@@ -1,14 +1,17 @@
 package frc.robot;
 
 import static edu.wpi.first.wpilibj2.command.Commands.none;
+import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 import static edu.wpi.first.wpilibj2.command.Commands.race;
+import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
-import static edu.wpi.first.wpilibj2.command.Commands.parallel;
-import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 
 import com.chopshop166.chopshoplib.commands.FunctionalWaitCommand;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -18,6 +21,7 @@ import frc.robot.auto.ConeStation;
 import frc.robot.auto.CubePickupLocation;
 import frc.robot.subsystems.ArmExtend;
 import frc.robot.subsystems.ArmRotate;
+import frc.robot.subsystems.BalanceArm;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Led;
@@ -28,27 +32,32 @@ public class Auto {
     ArmExtend armExtend;
     ArmRotate armRotate;
     Intake intake;
+    BalanceArm balanceArm;
     Led led;
     NetworkTableInstance ntinst = NetworkTableInstance.getDefault();
     StringSubscriber gamePieceSub = ntinst.getStringTopic("Game Piece").subscribe("Cone");
 
     // Pass in all subsystems
-    public Auto(Drive drive, ArmExtend armExtend, ArmRotate armRotate, Intake intake, Led led) {
+    public Auto(Drive drive, ArmExtend armExtend, ArmRotate armRotate, Intake intake, Led led, BalanceArm balanceArm) {
         this.drive = drive;
         this.armExtend = armExtend;
         this.armRotate = armRotate;
         this.intake = intake;
         this.led = led;
+        this.balanceArm = balanceArm;
     }
 
-    private CommandBase backUp(double speed, double seconds) {
+    private CommandBase moveFor(double speed, double seconds) {
         return race(
                 drive.driveRaw(() -> 0, () -> -speed, () -> 0),
                 new FunctionalWaitCommand(() -> seconds)).andThen(drive.safeStateCmd());
     }
 
-    public CommandBase leaveCommunityVersion2() {
-        return (scoreConeSimpleSlow(backUp(1.5, 3.0)));
+    public CommandBase leaveCommunity() {
+        return (scoreConeWhile(
+                drive.driveRelative(new Translation2d(4, 0), 6)
+                        .andThen(drive.rotateToAngle(Rotation2d.fromDegrees(180), () -> 0,
+                                () -> 0))));
     }
 
     private CommandBase armScore(ArmPresets aboveLevel, ArmPresets scoreLevel) {
@@ -57,23 +66,17 @@ public class Auto {
                 armRotate.moveTo(scoreLevel), armExtend.moveTo(ArmPresets.ARM_STOWED));
     }
 
-    public CommandBase scoreCone(ArmPresets aboveLevel, ArmPresets scoreLevel) {
-        return sequence(
-                armRotate.moveTo(aboveLevel),
-                race(drive.driveToNearest(), new FunctionalWaitCommand(() -> 2)),
-                armScore(aboveLevel, scoreLevel));
-    }
-
     // THE ONE THAT ACTUALLY WORKS
-    public CommandBase scoreConeSimpleSlow(CommandBase commandWhileStow) {
-        return race(new FunctionalWaitCommand(() -> 8),
+    public CommandBase scoreConeWhile(CommandBase commandWhileStow) {
+        return race(new FunctionalWaitCommand(() -> 12),
                 sequence(
                         drive.setGyro180(),
-                        backUp(1.5, 0.2),
+                        // backUp(1.5, 0.2),
                         armRotate.moveTo(ArmPresets.HIGH_SCORE),
-                        backUp(-1.5, 0.2),
+                        // backUp(-1.5, 0.2),
+                        drive.driveRelative(new Translation2d(-Units.inchesToMeters(4), 0), 2),
                         armScore(ArmPresets.HIGH_SCORE, ArmPresets.HIGH_SCORE_ACTUAL),
-                        backUp(1.0, 0.3),
+                        moveFor(1.0, 0.3),
                         parallel(stowArmCloseIntake(),
                                 commandWhileStow)));
 
@@ -83,10 +86,12 @@ public class Auto {
     public CommandBase scoreConeBalance() {
         return sequence(
                 // armRotate.zeroVelocityCheck(),
-                scoreConeSimpleSlow(drive.driveUntilTipped(true)),
+                balanceArm.pushDown(),
+                scoreConeWhile(drive.driveUntilTipped(true)),
                 led.balancing(),
                 drive.balance(),
-                led.starPower()
+                led.starPower(),
+                balanceArm.pushUp()
 
         )
                 .withName("Score Cone Balance");
@@ -95,10 +100,10 @@ public class Auto {
     public CommandBase scoreConeLeaveAndBalance() {
         return sequence(
                 // armRotate.zeroVelocityCheck(),
-                scoreConeSimpleSlow(drive.driveUntilTipped(true)),
+                scoreConeWhile(drive.driveUntilTipped(true)),
                 drive.driveUntilNotTipped(true),
                 waitSeconds(0.5),
-                backUp(1.0, 3),
+                moveFor(1.0, 3),
                 waitSeconds(2),
                 drive.driveUntilTipped(false),
                 led.balancing(),
@@ -113,16 +118,8 @@ public class Auto {
         return sequence(
                 // armRotate.zeroVelocityCheck(),
                 armExtend.zeroVelocityCheck(),
-                backUp(0.5, 0.5),
+                moveFor(0.5, 0.5),
                 armRotate.moveTo(ArmPresets.HIGH_SCORE));
-    }
-
-    public CommandBase scoreCone() {
-        return sequence(
-                armExtend.moveTo(ArmPresets.HIGH_SCORE),
-                timingWait(),
-                intake.coneRelease(),
-                timingWait());
     }
 
     public CommandBase stowArmCloseIntake() {
@@ -207,18 +204,6 @@ public class Auto {
         // , drive.balance()
 
         ).withName(coneScoreCmd.getName() + " " + pickupCubeCmd.getName() + " " + scoreCubeCmd.getName());
-    }
-
-    public CommandBase axisConeMobility() {
-        return sequence(
-                drive.setGyro180(),
-                backUp(1, 0.3),
-                scoreConeSimpleSlow(backUp(1, 0.3)),
-                race(new FunctionalWaitCommand(() -> 3),
-                        armRotate.moveTo(ArmPresets.ARM_STOWED)),
-                backUp(1.5, 3.5))
-
-                .withName("(TEST) One Cone Mobolity");
     }
 
     private CommandBase timingWait() {

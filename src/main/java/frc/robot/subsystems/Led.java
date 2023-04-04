@@ -55,6 +55,7 @@ public class Led extends SmartSubsystemBase {
 
     enum LedBehavior {
         Yellow,
+        Orange,
         Purple,
         ColdFire,
         ColorAlliance,
@@ -63,6 +64,7 @@ public class Led extends SmartSubsystemBase {
         BalanceLeds,
         StarPower,
         None;
+
     }
 
     public Led(LedMap map) {
@@ -104,6 +106,10 @@ public class Led extends SmartSubsystemBase {
             case Yellow:
                 setColor(255, 119, 0, section);
                 Logger.getInstance().recordOutput("IndicateLEDs", "Yellow");
+                break;
+            case Orange:
+                setColor(255, 82, 174, section);
+                Logger.getInstance().recordOutput("IndicateLEDs", "Orange");
                 break;
             case Purple:
                 setColor(133, 7, 168, section);
@@ -202,6 +208,13 @@ public class Led extends SmartSubsystemBase {
     public CommandBase setYellow() {
         return runOnce(() -> {
             ledBehaviors[LedSection.Top.getSection()] = LedBehavior.Yellow;
+            ledBehaviors[LedSection.All.getSection()] = LedBehavior.None;
+        });
+    }
+
+    public CommandBase setOrange() {
+        return runOnce(() -> {
+            ledBehaviors[LedSection.Bottom.getSection()] = LedBehavior.Orange;
             ledBehaviors[LedSection.All.getSection()] = LedBehavior.None;
         });
     }
