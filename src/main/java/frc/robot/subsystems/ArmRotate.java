@@ -8,17 +8,13 @@ import com.chopshop166.chopshoplib.PersistenceCheck;
 import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.networktables.BooleanSubscriber;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismObject2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.ArmPresets;
@@ -46,17 +42,12 @@ public class ArmRotate extends SmartSubsystemBase {
     DoublePublisher anglePub = ntinst.getDoubleTopic("Arm/Angle").publish();
     BooleanSubscriber intakeSub = ntinst.getBooleanTopic("Intake/Closed").subscribe(false);
 
-    Mechanism2d armMech = new Mechanism2d(0, 0);
-    MechanismRoot2d armRoot = armMech.getRoot("arm", 0, 0);
-    MechanismObject2d armObject;
-    MechanismLigament2d armLigament;
+    Pose3d armPosition = new Pose3d();
 
     public ArmRotate(ArmRotateMap map) {
 
         this.map = map;
         pid = map.pid;
-        armLigament = new MechanismLigament2d("armRotate", 0.67, 10);
-        armObject = armRoot.append(armLigament);
     }
 
     private double getArmAngle() {
@@ -166,10 +157,12 @@ public class ArmRotate extends SmartSubsystemBase {
         Logger.getInstance().processInputs(getName(), data);
         anglePub.set(getArmAngle());
         armLength = lengthSub.get();
-        armLigament.setAngle(Rotation2d.fromDegrees(data.degrees));
-
+        // 1.18171 m
+        armPosition = new Pose3d(
+                0, 0, 1.18171, new Rotation3d(
+                        0, getArmAngle(), 0));
+        Logger.getInstance().recordOutput("armPose", armPosition);
         SmartDashboard.putBoolean("Using Absolute", useAbsolute);
-        Logger.getInstance().recordOutput("armMechanism", armMech);
     }
 
     private double limits(double speed) {
