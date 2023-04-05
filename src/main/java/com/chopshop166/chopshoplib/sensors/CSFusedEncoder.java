@@ -40,13 +40,18 @@ public class CSFusedEncoder implements IEncoder {
         System.out.println("Reseting Fused Encoder");
         relativeEncoderOffset = this.absolutePos.getAbsolutePosition();
         this.relativeEncoder.reset();
+        this.motorEncoder.reset();
     }
 
     @Override
     public double getDistance() {
 
         double distance = this.relativeEncoder.getDistance() + relativeEncoderOffset;
+        double motorDistance = this.motorEncoder.getDistance();
         // Keep trying to set the offset until we get a valid reading back
+        if (distanceExceedsThreshold(distance, motorDistance)) {
+            return motorDistance;
+        }
         if (relativeEncoderOffset == 0 || distanceExceedsThreshold(distance, this.absolutePos.getAbsolutePosition())) {
             reset();
             distance = this.relativeEncoder.getDistance() + relativeEncoderOffset;
@@ -56,6 +61,13 @@ public class CSFusedEncoder implements IEncoder {
 
     @Override
     public double getRate() {
+
+        double rate = this.relativeEncoder.getRate();
+        double motorRate = this.motorEncoder.getRate();
+
+        if (distanceExceedsThreshold(rate, motorRate)) {
+            return motorRate;
+        }
         return this.relativeEncoder.getRate();
     }
 
