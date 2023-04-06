@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
@@ -67,22 +68,28 @@ public class Robot extends CommandRobot {
     public CommandBase noAuto = runOnce(() -> {
     });
 
-    @Autonomous(name = "Score then balance")
-    public CommandBase scoreBalance = auto.scoreConeBalance();
+    // @Autonomous(name = "Score then balance")
+    // public CommandBase scoreBalance = auto.scoreConeBalance();
 
-    @Autonomous
-    public CommandBase scoreLeaveBalance = auto.scoreConeLeaveAndBalance();
+    @Autonomous(name = "Just Score")
+    public CommandBase scorewhile = auto.scoreConeWhile(runOnce(() -> {
+    }));
+    @Autonomous(name = "Score and pick up")
+    public CommandBase scoreAndPickUp = auto.leaveCommunityAndPickUP();
+
+    // @Autonomous
+    // public CommandBase scoreLeaveBalance = auto.scoreConeLeaveAndBalance();
 
     @Autonomous(defaultAuto = true, name = "(MAIN) Score leave")
     public CommandBase scoreThenLeave = auto.leaveCommunity();
 
-    @Autonomous(name = "Piecemeal Auto")
-    public CommandBase buildCommand = new ProxyCommand(() -> {
-        ConeStation conePos = conePosChooser.getSelected();
-        CubePickupLocation cubePos = cubePosChooser.getSelected();
-        int cubeScorePos = cubeScorePosChooser.getSelected();
-        return auto.combinedAuto(conePos, cubePos, cubeScorePos);
-    });
+    // @Autonomous(name = "Piecemeal Auto")
+    // public CommandBase buildCommand = new ProxyCommand(() -> {
+    //     ConeStation conePos = conePosChooser.getSelected();
+    //     CubePickupLocation cubePos = cubePosChooser.getSelected();
+    //     int cubeScorePos = cubeScorePosChooser.getSelected();
+    //     return auto.combinedAuto(conePos, cubePos, cubeScorePos);
+    // });
 
     public CommandBase driveScoreMidNode = sequence(
             armRotate.moveTo(ArmPresets.MEDIUM_SCORE),
@@ -203,6 +210,7 @@ public class Robot extends CommandRobot {
                 driveController::getLeftY, driveController::getRightX));
 
         driveController.y().whileTrue(drive.balance());
+        driveController.x().whileTrue(drive.driveUntilTipped(true).andThen(drive.balance()));
 
         (new Trigger(() -> driveController.getRightTriggerAxis() > 0.5))
                 .onTrue(balanceArm.pushDown()).onFalse(balanceArm.pushUp());

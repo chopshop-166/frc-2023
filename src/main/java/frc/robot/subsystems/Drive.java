@@ -49,7 +49,7 @@ public class Drive extends SmartSubsystemBase {
     private final double TILT_THRESHOLD = 4.0;
     private final double TILT_MAX_STOPPING = 1;
 
-    private final double UNTIL_TIPPED_SPEED = 3;
+    private final double UNTIL_TIPPED_SPEED = 2.0;
     private final double UNTIL_NOT_TIPPED_SPEED = 0.5;
     private final double BALANCE_SPEED = 0.25;
 
@@ -321,7 +321,7 @@ public class Drive extends SmartSubsystemBase {
                 move(0.0, UNTIL_TIPPED_SPEED, 0.0);
             }
 
-        }).runsUntil(() -> Math.abs(this.getTilt()) > 10).withTimeout(1.5);
+        }).runsUntil(() -> Math.abs(this.getTilt()) > 6).withTimeout(1.5);
     }
 
     public CommandBase driveUntilNotTipped(boolean forward) {
@@ -345,7 +345,7 @@ public class Drive extends SmartSubsystemBase {
     public CommandBase balance() {
 
         PersistenceCheck balancedCheck = new PersistenceCheck(50,
-                () -> Math.abs(getTilt()) < 6);
+                () -> Math.abs(getTilt()) < 4);
         return cmd().onExecute(() -> {
             Rotation3d rotationVelocity = this.map.gyro().getRotationalVelocity();
 
