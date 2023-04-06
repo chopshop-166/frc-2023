@@ -198,8 +198,8 @@ public class FrostBiteMap extends RobotMap {
         motor.getMotorController().setSmartCurrentLimit(30);
         motor.getMotorController().burnFlash();
         motor.getEncoder().setPositionScaleFactor((1.273 * Math.PI) / 10);
-        motor.getEncoder().setVelocityScaleFactor((1.273 * Math.PI) / 10);
-        PIDController pid = new PIDController(0.08, 0.05, 0.0);
+        motor.getEncoder().setVelocityScaleFactor(((1.273 * Math.PI) / 10) / 60);
+        ProfiledPIDController pid = new ProfiledPIDController(0.08, 0.05, 0.0, new Constraints(30, 100));
         pid.setTolerance(0.5);
         return new ArmExtendMap(motor, 18.5, 3, 19, 0.3, pid, 46.654, 42.3);
     }

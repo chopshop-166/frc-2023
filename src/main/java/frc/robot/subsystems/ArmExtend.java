@@ -66,7 +66,7 @@ public class ArmExtend extends SmartSubsystemBase {
     public CommandBase moveToDistancePID(double distance) {
         return cmd("Move Distance").onExecute(() -> {
             // Extend
-            data.setPoint = limit(extendMap.pid.calculate(data.distanceInches, distance));
+            data.setPoint = extendMap.pid.calculate(data.distanceInches, distance);
 
         }).runsUntil(() -> extendMap.pid.atSetpoint()).onEnd(() -> {
             data.setPoint = 0;
