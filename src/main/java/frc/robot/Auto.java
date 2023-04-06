@@ -68,17 +68,16 @@ public class Auto {
 
     // THE ONE THAT ACTUALLY WORKS
     public CommandBase scoreConeWhile(CommandBase commandWhileStow) {
-        return race(new FunctionalWaitCommand(() -> 12),
-                sequence(
-                        drive.setGyro180(),
-                        // backUp(1.5, 0.2),
-                        armRotate.moveTo(ArmPresets.HIGH_SCORE),
-                        // backUp(-1.5, 0.2),
-                        drive.driveRelative(new Translation2d(-Units.inchesToMeters(4), 0), 2),
-                        armScore(ArmPresets.HIGH_SCORE, ArmPresets.HIGH_SCORE_ACTUAL),
-                        moveFor(1.0, 0.3),
-                        parallel(stowArmCloseIntake(),
-                                commandWhileStow)));
+        return sequence(
+                drive.setGyro180(),
+                // backUp(1.5, 0.2),
+                armRotate.moveTo(ArmPresets.HIGH_SCORE).withTimeout(1.5),
+                // backUp(-1.5, 0.2),
+                drive.driveRelative(new Translation2d(-Units.inchesToMeters(4), 0), 2),
+                armScore(ArmPresets.HIGH_SCORE, ArmPresets.HIGH_SCORE_ACTUAL),
+                moveFor(1.0, 0.3),
+                parallel(stowArmCloseIntake(),
+                        commandWhileStow).withTimeout(5));
 
     }
 

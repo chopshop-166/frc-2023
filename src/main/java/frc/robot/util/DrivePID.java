@@ -53,12 +53,13 @@ public class DrivePID {
      * @return The transformation needed to move in the direction of the target pose
      */
     public Transform2d calculate(Pose2d currentPose, Pose2d targetPose) {
-
+        double x = xPid.calculate(currentPose.getX(), targetPose.getX());
+         x += Math.signum(x) * 0.15;
+        double y = yPid.calculate(currentPose.getY(), targetPose.getY());
+        // y += Math.signum(y) * 0.15;
         return new Transform2d(
-                new Translation2d(
-                        // X and Y need to be swapped here for some reason
-                        yPid.calculate(targetPose.getY(), currentPose.getY()),
-                        xPid.calculate(targetPose.getX(), currentPose.getX())),
+                new Translation2d(-y, -x),
+                // X and Y need to be swapped here for some reason
                 Rotation2d.fromDegrees(anglePid.calculate(
                         targetPose.getRotation().getDegrees(), currentPose.getRotation().getDegrees())));
     }

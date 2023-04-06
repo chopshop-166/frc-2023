@@ -49,7 +49,7 @@ public class Drive extends SmartSubsystemBase {
     private final double TILT_THRESHOLD = 4.0;
     private final double TILT_MAX_STOPPING = 1;
 
-    private final double UNTIL_TIPPED_SPEED = 1;
+    private final double UNTIL_TIPPED_SPEED = 3;
     private final double UNTIL_NOT_TIPPED_SPEED = 0.5;
     private final double BALANCE_SPEED = 0.25;
 
@@ -266,7 +266,8 @@ public class Drive extends SmartSubsystemBase {
         return cmd().onExecute(() -> {
             Pose2d flipped = targetPose.get();
             Transform2d fb = drivePID.calculate(pose, flipped);
-
+            Logger.getInstance().recordOutput("DriveX", fb.getX());
+            Logger.getInstance().recordOutput("DriveY", fb.getY());
             move(fb.getX(), fb.getY(), -fb.getRotation().getDegrees());
 
             Logger.getInstance().recordOutput("targetPose", flipped);
@@ -320,7 +321,7 @@ public class Drive extends SmartSubsystemBase {
                 move(0.0, UNTIL_TIPPED_SPEED, 0.0);
             }
 
-        }).runsUntil(() -> Math.abs(this.getTilt()) > 10);
+        }).runsUntil(() -> Math.abs(this.getTilt()) > 10).withTimeout(1.5);
     }
 
     public CommandBase driveUntilNotTipped(boolean forward) {
