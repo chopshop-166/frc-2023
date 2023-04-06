@@ -219,7 +219,7 @@ public class Robot extends CommandRobot {
         // Arm
         // extend and rotate are in default commands
         new Trigger(DriverStation::isEnabled).onTrue(armRotate.brakeMode());
-        // copilotController.start().onTrue(armRotate.toggleAbsolute());
+        copilotController.start().onTrue(armRotate.toggleAbsolute());
         copilotController.back().whileTrue(armRotate.resetZero());
 
         // Automatic

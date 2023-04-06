@@ -20,7 +20,7 @@ import frc.robot.maps.subsystems.ArmRotateMap;
 import frc.robot.maps.subsystems.ArmRotateMap.Data;
 
 public class ArmRotate extends SmartSubsystemBase {
-    private boolean useAbsolute = false;
+    private boolean useAbsolute = true;
     private ArmRotateMap map;
     final double RAISE_SPEED = 0.5;
     final double LOWER_SPEED = 0.4;
