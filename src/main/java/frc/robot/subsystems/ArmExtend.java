@@ -65,10 +65,16 @@ public class ArmExtend extends SmartSubsystemBase {
     // Uses PID to change extension of arm to set distance
     public CommandBase moveToDistancePID(double distance) {
         return cmd("Move Distance").onInitialize(() -> {
-            extendMap.pid.reset(data.distanceInches, data.velocityInchesPerSec);
+            extendMap.pid.reset(data.distanceInches);
         }).onExecute(() -> {
             // Extend
             data.setPoint = extendMap.pid.calculate(data.distanceInches, distance);
+            if (data.setPoint > 0.05) {
+                data.setPoint += 0.1;
+            }
+            if (data.setPoint < -0.05) {
+                data.setPoint -= 0.1;
+            }
 
         }).runsUntil(() -> extendMap.pid.atGoal()).onEnd(() -> {
             data.setPoint = 0;
