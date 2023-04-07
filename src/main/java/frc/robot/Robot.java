@@ -85,10 +85,10 @@ public class Robot extends CommandRobot {
 
     // @Autonomous(name = "Piecemeal Auto")
     // public CommandBase buildCommand = new ProxyCommand(() -> {
-    //     ConeStation conePos = conePosChooser.getSelected();
-    //     CubePickupLocation cubePos = cubePosChooser.getSelected();
-    //     int cubeScorePos = cubeScorePosChooser.getSelected();
-    //     return auto.combinedAuto(conePos, cubePos, cubeScorePos);
+    // ConeStation conePos = conePosChooser.getSelected();
+    // CubePickupLocation cubePos = cubePosChooser.getSelected();
+    // int cubeScorePos = cubeScorePosChooser.getSelected();
+    // return auto.combinedAuto(conePos, cubePos, cubeScorePos);
     // });
 
     public CommandBase driveScoreMidNode = sequence(
@@ -240,7 +240,7 @@ public class Robot extends CommandRobot {
         copilotController.povRight()
                 .whileTrue(scoreMidNode);
         // stow arm when it is extended past 2 inches
-        copilotController.povLeft()
+        copilotController.povLeft().or(copilotController.povUpLeft()).or(copilotController.povDownLeft())
                 .whileTrue(stowArm)
                 .onFalse(led.colorAlliance());
         copilotController.povDown()
