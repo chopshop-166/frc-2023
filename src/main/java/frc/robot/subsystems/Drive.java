@@ -13,6 +13,7 @@ import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.commands.FunctionalWaitCommand;
 import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -116,7 +117,7 @@ public class Drive extends SmartSubsystemBase {
                 map.cameraName(), Field.getApriltagLayout(),
                 map.cameraPosition(),
                 this.map);
-        correctionPID = drivePID.copyRotationPidController();
+        correctionPID = new RotationPIDController(0.01, 0.00001, 0);
         rotationPID = drivePID.copyRotationPidController();
     }
 
@@ -183,6 +184,7 @@ public class Drive extends SmartSubsystemBase {
                 race(new FunctionalWaitCommand(() -> timeoutSeconds),
                         driveTo(() -> relativeTarget, 0.01)));
     }
+
     public CommandBase driveRelative(Translation2d translation, double angleDegrees, double timeoutSeconds) {
         return driveRelative(translation, Rotation2d.fromDegrees(angleDegrees), timeoutSeconds);
     }

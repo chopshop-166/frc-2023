@@ -113,7 +113,7 @@ public class FrostBiteMap extends RobotMap {
 
         final DrivePID pid = new DrivePID(
                 1.2, 0.002, 0.0,
-                0.01, 0.00001, 0,
+                0.02, 0.00001, 0,
                 new Constraints(1.5, 2.5));
 
         final Transform3d cameraPosition = new Transform3d(

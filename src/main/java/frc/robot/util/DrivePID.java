@@ -54,14 +54,21 @@ public class DrivePID {
      */
     public Transform2d calculate(Pose2d currentPose, Pose2d targetPose) {
         double x = xPid.calculate(currentPose.getX(), targetPose.getX());
-         x += Math.signum(x) * 0.15;
+        if (Math.abs(x) > 0.01) {
+        x += Math.signum(x) * 0.15;
+        }
         double y = yPid.calculate(currentPose.getY(), targetPose.getY());
-        // y += Math.signum(y) * 0.15;
+        if (Math.abs(y) > 0.01) {
+            y += Math.signum(y) * 0.15;
+        }
+        double angle_dps = anglePid.calculate(
+                targetPose.getRotation().getDegrees(), currentPose.getRotation().getDegrees());
+        if (Math.abs(angle_dps) > 0.1) {
+            angle_dps += Math.signum(angle_dps) * 1;
+        }
         return new Transform2d(
-                new Translation2d(-y, -x),
-                // X and Y need to be swapped here for some reason
-                Rotation2d.fromDegrees(anglePid.calculate(
-                        targetPose.getRotation().getDegrees(), currentPose.getRotation().getDegrees())));
+                new Translation2d(-y, -x), Rotation2d.fromDegrees(angle_dps));
+        // X and Y need to be swapped here for some reason));
     }
 
     /**
