@@ -55,16 +55,13 @@ public class Auto {
 
     public CommandBase leaveCommunity() {
         return (scoreConeWhile(
-                drive.driveRelative(new Translation2d(4, 0), 6)
-                        .andThen(drive.rotateToAngle(Rotation2d.fromDegrees(180), () -> 0,
-                                () -> 0))));
+                drive.driveRelative(new Translation2d(4, 0), 180, 6)));
     }
-    
+
     public CommandBase leaveCommunityAndPickUP() {
         return scoreConeWhile(
-                drive.driveRelative(new Translation2d(4, 0), 6)
-                        .andThen(drive.rotateToAngle(Rotation2d.fromDegrees(0), () -> 0,
-                                () -> 0))).andThen(pickUpCone());
+                drive.driveRelative(new Translation2d(4, 0), 270, 6))
+                .andThen(pickUpCone());
     }
 
     private CommandBase armScore(ArmPresets aboveLevel, ArmPresets scoreLevel) {
@@ -80,7 +77,7 @@ public class Auto {
                 // backUp(1.5, 0.2),
                 armRotate.moveTo(ArmPresets.HIGH_SCORE).withTimeout(1.5),
                 // backUp(-1.5, 0.2),
-                drive.driveRelative(new Translation2d(-Units.inchesToMeters(4), 0), 2),
+                drive.driveRelative(new Translation2d(-Units.inchesToMeters(4), 0), 180, 2),
                 armScore(ArmPresets.HIGH_SCORE, ArmPresets.HIGH_SCORE_ACTUAL),
                 moveFor(1.0, 0.3),
                 parallel(stowArmCloseIntake(),
@@ -143,12 +140,12 @@ public class Auto {
                 armExtend.retract(0.4),
                 armRotate.moveTo(ArmPresets.ARM_STOWED));
     }
-    
+
     public CommandBase pickUpCone() {
         return sequence(
                 armRotate.moveTo(ArmPresets.CONE_PICKUP),
                 armExtend.moveTo(ArmPresets.CONE_PICKUP),
-                intake.grab().raceWith(drive.driveRelative(new Translation2d(1,0 ), 2)),
+                intake.grab().raceWith(drive.driveRelative(new Translation2d(1, 0), 0, 2)),
                 armExtend.retract(0.4),
                 armRotate.moveTo(ArmPresets.ARM_STOWED));
     }

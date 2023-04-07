@@ -10,6 +10,7 @@ import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.networktables.StringSubscriber;
@@ -210,7 +211,8 @@ public class Robot extends CommandRobot {
                 driveController::getLeftY, driveController::getRightX));
 
         driveController.y().whileTrue(drive.balance());
-        driveController.x().whileTrue(drive.driveUntilTipped(true).andThen(drive.balance()));
+        driveController.x().whileTrue(drive.rotateToAngle(Rotation2d.fromDegrees(180), () -> 0, () -> 0));
+        driveController.a().whileTrue(drive.rotateToAngle(Rotation2d.fromDegrees(0), () -> 0, () -> 0));
 
         (new Trigger(() -> driveController.getRightTriggerAxis() > 0.5))
                 .onTrue(balanceArm.pushDown()).onFalse(balanceArm.pushUp());

@@ -123,6 +123,7 @@ public class Drive extends SmartSubsystemBase {
     public CommandBase rotateToAngle(Rotation2d angle, DoubleSupplier translateX, DoubleSupplier translateY) {
         return cmd().onExecute(() -> {
             double fb = rotationPID.calculate(pose.getRotation().getDegrees(), angle.getDegrees());
+            Logger.getInstance().recordOutput("Rotaion PId", fb);
             move(translateX.getAsDouble(), translateY.getAsDouble(), fb);
         }).runsUntil(() -> Math.abs(pose.getRotation().getDegrees() - angle.getDegrees()) < 0.1)
                 .onEnd(this::safeState);
@@ -170,17 +171,20 @@ public class Drive extends SmartSubsystemBase {
 
     private Pose2d relativeTarget = new Pose2d();
 
-    public CommandBase driveRelative(Translation2d translation, double timeoutSeconds) {
+    public CommandBase driveRelative(Translation2d translation, Rotation2d rotation2d, double timeoutSeconds) {
         return sequence(
                 runOnce(() -> {
                     relativeTarget = new Pose2d(
                             pose.getX() + translation.getX(),
                             pose.getY() + translation.getY(),
-                            pose.getRotation());
+                            rotation2d);
                     drivePID.reset(pose.getTranslation());
                 }),
                 race(new FunctionalWaitCommand(() -> timeoutSeconds),
                         driveTo(() -> relativeTarget, 0.01)));
+    }
+    public CommandBase driveRelative(Translation2d translation, double angleDegrees, double timeoutSeconds) {
+        return driveRelative(translation, Rotation2d.fromDegrees(angleDegrees), timeoutSeconds);
     }
 
     private void deadbandMove(final double xSpeed, final double ySpeed,
