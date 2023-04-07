@@ -60,8 +60,10 @@ public class Auto {
 
     public CommandBase leaveCommunityAndPickUP() {
         return scoreConeWhile(
-                drive.driveRelative(new Translation2d(5.25, -0.5), 90, 6))
-                .andThen(pickUpCone());
+                drive.driveRelative(new Translation2d(2, 0), 180, 3)).andThen(
+                        drive.driveRelative(new Translation2d(3.25, 0.75), 270,
+                                8))
+                .andThen(pickUpCube());
     }
 
     private CommandBase armScore(ArmPresets aboveLevel, ArmPresets scoreLevel) {
@@ -145,7 +147,7 @@ public class Auto {
         return sequence(
                 armRotate.moveTo(ArmPresets.CONE_PICKUP),
                 armExtend.moveTo(ArmPresets.CONE_PICKUP),
-                intake.grab().raceWith(drive.driveRelative(new Translation2d(0, 1), 90, 2)),
+                intake.grab().raceWith(drive.driveRelative(new Translation2d(0, -0.5), 270, 2)),
                 armExtend.retract(0.4),
                 armRotate.moveTo(ArmPresets.ARM_STOWED));
     }

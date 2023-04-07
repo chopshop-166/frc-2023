@@ -162,7 +162,7 @@ public class FrostBiteMap extends RobotMap {
         csmotor.getMotorController().setIdleMode(IdleMode.kCoast);
         csmotor.getEncoder().setPositionScaleFactor(1.125);
         csmotor.getEncoder().setVelocityScaleFactor(1.125 / 60);
-        ProfiledPIDController pid = new ProfiledPIDController(0.035, 0, 0.0, new Constraints(150, 250));
+        ProfiledPIDController pid = new ProfiledPIDController(0.03, 0.002, 0.0, new Constraints(150, 200));
         pid.setTolerance(2);
 
         CSEncoder encoder = new CSEncoder(2, 3, true);
