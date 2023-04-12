@@ -66,7 +66,7 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
 
     public CommandBase spinIn() {
         PersistenceCheck currentPersistenceCheck = new PersistenceCheck(5,
-                () -> Math.abs(getData().currentAmps[0]) > 30);
+                () -> Math.abs(getData().currentAmps[0]) > 20);
         return cmd().onInitialize(
                 () -> {
                     currentPersistenceCheck.reset();

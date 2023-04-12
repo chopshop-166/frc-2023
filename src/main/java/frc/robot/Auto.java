@@ -55,9 +55,15 @@ public class Auto {
 
     public CommandBase leaveCommunity() {
         return (scoreConeWhile(
-                drive.driveRelative(new Translation2d(4, 0), 6)
-                        .andThen(drive.rotateToAngle(Rotation2d.fromDegrees(180), () -> 0,
-                                () -> 0))));
+                drive.driveRelative(new Translation2d(4, 0), 180, 6)));
+    }
+
+    public CommandBase leaveCommunityAndPickUP() {
+        return scoreConeWhile(
+                drive.driveRelative(new Translation2d(2, 0), 180, 3)).andThen(
+                        drive.driveRelative(new Translation2d(3.25, 0.75), 270,
+                                8))
+                .andThen(pickUpCube());
     }
 
     private CommandBase armScore(ArmPresets aboveLevel, ArmPresets scoreLevel) {
@@ -68,17 +74,16 @@ public class Auto {
 
     // THE ONE THAT ACTUALLY WORKS
     public CommandBase scoreConeWhile(CommandBase commandWhileStow) {
-        return race(new FunctionalWaitCommand(() -> 12),
-                sequence(
-                        drive.setGyro180(),
-                        // backUp(1.5, 0.2),
-                        armRotate.moveTo(ArmPresets.HIGH_SCORE),
-                        // backUp(-1.5, 0.2),
-                        drive.driveRelative(new Translation2d(-Units.inchesToMeters(4), 0), 2),
-                        armScore(ArmPresets.HIGH_SCORE, ArmPresets.HIGH_SCORE_ACTUAL),
-                        moveFor(1.0, 0.3),
-                        parallel(stowArmCloseIntake(),
-                                commandWhileStow)));
+        return sequence(
+                drive.setGyro180(),
+                // backUp(1.5, 0.2),
+                armRotate.moveTo(ArmPresets.HIGH_SCORE).withTimeout(1.5),
+                // backUp(-1.5, 0.2),
+                drive.driveRelative(new Translation2d(-Units.inchesToMeters(4), 0), 180, 2),
+                armScore(ArmPresets.HIGH_SCORE, ArmPresets.HIGH_SCORE_ACTUAL),
+                moveFor(1.0, 0.3),
+                parallel(stowArmCloseIntake(),
+                        commandWhileStow).withTimeout(5));
 
     }
 
@@ -132,8 +137,19 @@ public class Auto {
     public CommandBase pickUpCube() {
         return sequence(
                 armRotate.moveTo(ArmPresets.CUBE_PICKUP),
+                armExtend.moveTo(ArmPresets.CUBE_PICKUP),
                 intake.grab(),
-                armExtend.moveTo(ArmPresets.CUBE_PICKUP));
+                armExtend.retract(0.4),
+                armRotate.moveTo(ArmPresets.ARM_STOWED));
+    }
+
+    public CommandBase pickUpCone() {
+        return sequence(
+                armRotate.moveTo(ArmPresets.CONE_PICKUP),
+                armExtend.moveTo(ArmPresets.CONE_PICKUP),
+                intake.grab().raceWith(drive.driveRelative(new Translation2d(0, -0.5), 270, 2)),
+                armExtend.retract(0.4),
+                armRotate.moveTo(ArmPresets.ARM_STOWED));
     }
 
     public CommandBase scoreCube() {

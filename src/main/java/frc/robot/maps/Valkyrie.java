@@ -41,7 +41,7 @@ public class Valkyrie extends RobotMap {
     public ArmExtendMap getArmMap() {
         CSSparkMax motor = new CSSparkMax(9, MotorType.kBrushless);
         motor.getMotorController().setIdleMode(IdleMode.kBrake);
-        PIDController pidController = new PIDController(0, 0, 0);
+        ProfiledPIDController pidController = new ProfiledPIDController(0, 0, 0, new Constraints(0, 0));
         pidController.setTolerance(4);
         return new ArmExtendMap(motor, 400, 20, 400, 20, pidController, 46.654, 42.3);
     }

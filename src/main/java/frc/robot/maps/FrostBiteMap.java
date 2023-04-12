@@ -113,7 +113,7 @@ public class FrostBiteMap extends RobotMap {
 
         final DrivePID pid = new DrivePID(
                 1.2, 0.002, 0.0,
-                0.01, 0.00001, 0,
+                0.02, 0.00001, 0,
                 new Constraints(1.5, 2.5));
 
         final Transform3d cameraPosition = new Transform3d(
@@ -145,8 +145,8 @@ public class FrostBiteMap extends RobotMap {
         CSTalonSRX intakeMotor = new CSTalonSRX(9);
         intakeMotor.setInverted(true);
         RevDSolenoid intakeSolenoid = new RevDSolenoid(7, 0);
-        intakeMotor.getMotorController().configContinuousCurrentLimit(35);
-        intakeMotor.getMotorController().configPeakCurrentLimit(35);
+        intakeMotor.getMotorController().configContinuousCurrentLimit(30);
+        intakeMotor.getMotorController().configPeakCurrentLimit(30);
 
         return new IntakeData.Map(intakeMotor, intakeSolenoid, new MockColorSensor());
 
@@ -162,7 +162,7 @@ public class FrostBiteMap extends RobotMap {
         csmotor.getMotorController().setIdleMode(IdleMode.kCoast);
         csmotor.getEncoder().setPositionScaleFactor(1.125);
         csmotor.getEncoder().setVelocityScaleFactor(1.125 / 60);
-        ProfiledPIDController pid = new ProfiledPIDController(0.035, 0, 0.0, new Constraints(150, 250));
+        ProfiledPIDController pid = new ProfiledPIDController(0.03, 0.002, 0.0, new Constraints(150, 200));
         pid.setTolerance(2);
 
         CSEncoder encoder = new CSEncoder(2, 3, true);
@@ -171,7 +171,7 @@ public class FrostBiteMap extends RobotMap {
         absEncoder.setDutyCycleRange(1.0 / 1025.0, 1024.0 / 1025.0);
         absEncoder.setDistancePerRotation(-360);
         // Adjust this to move the encoder zero point to the retracted position
-        absEncoder.setPositionOffset(30.29);
+        absEncoder.setPositionOffset(91.89780758483522);
 
         CSFusedEncoder fusedEncoder = new CSFusedEncoder(encoder, absEncoder);
 
@@ -198,10 +198,10 @@ public class FrostBiteMap extends RobotMap {
         motor.getMotorController().setSmartCurrentLimit(30);
         motor.getMotorController().burnFlash();
         motor.getEncoder().setPositionScaleFactor((1.273 * Math.PI) / 10);
-        motor.getEncoder().setVelocityScaleFactor((1.273 * Math.PI) / 10);
-        PIDController pid = new PIDController(0.08, 0.05, 0.0);
+        motor.getEncoder().setVelocityScaleFactor(((1.273 * Math.PI) / 10) / 60);
+        ProfiledPIDController pid = new ProfiledPIDController(0.08, 0.05, 0.0, new Constraints(30, 100));
         pid.setTolerance(0.5);
-        return new ArmExtendMap(motor, 18.5, 3, 19.8, 0.3, pid, 46.654, 42.3);
+        return new ArmExtendMap(motor, 18.5, 3, 19, 0.3, pid, 46.654, 42.3);
     }
 
     @Override

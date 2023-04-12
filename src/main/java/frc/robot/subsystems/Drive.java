@@ -13,6 +13,7 @@ import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.commands.FunctionalWaitCommand;
 import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -49,7 +50,7 @@ public class Drive extends SmartSubsystemBase {
     private final double TILT_THRESHOLD = 4.0;
     private final double TILT_MAX_STOPPING = 1;
 
-    private final double UNTIL_TIPPED_SPEED = 1;
+    private final double UNTIL_TIPPED_SPEED = 2.0;
     private final double UNTIL_NOT_TIPPED_SPEED = 0.5;
     private final double BALANCE_SPEED = 0.25;
 
@@ -116,13 +117,14 @@ public class Drive extends SmartSubsystemBase {
                 map.cameraName(), Field.getApriltagLayout(),
                 map.cameraPosition(),
                 this.map);
-        correctionPID = drivePID.copyRotationPidController();
+        correctionPID = new RotationPIDController(0.01, 0.00001, 0);
         rotationPID = drivePID.copyRotationPidController();
     }
 
     public CommandBase rotateToAngle(Rotation2d angle, DoubleSupplier translateX, DoubleSupplier translateY) {
         return cmd().onExecute(() -> {
             double fb = rotationPID.calculate(pose.getRotation().getDegrees(), angle.getDegrees());
+            Logger.getInstance().recordOutput("Rotaion PId", fb);
             move(translateX.getAsDouble(), translateY.getAsDouble(), fb);
         }).runsUntil(() -> Math.abs(pose.getRotation().getDegrees() - angle.getDegrees()) < 0.1)
                 .onEnd(this::safeState);
@@ -170,17 +172,21 @@ public class Drive extends SmartSubsystemBase {
 
     private Pose2d relativeTarget = new Pose2d();
 
-    public CommandBase driveRelative(Translation2d translation, double timeoutSeconds) {
+    public CommandBase driveRelative(Translation2d translation, Rotation2d rotation2d, double timeoutSeconds) {
         return sequence(
                 runOnce(() -> {
                     relativeTarget = new Pose2d(
                             pose.getX() + translation.getX(),
                             pose.getY() + translation.getY(),
-                            pose.getRotation());
+                            rotation2d);
                     drivePID.reset(pose.getTranslation());
                 }),
                 race(new FunctionalWaitCommand(() -> timeoutSeconds),
                         driveTo(() -> relativeTarget, 0.01)));
+    }
+
+    public CommandBase driveRelative(Translation2d translation, double angleDegrees, double timeoutSeconds) {
+        return driveRelative(translation, Rotation2d.fromDegrees(angleDegrees), timeoutSeconds);
     }
 
     private void deadbandMove(final double xSpeed, final double ySpeed,
@@ -266,7 +272,8 @@ public class Drive extends SmartSubsystemBase {
         return cmd().onExecute(() -> {
             Pose2d flipped = targetPose.get();
             Transform2d fb = drivePID.calculate(pose, flipped);
-
+            Logger.getInstance().recordOutput("DriveX", fb.getX());
+            Logger.getInstance().recordOutput("DriveY", fb.getY());
             move(fb.getX(), fb.getY(), -fb.getRotation().getDegrees());
 
             Logger.getInstance().recordOutput("targetPose", flipped);
@@ -320,7 +327,7 @@ public class Drive extends SmartSubsystemBase {
                 move(0.0, UNTIL_TIPPED_SPEED, 0.0);
             }
 
-        }).runsUntil(() -> Math.abs(this.getTilt()) > 10);
+        }).runsUntil(() -> Math.abs(this.getTilt()) > 6).withTimeout(1.5);
     }
 
     public CommandBase driveUntilNotTipped(boolean forward) {
@@ -344,7 +351,7 @@ public class Drive extends SmartSubsystemBase {
     public CommandBase balance() {
 
         PersistenceCheck balancedCheck = new PersistenceCheck(50,
-                () -> Math.abs(getTilt()) < 6);
+                () -> Math.abs(getTilt()) < 4);
         return cmd().onExecute(() -> {
             Rotation3d rotationVelocity = this.map.gyro().getRotationalVelocity();
 

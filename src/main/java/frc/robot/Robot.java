@@ -10,6 +10,7 @@ import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.networktables.StringSubscriber;
@@ -19,6 +20,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
@@ -67,22 +69,28 @@ public class Robot extends CommandRobot {
     public CommandBase noAuto = runOnce(() -> {
     });
 
-    @Autonomous(name = "Score then balance")
-    public CommandBase scoreBalance = auto.scoreConeBalance();
+    // @Autonomous(name = "Score then balance")
+    // public CommandBase scoreBalance = auto.scoreConeBalance();
 
-    @Autonomous
-    public CommandBase scoreLeaveBalance = auto.scoreConeLeaveAndBalance();
+    @Autonomous(name = "Just Score")
+    public CommandBase scorewhile = auto.scoreConeWhile(runOnce(() -> {
+    }));
+    @Autonomous(name = "Score and pick up")
+    public CommandBase scoreAndPickUp = auto.leaveCommunityAndPickUP();
+
+    // @Autonomous
+    // public CommandBase scoreLeaveBalance = auto.scoreConeLeaveAndBalance();
 
     @Autonomous(defaultAuto = true, name = "(MAIN) Score leave")
     public CommandBase scoreThenLeave = auto.leaveCommunity();
 
-    @Autonomous(name = "Piecemeal Auto")
-    public CommandBase buildCommand = new ProxyCommand(() -> {
-        ConeStation conePos = conePosChooser.getSelected();
-        CubePickupLocation cubePos = cubePosChooser.getSelected();
-        int cubeScorePos = cubeScorePosChooser.getSelected();
-        return auto.combinedAuto(conePos, cubePos, cubeScorePos);
-    });
+    // @Autonomous(name = "Piecemeal Auto")
+    // public CommandBase buildCommand = new ProxyCommand(() -> {
+    // ConeStation conePos = conePosChooser.getSelected();
+    // CubePickupLocation cubePos = cubePosChooser.getSelected();
+    // int cubeScorePos = cubeScorePosChooser.getSelected();
+    // return auto.combinedAuto(conePos, cubePos, cubeScorePos);
+    // });
 
     public CommandBase driveScoreMidNode = sequence(
             armRotate.moveTo(ArmPresets.MEDIUM_SCORE),
@@ -203,6 +211,8 @@ public class Robot extends CommandRobot {
                 driveController::getLeftY, driveController::getRightX));
 
         driveController.y().whileTrue(drive.balance());
+        driveController.x().whileTrue(drive.rotateToAngle(Rotation2d.fromDegrees(180), () -> 0, () -> 0));
+        driveController.a().whileTrue(drive.rotateToAngle(Rotation2d.fromDegrees(0), () -> 0, () -> 0));
 
         (new Trigger(() -> driveController.getRightTriggerAxis() > 0.5))
                 .onTrue(balanceArm.pushDown()).onFalse(balanceArm.pushUp());
@@ -219,7 +229,7 @@ public class Robot extends CommandRobot {
         // Arm
         // extend and rotate are in default commands
         new Trigger(DriverStation::isEnabled).onTrue(armRotate.brakeMode());
-        // copilotController.start().onTrue(armRotate.toggleAbsolute());
+        copilotController.start().onTrue(armRotate.toggleAbsolute());
         copilotController.back().whileTrue(armRotate.resetZero());
 
         // Automatic
@@ -232,7 +242,7 @@ public class Robot extends CommandRobot {
         copilotController.povRight()
                 .whileTrue(scoreMidNode);
         // stow arm when it is extended past 2 inches
-        copilotController.povLeft()
+        copilotController.povLeft().or(copilotController.povUpLeft()).or(copilotController.povDownLeft())
                 .whileTrue(stowArm)
                 .onFalse(led.colorAlliance());
         copilotController.povDown()

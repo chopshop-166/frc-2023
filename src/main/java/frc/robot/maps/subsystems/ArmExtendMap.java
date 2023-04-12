@@ -6,9 +6,11 @@ import org.littletonrobotics.junction.inputs.LoggableInputs;
 import com.chopshop166.chopshoplib.motors.SmartMotorController;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 
 public class ArmExtendMap {
-    public PIDController pid;
+    public ProfiledPIDController pid;
     public SmartMotorController extendMotor;
     public double softMaxDistance;
     public double softMinDistance;
@@ -18,7 +20,7 @@ public class ArmExtendMap {
     public double pivotHeight;
 
     public ArmExtendMap() {
-        this.pid = new PIDController(0, 0, 0);
+        this.pid = new ProfiledPIDController(0, 0, 0, new Constraints(0, 0));
         this.extendMotor = new SmartMotorController();
         this.softMaxDistance = 20;
         this.softMinDistance = 1;
@@ -27,7 +29,7 @@ public class ArmExtendMap {
 
     public ArmExtendMap(SmartMotorController motor, double softMaxDistance, double softMinDistance,
             double hardMaxDistance,
-            double hardMinDistance, PIDController pid, double armPivotHeight, double armStartLength) {
+            double hardMinDistance, ProfiledPIDController pid, double armPivotHeight, double armStartLength) {
         this.extendMotor = motor;
         this.softMaxDistance = softMaxDistance;
         this.softMinDistance = softMinDistance;

@@ -12,7 +12,7 @@ public enum ArmPresets {
             78),
 
     HIGH_SCORE(18.5, 94,
-            86),
+            87),
 
     MEDIUM_SCORE_ACTUAL(3.8, 62,
             62),
@@ -24,9 +24,9 @@ public enum ArmPresets {
     HPS_PICKUP(0, 76,
             72),
 
-    ARM_STOWED(1, 2, 2),
+    ARM_STOWED(1, 2, 1),
 
-    CUBE_PICKUP(3, 17, 17),
+    CUBE_PICKUP(3, 18, 18),
 
     CONE_PICKUP(8.9, 33, 33);
 
