@@ -47,7 +47,7 @@ public class CSFusedEncoder implements IEncoder {
     public double getDistance() {
 
         double distance = this.relativeEncoder.getDistance() + relativeEncoderOffset;
-        double motorDistance = this.motorEncoder.getDistance();
+        double motorDistance = this.motorEncoder.getDistance() + relativeEncoderOffset;
         // Keep trying to set the offset until we get a valid reading back
         if (distanceExceedsThreshold(distance, motorDistance)) {
             return motorDistance;
@@ -66,7 +66,7 @@ public class CSFusedEncoder implements IEncoder {
         double motorRate = this.motorEncoder.getRate();
 
         if (distanceExceedsThreshold(rate, motorRate)) {
-            return motorRate;
+            return rate;
         }
         return this.relativeEncoder.getRate();
     }
