@@ -11,6 +11,7 @@ import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.networktables.StringSubscriber;
@@ -100,15 +101,19 @@ public class Robot extends CommandRobot {
             armExtend.moveTo(ArmPresets.ARM_STOWED));
 
     public CommandBase scoreMidNode = sequence(
-            armRotate.moveTo(ArmPresets.MEDIUM_SCORE),
+            armRotate.moveTo(ArmPresets.MEDIUM_SCORE, new Constraints(150,
+                    250)),
             armExtend.moveTo(ArmPresets.MEDIUM_SCORE),
-            armRotate.moveTo(ArmPresets.MEDIUM_SCORE_ACTUAL),
+            armRotate.moveTo(ArmPresets.MEDIUM_SCORE_ACTUAL, new Constraints(150,
+                    150)),
             armExtend.moveTo(ArmPresets.ARM_STOWED));
 
     public CommandBase scoreHighNode = sequence(
-            armRotate.moveTo(ArmPresets.HIGH_SCORE),
+            armRotate.moveTo(ArmPresets.HIGH_SCORE, new Constraints(150,
+                    250)),
             armExtend.moveTo(ArmPresets.HIGH_SCORE),
-            armRotate.moveTo(ArmPresets.HIGH_SCORE_ACTUAL),
+            armRotate.moveTo(ArmPresets.HIGH_SCORE_ACTUAL, new Constraints(150,
+                    150)),
             armExtend.moveTo(ArmPresets.ARM_STOWED));
 
     public CommandBase grabCube() {
@@ -236,7 +241,8 @@ public class Robot extends CommandRobot {
         copilotController.rightBumper().onTrue(grabCone());
         copilotController.leftBumper().onTrue(grabCube());
         // will need buttons for the enums
-        copilotController.y().whileTrue(armRotate.moveTo(ArmPresets.HPS_PICKUP));
+        copilotController.y().whileTrue(armRotate.moveTo(ArmPresets.HPS_PICKUP, new Constraints(150,
+                250)));
         copilotController.povUp()
                 .whileTrue(scoreHighNode);
         copilotController.povRight()
