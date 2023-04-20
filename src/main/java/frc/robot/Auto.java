@@ -16,6 +16,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import frc.robot.auto.AutoPath;
 import frc.robot.auto.ConeStation;
@@ -70,9 +71,26 @@ public class Auto {
     private CommandBase armScore(ArmPresets aboveLevel, ArmPresets scoreLevel) {
         return sequence(
                 armRotate.moveTo(aboveLevel, new Constraints(150,
-                        1000)), armExtend.moveTo(aboveLevel),
+                        1000)),
+                armExtend.moveTo(aboveLevel),
                 armRotate.moveTo(scoreLevel, new Constraints(150,
-                        100)), armExtend.moveTo(ArmPresets.ARM_STOWED));
+                        100)),
+                armExtend.moveTo(ArmPresets.ARM_STOWED));
+    }
+
+    private boolean wasInterrupted = false;
+
+    public CommandBase scoreWheninterupted() {
+        return runOnce(() -> {
+            wasInterrupted = false;
+        }).andThen(armScore(ArmPresets.HIGH_SCORE, ArmPresets.HIGH_SCORE_ACTUAL).finallyDo(Interrupted -> {
+            wasInterrupted = true;
+        }).withTimeout(10), Commands.either(raiseArm(), runOnce(() -> {
+        }), () -> wasInterrupted));
+    }
+
+    public CommandBase raiseArm() {
+        return armRotate.moveTo(ArmPresets.HIGH_SCORE);
     }
 
     // THE ONE THAT ACTUALLY WORKS

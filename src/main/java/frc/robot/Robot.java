@@ -70,8 +70,8 @@ public class Robot extends CommandRobot {
     public CommandBase noAuto = runOnce(() -> {
     });
 
-    // @Autonomous(name = "Score then balance")
-    // public CommandBase scoreBalance = auto.scoreConeBalance();
+    @Autonomous(name = "Score then balance")
+    public CommandBase scoreBalance = auto.scoreConeBalance();
 
     @Autonomous(name = "Just Score")
     public CommandBase scorewhile = auto.scoreConeWhile(runOnce(() -> {
