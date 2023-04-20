@@ -102,18 +102,18 @@ public class Robot extends CommandRobot {
 
     public CommandBase scoreMidNode = sequence(
             armRotate.moveTo(ArmPresets.MEDIUM_SCORE, new Constraints(150,
-                    250)),
+                    1000)),
             armExtend.moveTo(ArmPresets.MEDIUM_SCORE),
             armRotate.moveTo(ArmPresets.MEDIUM_SCORE_ACTUAL, new Constraints(150,
-                    150)),
+                    100)),
             armExtend.moveTo(ArmPresets.ARM_STOWED));
 
     public CommandBase scoreHighNode = sequence(
             armRotate.moveTo(ArmPresets.HIGH_SCORE, new Constraints(150,
-                    250)),
+                    1000)),
             armExtend.moveTo(ArmPresets.HIGH_SCORE),
             armRotate.moveTo(ArmPresets.HIGH_SCORE_ACTUAL, new Constraints(150,
-                    150)),
+                    100)),
             armExtend.moveTo(ArmPresets.ARM_STOWED));
 
     public CommandBase grabCube() {
