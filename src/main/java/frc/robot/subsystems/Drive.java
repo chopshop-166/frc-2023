@@ -52,7 +52,7 @@ public class Drive extends SmartSubsystemBase {
 
     private final double UNTIL_TIPPED_SPEED = 2.0;
     private final double UNTIL_NOT_TIPPED_SPEED = 0.5;
-    private final double BALANCE_SPEED = 0.25;
+    private final double BALANCE_SPEED = 0.3;
 
     boolean isBlue = false;
     NetworkTableInstance inst = NetworkTableInstance.getDefault();
