@@ -168,10 +168,11 @@ public class FrostBiteMap extends RobotMap {
         CSEncoder encoder = new CSEncoder(2, 3, true);
         encoder.setDistancePerPulse(360.0 / 2048.0);
         CSDutyCycleEncoder absEncoder = new CSDutyCycleEncoder(4);
+        // rohdfshkfjhsdkjhfdskjhfdsjkf
         absEncoder.setDutyCycleRange(1.0 / 1025.0, 1024.0 / 1025.0);
         absEncoder.setDistancePerRotation(-360);
         // Adjust this to move the encoder zero point to the retracted position
-        absEncoder.setPositionOffset(91.89780758483522);
+        absEncoder.setPositionOffset(91.89780758483522 + 3.75);
 
         CSFusedEncoder fusedEncoder = new CSFusedEncoder(encoder, absEncoder);
 
