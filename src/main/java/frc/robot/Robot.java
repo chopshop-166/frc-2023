@@ -160,7 +160,8 @@ public class Robot extends CommandRobot {
                             armRotate.moveTo(ArmPresets.CONE_PICKUP), armExtend.moveTo(ArmPresets.CONE_PICKUP)),
                     sequence(
                             armRotate.moveTo(ArmPresets.CUBE_PICKUP), armExtend.moveTo(
-                                    ArmPresets.CUBE_PICKUP)),
+                                    ArmPresets.CUBE_PICKUP),
+                            intake.coneRelease()),
                     () -> {
                         return gamePieceSub.get() == "Cone";
                     }));
