@@ -73,6 +73,9 @@ public class Robot extends CommandRobot {
     @Autonomous(name = "Score then balance")
     public CommandBase scoreBalance = auto.scoreConeBalance();
 
+    @Autonomous(name = "(TEST) Score then rotate then balance")
+    public CommandBase scoreRotBalance = auto.scoreConeBalanceRotate();
+
     @Autonomous(name = "Just Score")
     public CommandBase scorewhile = auto.scoreConeWhile(runOnce(() -> {
     }));
