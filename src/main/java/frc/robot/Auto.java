@@ -103,10 +103,9 @@ public class Auto {
                 // backUp(-1.5, 0.2),
                 drive.driveRelative(new Translation2d(-Units.inchesToMeters(4), 0), 180, 2),
                 armScore(ArmPresets.HIGH_SCORE, ArmPresets.HIGH_SCORE_ACTUAL),
-                moveFor(1.0, 0.3),
+                drive.driveRelative(new Translation2d(Units.inchesToMeters(18), 4), Rotation2d.fromDegrees(0), 5),
                 parallel(stowArmCloseIntake(),
                         commandWhileStow).withTimeout(5));
-
     }
 
     // Score cone and back up onto charge station (from pos 1) and then balance
