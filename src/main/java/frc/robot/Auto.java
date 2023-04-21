@@ -103,7 +103,20 @@ public class Auto {
                 // backUp(-1.5, 0.2),
                 drive.driveRelative(new Translation2d(-Units.inchesToMeters(4), 0), 180, 2),
                 armScore(ArmPresets.HIGH_SCORE, ArmPresets.HIGH_SCORE_ACTUAL),
-                drive.driveRelative(new Translation2d(Units.inchesToMeters(18), 4), Rotation2d.fromDegrees(0), 5),
+                parallel(stowArmCloseIntake(),
+                        commandWhileStow).withTimeout(5));
+    }
+
+    public CommandBase scoreConeRotateWhile(CommandBase commandWhileStow) {
+        return sequence(
+                drive.setGyro180(),
+                // backUp(1.5, 0.2),
+                armRotate.moveTo(ArmPresets.HIGH_SCORE, new Constraints(150,
+                        250)).withTimeout(1.5),
+                // backUp(-1.5, 0.2),
+                drive.driveRelative(new Translation2d(-Units.inchesToMeters(4), 0), 180, 2),
+                armScore(ArmPresets.HIGH_SCORE, ArmPresets.HIGH_SCORE_ACTUAL),
+                drive.driveRelative(new Translation2d(Units.inchesToMeters(18), 0), Rotation2d.fromDegrees(0), 5),
                 parallel(stowArmCloseIntake(),
                         commandWhileStow).withTimeout(5));
     }
@@ -121,6 +134,20 @@ public class Auto {
 
         )
                 .withName("Score Cone Balance");
+    }
+
+    public CommandBase scoreConeBalanceRotate() {
+        return sequence(
+                // armRotate.zeroVelocityCheck(),
+                balanceArm.pushDown(),
+                scoreConeRotateWhile(drive.driveUntilTipped(true)),
+                led.balancing(),
+                drive.balance(),
+                led.starPower(),
+                balanceArm.pushUp()
+
+        )
+                .withName("(TEST) Score Cone Rotate Balance");
     }
 
     public CommandBase scoreConeLeaveAndBalance() {
