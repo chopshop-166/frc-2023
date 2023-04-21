@@ -75,7 +75,7 @@ public class Auto {
                 armExtend.moveTo(aboveLevel),
                 armRotate.moveTo(scoreLevel, new Constraints(150,
                         100)),
-                armExtend.moveTo(ArmPresets.ARM_STOWED));
+                armExtend.retract(0.4));
     }
 
     private boolean wasInterrupted = false;
