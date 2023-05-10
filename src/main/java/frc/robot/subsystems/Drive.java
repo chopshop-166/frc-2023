@@ -50,7 +50,7 @@ public class Drive extends SmartSubsystemBase {
     private final double TILT_THRESHOLD = 4.0;
     private final double TILT_MAX_STOPPING = 1;
 
-    private final double UNTIL_TIPPED_SPEED = 2.0;
+    private final double UNTIL_TIPPED_SPEED = 2;
     private final double UNTIL_NOT_TIPPED_SPEED = 0.5;
     private final double BALANCE_SPEED = 0.25;
 

@@ -8,6 +8,8 @@ import com.chopshop166.chopshoplib.PersistenceCheck;
 import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.networktables.BooleanSubscriber;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.DoubleSubscriber;
@@ -67,14 +69,14 @@ public class ArmRotate extends SmartSubsystemBase {
 
     }
 
-    public CommandBase moveToAngle(double angle) {
+    public CommandBase moveToAngle(double angle, Constraints rotateConstraints) {
         // When executed the arm will move. The encoder will update until the desired
         // value is reached, then the command will end.
         PersistenceCheck setPointPersistenceCheck = new PersistenceCheck(20, pid::atGoal);
         return cmd("Move To Set Angle").onInitialize(() -> {
             pid.reset(getArmAngle(), data.rotatingAngleVelocity);
         }).onExecute(() -> {
-            data.setPoint = pid.calculate(getArmAngle(), angle) + NO_FALL;
+            data.setPoint = pid.calculate(getArmAngle(), new State(angle, 0), rotateConstraints) + NO_FALL;
             Logger.getInstance().recordOutput("getPositionErrors", pid.getPositionError());
 
         }).runsUntil(setPointPersistenceCheck).onEnd(() -> {
@@ -109,8 +111,12 @@ public class ArmRotate extends SmartSubsystemBase {
         });
     }
 
+    public CommandBase moveTo(ArmPresets level, Constraints rotateConstraints) {
+        return moveToAngle(level.getAngle(useAbsolute), rotateConstraints);
+    }
+
     public CommandBase moveTo(ArmPresets level) {
-        return moveToAngle(level.getAngle(useAbsolute));
+        return moveToAngle(level.getAngle(useAbsolute), new Constraints(150, 200));
     }
 
     public CommandBase resetAngle() {

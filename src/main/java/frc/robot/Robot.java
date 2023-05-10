@@ -11,6 +11,7 @@ import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.networktables.StringSubscriber;
@@ -69,8 +70,11 @@ public class Robot extends CommandRobot {
     public CommandBase noAuto = runOnce(() -> {
     });
 
-    // @Autonomous(name = "Score then balance")
-    // public CommandBase scoreBalance = auto.scoreConeBalance();
+    @Autonomous(name = "Score then balance")
+    public CommandBase scoreBalance = auto.scoreConeBalance();
+
+    @Autonomous(name = "(TEST) Score then rotate then balance")
+    public CommandBase scoreRotBalance = auto.scoreConeBalanceRotate();
 
     @Autonomous(name = "Just Score")
     public CommandBase scorewhile = auto.scoreConeWhile(runOnce(() -> {
@@ -100,15 +104,19 @@ public class Robot extends CommandRobot {
             armExtend.moveTo(ArmPresets.ARM_STOWED));
 
     public CommandBase scoreMidNode = sequence(
-            armRotate.moveTo(ArmPresets.MEDIUM_SCORE),
+            armRotate.moveTo(ArmPresets.MEDIUM_SCORE, new Constraints(150,
+                    1000)),
             armExtend.moveTo(ArmPresets.MEDIUM_SCORE),
-            armRotate.moveTo(ArmPresets.MEDIUM_SCORE_ACTUAL),
+            armRotate.moveTo(ArmPresets.MEDIUM_SCORE_ACTUAL, new Constraints(150,
+                    100)),
             armExtend.moveTo(ArmPresets.ARM_STOWED));
 
     public CommandBase scoreHighNode = sequence(
-            armRotate.moveTo(ArmPresets.HIGH_SCORE),
+            armRotate.moveTo(ArmPresets.HIGH_SCORE, new Constraints(150,
+                    1000)),
             armExtend.moveTo(ArmPresets.HIGH_SCORE),
-            armRotate.moveTo(ArmPresets.HIGH_SCORE_ACTUAL),
+            armRotate.moveTo(ArmPresets.HIGH_SCORE_ACTUAL, new Constraints(150,
+                    100)),
             armExtend.moveTo(ArmPresets.ARM_STOWED));
 
     public CommandBase grabCube() {
@@ -152,7 +160,8 @@ public class Robot extends CommandRobot {
                             armRotate.moveTo(ArmPresets.CONE_PICKUP), armExtend.moveTo(ArmPresets.CONE_PICKUP)),
                     sequence(
                             armRotate.moveTo(ArmPresets.CUBE_PICKUP), armExtend.moveTo(
-                                    ArmPresets.CUBE_PICKUP)),
+                                    ArmPresets.CUBE_PICKUP),
+                            intake.coneRelease()),
                     () -> {
                         return gamePieceSub.get() == "Cone";
                     }));
@@ -236,7 +245,8 @@ public class Robot extends CommandRobot {
         copilotController.rightBumper().onTrue(grabCone());
         copilotController.leftBumper().onTrue(grabCube());
         // will need buttons for the enums
-        copilotController.y().whileTrue(armRotate.moveTo(ArmPresets.HPS_PICKUP));
+        copilotController.y().whileTrue(armRotate.moveTo(ArmPresets.HPS_PICKUP, new Constraints(150,
+                250)));
         copilotController.povUp()
                 .whileTrue(scoreHighNode);
         copilotController.povRight()
