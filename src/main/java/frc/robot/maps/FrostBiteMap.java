@@ -176,7 +176,7 @@ public class FrostBiteMap extends RobotMap {
 
         CSFusedEncoder fusedEncoder = new CSFusedEncoder(encoder, absEncoder);
 
-        return new ArmRotateMap(csmotor, 95, 10, 98, 0, 15, pid, fusedEncoder, 46.654, 42.3) {
+        return new ArmRotateMap(csmotor, 95, 10, 98, 0, 18, pid, fusedEncoder, 46.654, 42.3) {
             @Override
             public void setBrake() {
                 csmotor.getMotorController().setIdleMode(IdleMode.kBrake);
