@@ -68,8 +68,9 @@ public class Auto {
 
     private CommandBase armScore(ArmPresets aboveLevel, ArmPresets scoreLevel) {
         return sequence(
-                armRotate.moveTo(aboveLevel), armExtend.moveTo(aboveLevel),
-                armRotate.moveTo(scoreLevel), armExtend.moveTo(ArmPresets.ARM_STOWED));
+                armRotate.moveTo(aboveLevel).withTimeout(2), armExtend.moveTo(aboveLevel).withTimeout(
+                        2),
+                armRotate.moveTo(scoreLevel).withTimeout(2), armExtend.moveTo(ArmPresets.ARM_STOWED).withTimeout(2));
     }
 
     // THE ONE THAT ACTUALLY WORKS
@@ -83,7 +84,7 @@ public class Auto {
                 armScore(ArmPresets.HIGH_SCORE, ArmPresets.HIGH_SCORE_ACTUAL),
                 moveFor(1.0, 0.3),
                 parallel(stowArmCloseIntake(),
-                        commandWhileStow).withTimeout(2));
+                        commandWhileStow));
 
     }
 
@@ -91,7 +92,7 @@ public class Auto {
     public CommandBase scoreConeBalance() {
         return sequence(
                 // armRotate.zeroVelocityCheck(),
-                scoreConeWhile(drive.driveUntilTipped(true)),
+                scoreConeWhile(drive.driveUntilTipped(true).withTimeout(2)),
                 led.balancing(),
                 drive.balance().withTimeout(5),
                 led.starPower(),

@@ -26,7 +26,7 @@ public enum ArmPresets {
 
     ARM_STOWED(1, 2, 1),
 
-    CUBE_PICKUP(3, 18, 18),
+    CUBE_PICKUP(4, 18, 18),
 
     CONE_PICKUP(8.9, 33, 33);
 
