@@ -205,6 +205,11 @@ public class Robot extends CommandRobot {
         Logger.getInstance().recordOutput("Compressor/Current", compressor.getCurrent());
     }
 
+    public CommandBase intakeGamePiece() {
+        return rumbleOn().andThen(led.intakeSpinning(), intake.grab(), rumbleOff(),
+                led.grabbedPiece());
+    }
+
     @Override
     public void configureButtonBindings() {
 
@@ -227,8 +232,7 @@ public class Robot extends CommandRobot {
         // COPILOT CONTROLLER
         // Intake
         copilotController.a()
-                .onTrue(rumbleOn().andThen(led.intakeSpinning(), intake.grab(), rumbleOff(),
-                        led.grabbedPiece()));
+                .onTrue(intakeGamePiece());
         copilotController.b().onTrue(intake.toggle().andThen(rumbleAndIntakeSpinningOff()));
         copilotController.x().onTrue(rumbleAndIntakeSpinningOff()).whileTrue(intake.cubeRelease());
 
