@@ -322,23 +322,31 @@ public class Drive extends SmartSubsystemBase {
     public CommandBase driveUntilTipped(boolean forward) {
         return cmd().onExecute(() -> {
             if (forward) {
+                Logger.getInstance().recordOutput("AutoBalanceState", "tipping forward");
                 move(0.0, -UNTIL_TIPPED_SPEED, 0.0);
             } else {
+                Logger.getInstance().recordOutput("AutoBalanceState", "tipping backward");
                 move(0.0, UNTIL_TIPPED_SPEED, 0.0);
             }
 
-        }).runsUntil(() -> Math.abs(this.getTilt()) > 6).withTimeout(1.5);
+        }).runsUntil(() -> Math.abs(this.getTilt()) > 6).onEnd((() -> {
+            Logger.getInstance().recordOutput("AutoBalanceState", "tipped");
+        })).withTimeout(1.5);
     }
 
     public CommandBase driveUntilNotTipped(boolean forward) {
         return cmd().onExecute(() -> {
             if (forward) {
+                Logger.getInstance().recordOutput("AutoBalanceState", "untipping forward");
                 move(0.0, -UNTIL_NOT_TIPPED_SPEED, 0.0);
             } else {
+                Logger.getInstance().recordOutput("AutoBalanceState", "untipping backward");
                 move(0.0, UNTIL_NOT_TIPPED_SPEED, 0.0);
             }
 
-        }).runsUntil(() -> Math.abs(this.getTilt()) < 6);
+        }).runsUntil(() -> Math.abs(this.getTilt()) < 6).onEnd((() -> {
+            Logger.getInstance().recordOutput("AutoBalanceState", "not tipped");
+        }));
     }
 
     public double getTilt() {
@@ -430,6 +438,7 @@ public class Drive extends SmartSubsystemBase {
         Logger.getInstance().processInputs(getName(), io);
         pose = vision.update(isBlue);
         Logger.getInstance().recordOutput("robotPose", pose);
+        Logger.getInstance().recordOutput("Pitch", getTilt());
     }
 
 }

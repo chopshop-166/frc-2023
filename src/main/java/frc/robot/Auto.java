@@ -11,12 +11,10 @@ import com.chopshop166.chopshoplib.commands.FunctionalWaitCommand;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import frc.robot.auto.AutoPath;
 import frc.robot.auto.ConeStation;
@@ -70,27 +68,8 @@ public class Auto {
 
     private CommandBase armScore(ArmPresets aboveLevel, ArmPresets scoreLevel) {
         return sequence(
-                armRotate.moveTo(aboveLevel, new Constraints(150,
-                        1000)),
-                armExtend.moveTo(aboveLevel),
-                armRotate.moveTo(scoreLevel, new Constraints(150,
-                        100)),
-                armExtend.retract(0.4));
-    }
-
-    private boolean wasInterrupted = false;
-
-    public CommandBase scoreWheninterupted() {
-        return runOnce(() -> {
-            wasInterrupted = false;
-        }).andThen(armScore(ArmPresets.HIGH_SCORE, ArmPresets.HIGH_SCORE_ACTUAL).finallyDo(Interrupted -> {
-            wasInterrupted = true;
-        }).withTimeout(10), Commands.either(raiseArm(), runOnce(() -> {
-        }), () -> wasInterrupted));
-    }
-
-    public CommandBase raiseArm() {
-        return armRotate.moveTo(ArmPresets.HIGH_SCORE);
+                armRotate.moveTo(aboveLevel), armExtend.moveTo(aboveLevel),
+                armRotate.moveTo(scoreLevel), armExtend.moveTo(ArmPresets.ARM_STOWED));
     }
 
     // THE ONE THAT ACTUALLY WORKS
@@ -98,37 +77,23 @@ public class Auto {
         return sequence(
                 drive.setGyro180(),
                 // backUp(1.5, 0.2),
-                armRotate.moveTo(ArmPresets.HIGH_SCORE, new Constraints(150,
-                        250)).withTimeout(1.5),
+                armRotate.moveTo(ArmPresets.HIGH_SCORE).withTimeout(1.5),
                 // backUp(-1.5, 0.2),
                 drive.driveRelative(new Translation2d(-Units.inchesToMeters(4), 0), 180, 2),
                 armScore(ArmPresets.HIGH_SCORE, ArmPresets.HIGH_SCORE_ACTUAL),
+                moveFor(1.0, 0.3),
                 parallel(stowArmCloseIntake(),
-                        commandWhileStow).withTimeout(5));
-    }
+                        commandWhileStow).withTimeout(2));
 
-    public CommandBase scoreConeRotateWhile(CommandBase commandWhileStow) {
-        return sequence(
-                drive.setGyro180(),
-                // backUp(1.5, 0.2),
-                armRotate.moveTo(ArmPresets.HIGH_SCORE, new Constraints(150,
-                        250)).withTimeout(1.5),
-                // backUp(-1.5, 0.2),
-                drive.driveRelative(new Translation2d(-Units.inchesToMeters(4), 0), 180, 2),
-                armScore(ArmPresets.HIGH_SCORE, ArmPresets.HIGH_SCORE_ACTUAL),
-                drive.driveRelative(new Translation2d(Units.inchesToMeters(18), 0), Rotation2d.fromDegrees(0), 5),
-                parallel(stowArmCloseIntake(),
-                        commandWhileStow).withTimeout(5));
     }
 
     // Score cone and back up onto charge station (from pos 1) and then balance
     public CommandBase scoreConeBalance() {
         return sequence(
                 // armRotate.zeroVelocityCheck(),
-                balanceArm.pushDown(),
                 scoreConeWhile(drive.driveUntilTipped(true)),
                 led.balancing(),
-                drive.balance(),
+                drive.balance().withTimeout(5),
                 led.starPower(),
                 balanceArm.pushUp()
 
@@ -136,25 +101,11 @@ public class Auto {
                 .withName("Score Cone Balance");
     }
 
-    public CommandBase scoreConeBalanceRotate() {
-        return sequence(
-                // armRotate.zeroVelocityCheck(),
-                balanceArm.pushDown(),
-                scoreConeRotateWhile(drive.driveUntilTipped(true)),
-                led.balancing(),
-                drive.balance(),
-                led.starPower(),
-                balanceArm.pushUp()
-
-        )
-                .withName("(TEST) Score Cone Rotate Balance");
-    }
-
     public CommandBase scoreConeLeaveAndBalance() {
         return sequence(
                 // armRotate.zeroVelocityCheck(),
                 scoreConeWhile(drive.driveUntilTipped(true)),
-                drive.driveUntilNotTipped(true),
+                drive.driveUntilNotTipped(true).withTimeout(1.0),
                 waitSeconds(0.5),
                 moveFor(1.0, 3),
                 waitSeconds(2),
