@@ -49,7 +49,7 @@ public class FrostBiteMap extends RobotMap {
         // Value taken from CAD as offset from center of module base pulley to center
         // of the robot
 
-        final double MODULE_OFFSET_XY = Units.inchesToMeters(8.89);
+        final double MODULE_OFFSET_XY = Units.inchesToMeters(9.89);
         final PigeonGyro2 pigeonGyro2 = new PigeonGyro2(1);
 
         final CSSparkMax frontLeftSteer = new CSSparkMax(8, MotorType.kBrushless);
@@ -74,7 +74,7 @@ public class FrostBiteMap extends RobotMap {
         // All Distances are in Meters
         // Front Left Module
         final CANCoder encoderFL = new CANCoder(4);
-        encoderFL.configMagnetOffset(-14.326171874999998);
+        encoderFL.configMagnetOffset(0);
         encoderFL.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
         final SDSSwerveModule frontLeft = new SDSSwerveModule(new Translation2d(MODULE_OFFSET_XY, MODULE_OFFSET_XY),
                 encoderFL, frontLeftSteer, new CSSparkMax(7, MotorType.kBrushless),
