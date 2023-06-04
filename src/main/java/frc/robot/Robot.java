@@ -97,14 +97,14 @@ public class Robot extends CommandRobot {
             armRotate.moveTo(ArmPresets.MEDIUM_SCORE),
             drive.driveToNearest(),
             armExtend.moveTo(ArmPresets.MEDIUM_SCORE),
-            armRotate.moveTo(ArmPresets.MEDIUM_SCORE_ACTUAL),
+            armRotate.moveTo(ArmPresets.MEDIUM_SCORE_DOWN),
             armExtend.moveTo(ArmPresets.ARM_STOWED));
 
     public CommandBase scoreMidNode = sequence(
             armRotate.moveTo(ArmPresets.MEDIUM_SCORE, new Constraints(150,
                     1000)),
             armExtend.moveTo(ArmPresets.MEDIUM_SCORE),
-            armRotate.moveTo(ArmPresets.MEDIUM_SCORE_ACTUAL, new Constraints(150,
+            armRotate.moveTo(ArmPresets.MEDIUM_SCORE_DOWN, new Constraints(150,
                     100)),
             armExtend.moveTo(ArmPresets.ARM_STOWED));
 
@@ -112,7 +112,7 @@ public class Robot extends CommandRobot {
             armRotate.moveTo(ArmPresets.HIGH_SCORE, new Constraints(150,
                     1000)),
             armExtend.moveTo(ArmPresets.HIGH_SCORE),
-            armRotate.moveTo(ArmPresets.HIGH_SCORE_ACTUAL, new Constraints(150,
+            armRotate.moveTo(ArmPresets.HIGH_SCORE_DOWN, new Constraints(150,
                     100)),
             armExtend.moveTo(ArmPresets.ARM_STOWED));
 

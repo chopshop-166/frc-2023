@@ -77,11 +77,12 @@ public class Auto {
     public CommandBase scoreConeWhile(CommandBase commandWhileStow) {
         return sequence(
                 drive.setGyro180(),
+                armExtend.zeroVelocityCheck(),
                 // backUp(1.5, 0.2),
                 armRotate.moveTo(ArmPresets.HIGH_SCORE).withTimeout(1.5),
                 // backUp(-1.5, 0.2),
                 drive.driveRelative(new Translation2d(-Units.inchesToMeters(4), 0), 180, 2),
-                armScore(ArmPresets.HIGH_SCORE, ArmPresets.HIGH_SCORE_ACTUAL),
+                armScore(ArmPresets.HIGH_SCORE, ArmPresets.HIGH_SCORE_DOWN),
                 moveFor(1.0, 0.3),
                 parallel(stowArmCloseIntake(),
                         commandWhileStow));
@@ -164,7 +165,7 @@ public class Auto {
         return sequence(
                 armRotate.moveTo(ArmPresets.HIGH_SCORE),
                 new ConditionalCommand(
-                        armExtend.moveTo(ArmPresets.HIGH_SCORE).andThen(armRotate.moveTo(ArmPresets.HIGH_SCORE_ACTUAL))
+                        armExtend.moveTo(ArmPresets.HIGH_SCORE).andThen(armRotate.moveTo(ArmPresets.HIGH_SCORE_DOWN))
                                 .andThen(armExtend.moveTo(ArmPresets.ARM_STOWED)),
                         runOnce(() -> {
                         }), () -> {
