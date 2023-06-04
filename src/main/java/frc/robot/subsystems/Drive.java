@@ -329,7 +329,7 @@ public class Drive extends SmartSubsystemBase {
                 move(0.0, UNTIL_TIPPED_SPEED, 0.0);
             }
 
-        }).runsUntil(() -> Math.abs(this.getTilt()) > 6).onEnd((() -> {
+        }).runsUntil(() -> Math.abs(this.getTilt()) > 4).onEnd((() -> {
             Logger.getInstance().recordOutput("AutoBalanceState", "tipped");
         })).withTimeout(1.5);
     }
