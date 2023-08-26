@@ -363,8 +363,12 @@ public class Drive extends SmartSubsystemBase {
     // Created by Helen (FOR TESTING PURPOSES ONLY) on 8/26/23
     public CommandBase yuckyTiltCommand() {
         return cmd().onExecute(() -> {
-            move(0.0, 0.75, 0);
-        }).withTimeout(4).andThen(balance());
+            move(0.0, (-1 * 0.75), 0);
+        }).runsUntil(() -> ((Math.abs(this.getTilt()) > 15)))
+                .onEnd(() -> Logger.getInstance().recordOutput("AutoBalanceState", "wheee")).andThen(() -> {
+                    balance();
+                }).withTimeout(6);
+
     }
 
     public CommandBase balance() {

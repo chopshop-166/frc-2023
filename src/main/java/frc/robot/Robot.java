@@ -220,8 +220,8 @@ public class Robot extends CommandRobot {
         driveController.back().onTrue(drive.resetGyroCommand());
         driveController.rightStick().whileTrue(drive.robotCentricDrive(driveController::getLeftX,
                 driveController::getLeftY, driveController::getRightX));
-        driveController.b().whileTrue(drive.yuckyTiltCommand());
-        driveController.y().whileTrue(drive.balance());
+        driveController.y().whileTrue(drive.yuckyTiltCommand());
+        // driveController.y().whileTrue(drive.balance());
         driveController.x().whileTrue(drive.rotateToAngle(Rotation2d.fromDegrees(180), () -> 0, () -> 0));
         driveController.a().whileTrue(drive.rotateToAngle(Rotation2d.fromDegrees(0), () -> 0, () -> 0));
 
