@@ -187,6 +187,7 @@ public class ArmRotate extends SmartSubsystemBase {
             return (speed + NO_FALL);
         }
 
+        
         return speed;
     }
 }

@@ -15,7 +15,7 @@ public enum ArmPresets {
             87),
 
     MEDIUM_SCORE_DOWN(3.8, 62,
-            62),
+            58),
 
     HIGH_SCORE_DOWN(18.5, 80,
             76.3),
