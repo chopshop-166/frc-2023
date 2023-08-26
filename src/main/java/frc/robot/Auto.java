@@ -93,7 +93,7 @@ public class Auto {
     public CommandBase scoreConeBalance() {
         return sequence(
                 // armRotate.zeroVelocityCheck(),
-                scoreConeWhile(drive.driveUntilTipped(true).withTimeout(2)),
+                scoreConeWhile(drive.driveOnToCS(true).withTimeout(2)),
                 led.balancing(),
                 drive.balance().withTimeout(5),
                 led.starPower(),
@@ -106,12 +106,12 @@ public class Auto {
     public CommandBase scoreConeLeaveAndBalance() {
         return sequence(
                 // armRotate.zeroVelocityCheck(),
-                scoreConeWhile(drive.driveUntilTipped(true)),
-                drive.driveUntilNotTipped(true).withTimeout(1.0),
+                scoreConeWhile(drive.driveOnToCS(true)),
+                drive.driveOffCS(true).withTimeout(1.0),
                 waitSeconds(0.5),
                 moveFor(1.0, 3),
                 waitSeconds(2),
-                drive.driveUntilTipped(false),
+                drive.driveOnToCS(false),
                 led.balancing(),
                 drive.balance(),
                 led.starPower()

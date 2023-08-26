@@ -50,7 +50,7 @@ public class Drive extends SmartSubsystemBase {
     private final double TILT_THRESHOLD = 4.0;
     private final double TILT_MAX_STOPPING = 1;
 
-    private final double UNTIL_TIPPED_SPEED = 2;
+    private final double UNTIL_TIPPED_SPEED = 1.8;
     private final double UNTIL_NOT_TIPPED_SPEED = 0.5;
     private final double BALANCE_SPEED = 0.25;
 
@@ -319,7 +319,7 @@ public class Drive extends SmartSubsystemBase {
 
     }
 
-    public CommandBase driveUntilTipped(boolean forward) {
+    public CommandBase driveOnToCS(boolean forward) {
         return cmd().onExecute(() -> {
             if (forward) {
                 Logger.getInstance().recordOutput("AutoBalanceState", "tipping forward");
@@ -329,12 +329,14 @@ public class Drive extends SmartSubsystemBase {
                 move(0.0, UNTIL_TIPPED_SPEED, 0.0);
             }
 
-        }).runsUntil(() -> Math.abs(this.getTilt()) > 4).onEnd((() -> {
+        }).runsUntil(() -> Math.abs(this.getTilt()) > 6).onEnd((() -> {
             Logger.getInstance().recordOutput("AutoBalanceState", "tipped");
-        })).withTimeout(1.5);
+        })).andThen(() -> {
+            move(0.0, 1.8, 0.0);
+        }).withTimeout(1.5);
     }
 
-    public CommandBase driveUntilNotTipped(boolean forward) {
+    public CommandBase driveOffCS(boolean forward) {
         return cmd().onExecute(() -> {
             if (forward) {
                 Logger.getInstance().recordOutput("AutoBalanceState", "untipping forward");
@@ -354,6 +356,15 @@ public class Drive extends SmartSubsystemBase {
                 * Units.radiansToDegrees(this.map.gyro().getRotation3d().getY())
                 + this.map.gyro().getRotation2d().getSin()
                         * Units.radiansToDegrees(this.map.gyro().getRotation3d().getX());
+    }
+
+    // a command to be mapped to a drive controller button to test brute force
+    // driving onto CS then timeout and balance
+    // Created by Helen (FOR TESTING PURPOSES ONLY) on 8/26/23
+    public CommandBase yuckyTiltCommand() {
+        return cmd().onExecute(() -> {
+            move(0.0, 0.75, 0);
+        }).withTimeout(4).andThen(balance());
     }
 
     public CommandBase balance() {
