@@ -11,22 +11,22 @@ public enum ArmPresets {
     MEDIUM_SCORE(3.8, 78,
             78),
 
-    HIGH_SCORE(18.5, 94,
+    HIGH_SCORE(18.5, 95,
             87),
 
-    MEDIUM_SCORE_ACTUAL(3.8, 62,
+    MEDIUM_SCORE_DOWN(3.8, 62,
             62),
 
-    HIGH_SCORE_ACTUAL(18.5, 80,
+    HIGH_SCORE_DOWN(18.5, 80,
             76.3),
 
     // Human Player Station = HPS
-    HPS_PICKUP(0, 76,
+    HPS_PICKUP(0, 77,
             72),
 
     ARM_STOWED(1, 2, 1),
 
-    CUBE_PICKUP(3, 18, 18),
+    CUBE_PICKUP(4, 18, 18),
 
     CONE_PICKUP(8.9, 33, 33);
 

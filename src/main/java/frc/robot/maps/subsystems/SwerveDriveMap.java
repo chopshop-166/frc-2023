@@ -86,6 +86,7 @@ public record SwerveDriveMap(SwerveModule frontLeft, SwerveModule frontRight, Sw
                 // actual state (Position/velocity/angle)
                 subTable.put("DrivePositionMeters", this.drivePositionMeters);
                 subTable.put("DriveVelocityMetersPerSec", this.velocityMetersPerSec);
+                subTable.put("ABSDriveVelocityMetersPerSec", Math.abs(this.velocityMetersPerSec));
                 subTable.put("DriveAngleDegrees", this.podAngle);
                 // Drive Motor params
                 subTable.put("DriveCurrentAmps", this.driveCurrentAmps);

@@ -22,7 +22,7 @@ public class ArmExtend extends SmartSubsystemBase {
     public ArmExtendMap extendMap;
     public final double SPEED = 0.4;
     private final double RETRACT_SPEED = -0.1;
-    private final double INTAKE_DEPTH_LIMIT = 0;
+    private final double INTAKE_DEPTH_LIMIT = 1;
     private double armAngle;
 
     NetworkTableInstance inst = NetworkTableInstance.getDefault();
@@ -129,6 +129,10 @@ public class ArmExtend extends SmartSubsystemBase {
         if (speed > 0 && intakeBelowGround()) {
             return 0;
         }
+        if (armAngle < 18 && speed > 0) {
+            return 0;
+        }
+
         if ((data.distanceInches > extendMap.hardMaxDistance && speed > 0)
                 || (data.distanceInches < extendMap.hardMinDistance && speed < 0)) {
             return data.setPoint = 0;

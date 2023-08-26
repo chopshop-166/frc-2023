@@ -28,7 +28,7 @@ public class ArmRotate extends SmartSubsystemBase {
     final double LOWER_SPEED = 0.4;
     final double SLOW_DOWN = 0.2;
     final double PIVOT_HEIGHT = 46.654;
-    private final double INTAKE_DEPTH_LIMIT = 0;
+    private final double INTAKE_DEPTH_LIMIT = 1;
     private final double DESCEND_SPEED = -0.3;
     final double armStartLength = 42.3;
     final double NO_FALL = 0.024;
@@ -169,6 +169,10 @@ public class ArmRotate extends SmartSubsystemBase {
         }
 
         if (!intakeSub.get() && speed < 0 && getArmAngle() < map.bumperAngle) {
+            return 0;
+
+        }
+        if (getArmAngle() < map.bumperAngle && speed < 0 && armLength > 1.5) {
             return 0;
         }
         if ((getArmAngle() > this.map.hardMaxAngle && speed > 0)

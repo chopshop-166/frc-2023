@@ -73,9 +73,6 @@ public class Robot extends CommandRobot {
     @Autonomous(name = "Score then balance")
     public CommandBase scoreBalance = auto.scoreConeBalance();
 
-    @Autonomous(name = "(TEST) Score then rotate then balance")
-    public CommandBase scoreRotBalance = auto.scoreConeBalanceRotate();
-
     @Autonomous(name = "Just Score")
     public CommandBase scorewhile = auto.scoreConeWhile(runOnce(() -> {
     }));
@@ -100,14 +97,14 @@ public class Robot extends CommandRobot {
             armRotate.moveTo(ArmPresets.MEDIUM_SCORE),
             drive.driveToNearest(),
             armExtend.moveTo(ArmPresets.MEDIUM_SCORE),
-            armRotate.moveTo(ArmPresets.MEDIUM_SCORE_ACTUAL),
+            armRotate.moveTo(ArmPresets.MEDIUM_SCORE_DOWN),
             armExtend.moveTo(ArmPresets.ARM_STOWED));
 
     public CommandBase scoreMidNode = sequence(
             armRotate.moveTo(ArmPresets.MEDIUM_SCORE, new Constraints(150,
                     1000)),
             armExtend.moveTo(ArmPresets.MEDIUM_SCORE),
-            armRotate.moveTo(ArmPresets.MEDIUM_SCORE_ACTUAL, new Constraints(150,
+            armRotate.moveTo(ArmPresets.MEDIUM_SCORE_DOWN, new Constraints(150,
                     100)),
             armExtend.moveTo(ArmPresets.ARM_STOWED));
 
@@ -115,7 +112,7 @@ public class Robot extends CommandRobot {
             armRotate.moveTo(ArmPresets.HIGH_SCORE, new Constraints(150,
                     1000)),
             armExtend.moveTo(ArmPresets.HIGH_SCORE),
-            armRotate.moveTo(ArmPresets.HIGH_SCORE_ACTUAL, new Constraints(150,
+            armRotate.moveTo(ArmPresets.HIGH_SCORE_DOWN, new Constraints(150,
                     100)),
             armExtend.moveTo(ArmPresets.ARM_STOWED));
 
@@ -208,6 +205,11 @@ public class Robot extends CommandRobot {
         Logger.getInstance().recordOutput("Compressor/Current", compressor.getCurrent());
     }
 
+    public CommandBase intakeGamePiece() {
+        return rumbleOn().andThen(led.intakeSpinning(), intake.grab(), rumbleOff(),
+                led.grabbedPiece());
+    }
+
     @Override
     public void configureButtonBindings() {
 
@@ -230,8 +232,7 @@ public class Robot extends CommandRobot {
         // COPILOT CONTROLLER
         // Intake
         copilotController.a()
-                .onTrue(rumbleOn().andThen(led.intakeSpinning(), intake.grab(), rumbleOff(),
-                        led.grabbedPiece()));
+                .onTrue(intakeGamePiece());
         copilotController.b().onTrue(intake.toggle().andThen(rumbleAndIntakeSpinningOff()));
         copilotController.x().onTrue(rumbleAndIntakeSpinningOff()).whileTrue(intake.cubeRelease());
 
