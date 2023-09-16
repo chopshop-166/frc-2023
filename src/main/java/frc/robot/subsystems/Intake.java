@@ -75,7 +75,7 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
     }
 
     public CommandBase grab() {
-        return spinIn().andThen(new FunctionalWaitCommand(() -> 0.75), runOnce(() -> {
+        return spinIn().andThen(new FunctionalWaitCommand(() -> 0.75).finallyDo((interupt) -> {
             getData().motorSetPoint = 0.05;
         }));
     }
