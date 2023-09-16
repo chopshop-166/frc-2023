@@ -74,10 +74,12 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
                 }).runsUntil(currentPersistenceCheck);
     }
 
+    public void holdGamePiece(boolean interrupted) {
+        getData().motorSetPoint = 0.05;
+    }
+
     public CommandBase grab() {
-        return spinIn().andThen(new FunctionalWaitCommand(() -> 0.75).finallyDo((interupt) -> {
-            getData().motorSetPoint = 0.05;
-        }));
+        return spinIn().andThen(new FunctionalWaitCommand(() -> 0.75).finallyDo(this::holdGamePiece));
     }
 
     // Releases game piece Cube

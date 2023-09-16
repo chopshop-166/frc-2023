@@ -207,7 +207,7 @@ public class Robot extends CommandRobot {
 
     public CommandBase intakeGamePiece() {
         return rumbleOn().andThen(led.intakeSpinning(), intake.grab(), rumbleOff(),
-                led.grabbedPiece());
+                led.grabbedPiece()).finallyDo(intake::holdGamePiece);
     }
 
     @Override
