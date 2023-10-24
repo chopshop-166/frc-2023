@@ -93,6 +93,9 @@ public class Robot extends CommandRobot {
     // return auto.combinedAuto(conePos, cubePos, cubeScorePos);
     // });
 
+    @Autonomous(name = "TEST_DriveWheelRun")
+    public CommandBase driveWheelTest = auto.testDriveDriver();
+
     public CommandBase driveScoreMidNode = sequence(
             armRotate.moveTo(ArmPresets.MEDIUM_SCORE),
             drive.driveToNearest(),
