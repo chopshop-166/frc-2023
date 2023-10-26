@@ -93,9 +93,6 @@ public class Robot extends CommandRobot {
     // return auto.combinedAuto(conePos, cubePos, cubeScorePos);
     // });
 
-    @Autonomous(name = "TEST_DriveWheelRun")
-    public CommandBase driveWheelTest = auto.testDriveDriver();
-
     public CommandBase driveScoreMidNode = sequence(
             armRotate.moveTo(ArmPresets.MEDIUM_SCORE),
             drive.driveToNearest(),
@@ -228,8 +225,19 @@ public class Robot extends CommandRobot {
         driveController.x().whileTrue(drive.rotateToAngle(Rotation2d.fromDegrees(180), () -> 0, () -> 0));
         driveController.a().whileTrue(drive.rotateToAngle(Rotation2d.fromDegrees(0), () -> 0, () -> 0));
 
-        (new Trigger(() -> driveController.getRightTriggerAxis() > 0.5))
-                .onTrue(balanceArm.pushDown()).onFalse(balanceArm.pushUp());
+        driveController.povUp().onTrue(drive.moveForDirectional(0, 1, 5));
+        driveController.povLeft().onTrue(drive.moveForDirectional(1, 0, 5));
+        driveController.povRight().onTrue(drive.moveForDirectional(0, -1, 5));
+        driveController.povDown().onTrue(drive.moveForDirectional(-1, 0, 5));
+        /*
+         * public CommandBase testDriveDriver() {
+         * return sequence(
+         * moveForDirectional(0, 1, 5),
+         * moveForDirectional(1, 0, 5),
+         * moveForDirectional(0, -1, 5),
+         * moveForDirectional(-1, 0, 5));
+         * }
+         */
         // Arm
 
         // COPILOT CONTROLLER

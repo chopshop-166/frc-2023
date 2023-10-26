@@ -394,6 +394,12 @@ public class Drive extends SmartSubsystemBase {
 
     }
 
+    public CommandBase moveForDirectional(double xSpeed, double ySpeed, double seconds) {
+        return race(
+                driveRaw(() -> xSpeed, () -> ySpeed, () -> 0),
+                new FunctionalWaitCommand(() -> seconds)).andThen(safeStateCmd());
+    }
+
     public CommandBase resetGyroCommand() {
         return cmd().onInitialize(() -> {
             resetGyro();

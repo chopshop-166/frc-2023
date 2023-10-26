@@ -53,12 +53,6 @@ public class Auto {
                 new FunctionalWaitCommand(() -> seconds)).andThen(drive.safeStateCmd());
     }
 
-    private CommandBase moveForDirectional(double xSpeed, double ySpeed, double seconds) {
-        return race(
-                drive.driveRaw(() -> xSpeed, () -> ySpeed, () -> 0),
-                new FunctionalWaitCommand(() -> seconds)).andThen(drive.safeStateCmd());
-    }
-
     public CommandBase leaveCommunity() {
         return (scoreConeWhile(
                 drive.driveRelative(new Translation2d(4, 0), 180, 6)));
@@ -136,10 +130,10 @@ public class Auto {
 
     public CommandBase testDriveDriver() {
         return sequence(
-                moveForDirectional(0, 1, 5),
-                moveForDirectional(1, 0, 5),
-                moveForDirectional(0, -1, 5),
-                moveForDirectional(-1, 0, 5));
+                drive.moveForDirectional(0, 1, 5),
+                drive.moveForDirectional(1, 0, 5),
+                drive.moveForDirectional(0, -1, 5),
+                drive.moveForDirectional(-1, 0, 5));
     }
 
     public CommandBase stowArmCloseIntake() {
