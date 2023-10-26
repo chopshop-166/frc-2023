@@ -225,10 +225,10 @@ public class Robot extends CommandRobot {
         driveController.x().whileTrue(drive.rotateToAngle(Rotation2d.fromDegrees(180), () -> 0, () -> 0));
         driveController.a().whileTrue(drive.rotateToAngle(Rotation2d.fromDegrees(0), () -> 0, () -> 0));
 
-        driveController.povUp().onTrue(drive.moveForDirectional(0, 1, 5));
-        driveController.povLeft().onTrue(drive.moveForDirectional(1, 0, 5));
-        driveController.povRight().onTrue(drive.moveForDirectional(0, -1, 5));
-        driveController.povDown().onTrue(drive.moveForDirectional(-1, 0, 5));
+        driveController.povDown().onTrue(drive.moveForDirectional(0, 1, 5));
+        driveController.povRight().onTrue(drive.moveForDirectional(1, 0, 5));
+        driveController.povUp().onTrue(drive.moveForDirectional(0, -1, 5));
+        driveController.povLeft().onTrue(drive.moveForDirectional(-1, 0, 5));
         /*
          * public CommandBase testDriveDriver() {
          * return sequence(
