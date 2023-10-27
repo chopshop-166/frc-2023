@@ -154,11 +154,12 @@ public class Robot extends CommandRobot {
     public CommandBase pickUpGamePiece = sequence(
             new ConditionalCommand(
                     sequence(
-                            armRotate.moveTo(ArmPresets.CONE_PICKUP), armExtend.moveTo(ArmPresets.CONE_PICKUP)),
+                            armRotate.moveTo(ArmPresets.CONE_PICKUP), armExtend.moveTo(ArmPresets.CONE_PICKUP),
+                            intake.toggle()),
                     sequence(
                             armRotate.moveTo(ArmPresets.CUBE_PICKUP), armExtend.moveTo(
                                     ArmPresets.CUBE_PICKUP),
-                            intake.coneRelease()),
+                            intake.coneRelease(), intake.toggle()),
                     () -> {
                         return gamePieceSub.get() == "Cone";
                     }));
@@ -225,8 +226,19 @@ public class Robot extends CommandRobot {
         driveController.x().whileTrue(drive.rotateToAngle(Rotation2d.fromDegrees(180), () -> 0, () -> 0));
         driveController.a().whileTrue(drive.rotateToAngle(Rotation2d.fromDegrees(0), () -> 0, () -> 0));
 
-        (new Trigger(() -> driveController.getRightTriggerAxis() > 0.5))
-                .onTrue(balanceArm.pushDown()).onFalse(balanceArm.pushUp());
+        driveController.povDown().onTrue(drive.moveForDirectional(0, 1, 5));
+        driveController.povRight().onTrue(drive.moveForDirectional(1, 0, 5));
+        driveController.povUp().onTrue(drive.moveForDirectional(0, -1, 5));
+        driveController.povLeft().onTrue(drive.moveForDirectional(-1, 0, 5));
+        /*
+         * public CommandBase testDriveDriver() {
+         * return sequence(
+         * moveForDirectional(0, 1, 5),
+         * moveForDirectional(1, 0, 5),
+         * moveForDirectional(0, -1, 5),
+         * moveForDirectional(-1, 0, 5));
+         * }
+         */
         // Arm
 
         // COPILOT CONTROLLER

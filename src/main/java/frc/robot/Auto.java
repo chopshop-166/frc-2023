@@ -128,6 +128,14 @@ public class Auto {
                 armRotate.moveTo(ArmPresets.HIGH_SCORE));
     }
 
+    public CommandBase testDriveDriver() {
+        return sequence(
+                drive.moveForDirectional(0, 1, 5),
+                drive.moveForDirectional(1, 0, 5),
+                drive.moveForDirectional(0, -1, 5),
+                drive.moveForDirectional(-1, 0, 5));
+    }
+
     public CommandBase stowArmCloseIntake() {
         return sequence(
                 armExtend.moveTo(ArmPresets.ARM_STOWED),
