@@ -140,6 +140,15 @@ public enum AutoPath {
     OUTER_SIDE_CHARGE_STATION_15(0.2,
             new Pose2d()),
 
+    // Square Auto Pathing
+    SQUARE_AUTO_POS1(0.2, new Pose2d(1.0, 1.0, AutoConstants.ROTATION_0)),
+
+    SQUARE_AUTO_POS2(0.2, new Pose2d(5.0, 1.0, AutoConstants.ROTATION_0)),
+
+    SQUARE_AUTO_POS3(0.2, new Pose2d(5.0, 5.0, AutoConstants.ROTATION_0)),
+
+    SQUARE_AUTO_POS4(0.2, new Pose2d(1.0, 5.0, AutoConstants.ROTATION_0)),
+
     //// Start of some stuff that Joe wrote
     PRE_TEST(0.05,
             new Pose2d(14.165401626124469, 2.879876924969839, Rotation2d.fromRadians(-0.22656457143950046)));

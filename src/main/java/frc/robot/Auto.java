@@ -144,15 +144,6 @@ public class Auto {
                 armRotate.moveTo(ArmPresets.ARM_STOWED));
     }
 
-    public CommandBase pickUpCone() {
-        return sequence(
-                armRotate.moveTo(ArmPresets.CONE_PICKUP),
-                armExtend.moveTo(ArmPresets.CONE_PICKUP),
-                intake.grab().raceWith(drive.driveRelative(new Translation2d(0, -0.5), 270, 2)),
-                armExtend.retract(0.4),
-                armRotate.moveTo(ArmPresets.ARM_STOWED));
-    }
-
     public CommandBase scoreCube() {
         return sequence(
                 armRotate.moveTo(ArmPresets.HIGH_SCORE),
@@ -216,7 +207,8 @@ public class Auto {
                 conePos.communityPosition.inCommunity.getPath(drive),
                 scoreCubeCmd,
                 scoreCube()
-        // position to be in front of drive station in community? I'll add that
+        // position to be in front of drive station in community? I'll add that <- ha
+        // you thought, no becuase this auto is useless
         // , drive.driveUntilTipped()
         // , drive.balance()
 
@@ -225,6 +217,35 @@ public class Auto {
 
     private CommandBase timingWait() {
         return new FunctionalWaitCommand(() -> 0.25);
+    }
+
+    // Square auto using the drive relative command
+    public CommandBase squareAutoDriveRelative() {
+        return sequence(
+                drive.setGyro180(),
+                drive.driveRelative(new Translation2d(0, 0), 0, 3),
+                drive.driveRelative(new Translation2d(0, 0), 90, 3),
+                drive.driveRelative(new Translation2d(0, 0), 180, 3),
+                drive.driveRelative(new Translation2d(0, 0), 270, 3),
+                drive.driveRelative(new Translation2d(0, 0), 0, 3));
+    }
+
+    // Square auto using pathing
+    public CommandBase squareAutoPathing() {
+        return sequence(
+                AutoPath.SQUARE_AUTO_POS1.getPath(drive),
+                AutoPath.SQUARE_AUTO_POS2.getPath(drive),
+                AutoPath.SQUARE_AUTO_POS3.getPath(drive),
+                AutoPath.SQUARE_AUTO_POS4.getPath(drive),
+                AutoPath.SQUARE_AUTO_POS1.getPath(drive)
+        );
+    }
+
+    // Square auto using driveRaw Command maybe?
+    public CommandBase squareAutoMoveTurn() {
+        return sequence(
+
+        );
     }
 
 }
