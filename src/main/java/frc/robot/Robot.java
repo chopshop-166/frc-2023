@@ -251,7 +251,10 @@ public class Robot extends CommandRobot {
 
     @Override
     public void populateDashboard() {
-        SmartDashboard.putData("Move foward (test)", drive.moveForDirectional(0, 1, 5));
+        SmartDashboard.putData("Move backward (Test)", drive.moveForDirectional(0, 1, 5));
+        SmartDashboard.putData("Move left (Test)", drive.moveForDirectional(-1, 0, 5));
+        SmartDashboard.putData("Move right (Test)", drive.moveForDirectional(1, 0, 5));
+        SmartDashboard.putData("Move forward (Test)", drive.moveForDirectional(0, -1, 5));
     }
 
     @Override
