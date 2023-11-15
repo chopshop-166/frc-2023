@@ -140,14 +140,17 @@ public enum AutoPath {
     OUTER_SIDE_CHARGE_STATION_15(0.2,
             new Pose2d()),
 
-    // Square Auto Pathing
-    SQUARE_AUTO_POS1(0.2, new Pose2d(1.0, 1.0, AutoConstants.ROTATION_0)),
-
-    SQUARE_AUTO_POS2(0.2, new Pose2d(5.0, 1.0, AutoConstants.ROTATION_0)),
-
-    SQUARE_AUTO_POS3(0.2, new Pose2d(5.0, 5.0, AutoConstants.ROTATION_0)),
-
-    SQUARE_AUTO_POS4(0.2, new Pose2d(1.0, 5.0, AutoConstants.ROTATION_0)),
+    //// Square Auto Pathing
+    // Starting position, moving nowhere (is this necessary?)
+    SQUARE_AUTO_POS1(0.2, new Pose2d(0, 0, AutoConstants.ROTATION_0)),
+    // Go up 2 meters (y axis)
+    SQUARE_AUTO_POS2(0.2, new Pose2d(0, 2.0, AutoConstants.ROTATION_0)),
+    // Go left 2 meters (x axis)
+    SQUARE_AUTO_POS3(0.2, new Pose2d(-2.0, 0, AutoConstants.ROTATION_0)),
+    // Go down 2 meters (y axis)
+    SQUARE_AUTO_POS4(0.2, new Pose2d(0, -2.0, AutoConstants.ROTATION_0)),
+    // Go right 2 meters (x axis)
+    SQUARE_AUTO_POS5(0.2, new Pose2d(2.0, 0, AutoConstants.ROTATION_0)),
 
     //// Start of some stuff that Joe wrote
     PRE_TEST(0.05,

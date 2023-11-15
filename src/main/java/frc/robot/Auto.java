@@ -208,7 +208,7 @@ public class Auto {
                 scoreCubeCmd,
                 scoreCube()
         // position to be in front of drive station in community? I'll add that <- ha
-        // you thought, no becuase this auto is useless
+        // you thought, no because this auto is useless
         // , drive.driveUntilTipped()
         // , drive.balance()
 
@@ -223,10 +223,10 @@ public class Auto {
     public CommandBase squareAutoDriveRelative() {
         return sequence(
                 drive.setGyro180(),
-                drive.driveRelative(new Translation2d(0, 0), 0, 3),
-                drive.driveRelative(new Translation2d(0, 0), 90, 3),
-                drive.driveRelative(new Translation2d(0, 0), 180, 3),
-                drive.driveRelative(new Translation2d(0, 0), 270, 3),
+                drive.driveRelative(new Translation2d(0.0, 0.0), 0, 3),
+                drive.driveRelative(new Translation2d(0.0, 2.0), 0, 3),
+                drive.driveRelative(new Translation2d(-2.0, 2.0), 0, 3),
+                drive.driveRelative(new Translation2d(-2.0, 0), 0, 3),
                 drive.driveRelative(new Translation2d(0, 0), 0, 3));
     }
 
@@ -237,8 +237,7 @@ public class Auto {
                 AutoPath.SQUARE_AUTO_POS2.getPath(drive),
                 AutoPath.SQUARE_AUTO_POS3.getPath(drive),
                 AutoPath.SQUARE_AUTO_POS4.getPath(drive),
-                AutoPath.SQUARE_AUTO_POS1.getPath(drive)
-        );
+                AutoPath.SQUARE_AUTO_POS1.getPath(drive));
     }
 
     // Square auto using driveRaw Command maybe?
