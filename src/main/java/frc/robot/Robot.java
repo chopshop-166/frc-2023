@@ -18,6 +18,8 @@ import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -251,10 +253,11 @@ public class Robot extends CommandRobot {
 
     @Override
     public void populateDashboard() {
-        SmartDashboard.putData("Move backward (Test)", drive.moveForDirectional(0, 1, 5));
-        SmartDashboard.putData("Move left (Test)", drive.moveForDirectional(-1, 0, 5));
-        SmartDashboard.putData("Move right (Test)", drive.moveForDirectional(1, 0, 5));
-        SmartDashboard.putData("Move forward (Test)", drive.moveForDirectional(0, -1, 5));
+        Shuffleboard.getTab("Pit Test");
+        Shuffleboard.getTab("Pit Test").add("Drive Backward", drive.moveForDirectional(0, 1, 5));
+        Shuffleboard.getTab("Pit Test").add("Drive Left", drive.moveForDirectional(-1, 0, 5));
+        Shuffleboard.getTab("Pit Test").add("Drive Right", drive.moveForDirectional(1, 0, 5));
+        Shuffleboard.getTab("Pit Test").add("Drive Forward", drive.moveForDirectional(0, -1, 5));
     }
 
     @Override
