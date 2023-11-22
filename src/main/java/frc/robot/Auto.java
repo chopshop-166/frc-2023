@@ -9,6 +9,7 @@ import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 
 import com.chopshop166.chopshoplib.commands.FunctionalWaitCommand;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
@@ -16,6 +17,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import frc.robot.auto.AutoConstants;
 import frc.robot.auto.AutoPath;
 import frc.robot.auto.ConeStation;
 import frc.robot.auto.CubePickupLocation;
@@ -220,6 +222,7 @@ public class Auto {
     }
 
     // Square auto using the drive relative command
+    // Note: Tranlsation 2d x,y represents distance in the x plane, y plane
     public CommandBase squareAutoDriveRelative() {
         return sequence(
                 drive.setGyro180(),
@@ -227,17 +230,53 @@ public class Auto {
                 drive.driveRelative(new Translation2d(0.0, 2.0), 0, 3),
                 drive.driveRelative(new Translation2d(-2.0, 2.0), 0, 3),
                 drive.driveRelative(new Translation2d(-2.0, 0), 0, 3),
-                drive.driveRelative(new Translation2d(0, 0), 0, 3));
+                drive.driveRelative(new Translation2d(0, 0), 0, 3)).withName("Square: ");
     }
 
     // Square auto using pathing
     public CommandBase squareAutoPathing() {
         return sequence(
                 AutoPath.SQUARE_AUTO_POS1.getPath(drive),
+                // waitSeconds(1.5),
                 AutoPath.SQUARE_AUTO_POS2.getPath(drive),
+                // waitSeconds(1.5),
                 AutoPath.SQUARE_AUTO_POS3.getPath(drive),
+                // waitSeconds(1.5),
                 AutoPath.SQUARE_AUTO_POS4.getPath(drive),
-                AutoPath.SQUARE_AUTO_POS1.getPath(drive));
+                // waitSeconds(1.5),
+                AutoPath.SQUARE_AUTO_POS1.getPath(drive)).withName("Square: (Pathing)");
+    }
+
+    // Line Auto
+    public CommandBase knockoutAutoPathing() {
+        return sequence(
+                // Vision.setPose(Pose2d(0.0, 0.0, AutoConstants.ROTATION_0)),
+
+                drive.setPose(new Pose2d(0.0, 0.0,
+                        AutoConstants.ROTATION_0)),
+                AutoPath.KNOCKOUT_AUTO_POS1.getPath(drive),
+                AutoPath.KNOCKOUT_AUTO_POS2.getPath(drive),
+                AutoPath.KNOCKOUT_AUTO_POS3.getPath(drive),
+                AutoPath.KNOCKOUT_AUTO_POS4.getPath(drive),
+                AutoPath.KNOCKOUT_AUTO_POS1.getPath(drive),
+                AutoPath.KNOCKOUT_AUTO_POS5.getPath(drive),
+                AutoPath.KNOCKOUT_AUTO_POS6.getPath(drive),
+                AutoPath.KNOCKOUT_AUTO_POS1.getPath(drive)
+
+        // AutoPath.LINE_AUTO_POS1.getPath(drive)
+        );
+    }
+
+    // Triangle Auto
+    public CommandBase triangleAutoPathing() {
+        return sequence(
+                AutoPath.TRIANGLE_AUTO_POS1.getPath(drive),
+                // waitSeconds(1.5),
+                AutoPath.TRIANGLE_AUTO_POS2.getPath(drive),
+                // waitSeconds(1.5),
+                AutoPath.TRIANGLE_AUTO_POS3.getPath(drive),
+                // waitSeconds(1.5),
+                AutoPath.TRIANGLE_AUTO_POS1.getPath(drive));
     }
 
     // Square auto using driveRaw Command maybe?
@@ -247,4 +286,7 @@ public class Auto {
         );
     }
 
+    public void resetCoords() {
+        // no clue how to do this
+    }
 }

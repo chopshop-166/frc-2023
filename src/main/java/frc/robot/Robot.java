@@ -10,6 +10,7 @@ import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -26,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.auto.AutoConstants;
 import frc.robot.auto.ConeStation;
 import frc.robot.auto.CubePickupLocation;
 import frc.robot.maps.RobotMap;
@@ -221,12 +223,20 @@ public class Robot extends CommandRobot {
         driveController.rightStick().whileTrue(drive.robotCentricDrive(driveController::getLeftX,
                 driveController::getLeftY, driveController::getRightX));
 
-        driveController.y().whileTrue(drive.balance());
-        driveController.x().whileTrue(drive.rotateToAngle(Rotation2d.fromDegrees(180), () -> 0, () -> 0));
-        driveController.a().whileTrue(drive.rotateToAngle(Rotation2d.fromDegrees(0), () -> 0, () -> 0));
+        // driveController.y().whileTrue(drive.balance());
+        // driveController.x().whileTrue(drive.rotateToAngle(Rotation2d.fromDegrees(180),
+        // () -> 0, () -> 0));
+        // driveController.a().whileTrue(drive.rotateToAngle(Rotation2d.fromDegrees(0),
+        // () -> 0, () -> 0));
 
         (new Trigger(() -> driveController.getRightTriggerAxis() > 0.5))
                 .onTrue(balanceArm.pushDown()).onFalse(balanceArm.pushUp());
+
+        driveController.a().whileTrue(auto.triangleAutoPathing());
+        driveController.x().whileTrue(auto.squareAutoPathing());
+        driveController.y().whileTrue(auto.knockoutAutoPathing());
+        driveController.b().onTrue(drive.setPose(new Pose2d(0.0, 0.0, AutoConstants.ROTATION_0)));
+
         // Arm
 
         // COPILOT CONTROLLER
