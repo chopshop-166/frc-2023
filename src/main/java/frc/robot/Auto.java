@@ -252,8 +252,9 @@ public class Auto {
         return sequence(
                 // Vision.setPose(Pose2d(0.0, 0.0, AutoConstants.ROTATION_0)),
 
-                drive.setPose(new Pose2d(0.0, 0.0,
-                        AutoConstants.ROTATION_0)),
+                // drive.setPose(new Pose2d(0.0, 0.0,
+                // AutoConstants.ROTATION_0)),
+
                 AutoPath.KNOCKOUT_AUTO_POS1.getPath(drive),
                 AutoPath.KNOCKOUT_AUTO_POS2.getPath(drive),
                 AutoPath.KNOCKOUT_AUTO_POS3.getPath(drive),
@@ -277,6 +278,7 @@ public class Auto {
                 AutoPath.TRIANGLE_AUTO_POS3.getPath(drive),
                 // waitSeconds(1.5),
                 AutoPath.TRIANGLE_AUTO_POS1.getPath(drive));
+>>>>>>> Stashed changes
     }
 
     // Square auto using driveRaw Command maybe?

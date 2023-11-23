@@ -12,6 +12,7 @@ import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
@@ -231,12 +232,17 @@ public class Robot extends CommandRobot {
 
         (new Trigger(() -> driveController.getRightTriggerAxis() > 0.5))
                 .onTrue(balanceArm.pushDown()).onFalse(balanceArm.pushUp());
+<<<<<<< Updated upstream
+=======
 
         driveController.a().whileTrue(auto.triangleAutoPathing());
         driveController.x().whileTrue(auto.squareAutoPathing());
         driveController.y().whileTrue(auto.knockoutAutoPathing());
-        driveController.b().onTrue(drive.setPose(new Pose2d(0.0, 0.0, AutoConstants.ROTATION_0)));
+        // driveController.b().onTrue(drive.setPose(new Pose2d(0.0, 0.0,
+        // AutoConstants.ROTATION_0)));
+        // driveController.b().onTrue(Vision.setPose(new Pose2d(0.0, 0.0, 0.0)));
 
+>>>>>>> Stashed changes
         // Arm
 
         // COPILOT CONTROLLER
