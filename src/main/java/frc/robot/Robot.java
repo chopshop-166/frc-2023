@@ -149,7 +149,7 @@ public class Robot extends CommandRobot {
 
     public CommandBase stowArm = sequence(
             led.setOrange(),
-            intake.coneGrab(),
+            intake.closeIntake(),
             armExtend.retract(0.4),
             armRotate.moveTo(ArmPresets.ARM_STOWED),
             led.colorAlliance());
@@ -161,7 +161,7 @@ public class Robot extends CommandRobot {
                     sequence(
                             armRotate.moveTo(ArmPresets.CUBE_PICKUP), armExtend.moveTo(
                                     ArmPresets.CUBE_PICKUP),
-                            intake.coneRelease()),
+                            intake.openIntake()),
                     () -> {
                         return gamePieceSub.get() == "Cone";
                     }));
@@ -232,8 +232,6 @@ public class Robot extends CommandRobot {
 
         (new Trigger(() -> driveController.getRightTriggerAxis() > 0.5))
                 .onTrue(balanceArm.pushDown()).onFalse(balanceArm.pushUp());
-<<<<<<< Updated upstream
-=======
 
         driveController.a().whileTrue(auto.triangleAutoPathing());
         driveController.x().whileTrue(auto.squareAutoPathing());
@@ -242,7 +240,6 @@ public class Robot extends CommandRobot {
         // AutoConstants.ROTATION_0)));
         // driveController.b().onTrue(Vision.setPose(new Pose2d(0.0, 0.0, 0.0)));
 
->>>>>>> Stashed changes
         // Arm
 
         // COPILOT CONTROLLER

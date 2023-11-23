@@ -133,17 +133,19 @@ public class Auto {
     public CommandBase stowArmCloseIntake() {
         return sequence(
                 armExtend.moveTo(ArmPresets.ARM_STOWED),
-                intake.coneGrab(),
+                intake.closeIntake(),
                 armRotate.moveTo(ArmPresets.ARM_STOWED));
     }
 
     public CommandBase pickUpCube() {
         return sequence(
                 armRotate.moveTo(ArmPresets.CUBE_PICKUP),
-                armExtend.moveTo(ArmPresets.CUBE_PICKUP),
-                intake.grab(),
-                armExtend.retract(0.4),
-                armRotate.moveTo(ArmPresets.ARM_STOWED));
+                // armExtend.moveTo(ArmPresets.CUBE_PICKUP),
+                intake.openIntake(),
+                intake.grab()
+
+        // armExtend.retract(0.4),
+        );
     }
 
     public CommandBase scoreCube() {
@@ -151,7 +153,16 @@ public class Auto {
                 armRotate.moveTo(ArmPresets.HIGH_SCORE),
                 timingWait(),
                 intake.cubeRelease(),
-                timingWait());
+                timingWait(),
+                armRotate.moveTo(ArmPresets.ARM_STOWED));
+    }
+
+    public CommandBase scoreCubeLow() {
+        return sequence(
+                armRotate.moveTo(ArmPresets.CUBE_PICKUP),
+                parallel(intake.cubeRelease(),
+                        intake.closeIntake()),
+                armRotate.moveTo(ArmPresets.ARM_STOWED));
     }
 
     public CommandBase scoreHighNode() {
@@ -257,11 +268,13 @@ public class Auto {
 
                 AutoPath.KNOCKOUT_AUTO_POS1.getPath(drive),
                 AutoPath.KNOCKOUT_AUTO_POS2.getPath(drive),
-                AutoPath.KNOCKOUT_AUTO_POS3.getPath(drive),
+                parallel(AutoPath.KNOCKOUT_AUTO_POS3.getPath(drive),
+                        pickUpCube()),
                 AutoPath.KNOCKOUT_AUTO_POS4.getPath(drive),
                 AutoPath.KNOCKOUT_AUTO_POS1.getPath(drive),
                 AutoPath.KNOCKOUT_AUTO_POS5.getPath(drive),
                 AutoPath.KNOCKOUT_AUTO_POS6.getPath(drive),
+                scoreCubeLow(),
                 AutoPath.KNOCKOUT_AUTO_POS1.getPath(drive)
 
         // AutoPath.LINE_AUTO_POS1.getPath(drive)
@@ -278,7 +291,7 @@ public class Auto {
                 AutoPath.TRIANGLE_AUTO_POS3.getPath(drive),
                 // waitSeconds(1.5),
                 AutoPath.TRIANGLE_AUTO_POS1.getPath(drive));
->>>>>>> Stashed changes
+
     }
 
     // Square auto using driveRaw Command maybe?
