@@ -151,33 +151,23 @@ public enum AutoPath {
     SQUARE_AUTO_POS4(0.2, new Pose2d(1.0, 0.0, AutoConstants.ROTATION_0)),
     // Go right 2 meters (x axis)
 
-    SQUARE_AUTO_POS5(0.2, new Pose2d(2.0, 0, AutoConstants.ROTATION_0)),
-
     KNOCKOUT_AUTO_POS1(0.2, new Pose2d(0.0, 0.0, AutoConstants.ROTATION_0)),
 
     KNOCKOUT_AUTO_POS2(0.2, new Pose2d(4.3, 0.0, AutoConstants.ROTATION_270)),
 
-    KNOCKOUT_AUTO_POS3(0.2, new Pose2d(4.3, -2.2, AutoConstants.ROTATION_270)),
+    KNOCKOUT_AUTO_POS3(0.2, new Pose2d(4.3, -2.7, AutoConstants.ROTATION_270)),
 
-    KNOCKOUT_AUTO_POS4(0.2, new Pose2d(4.3, -1.6, AutoConstants.ROTATION_270)),
+    KNOCKOUT_AUTO_POS4(0.2, new Pose2d(4.3, -2.0, AutoConstants.ROTATION_270)),
 
-    KNOCKOUT_AUTO_POS5(0.2, new Pose2d(2.6, 0.0, AutoConstants.ROTATION_0)),
+    KNOCKOUT_AUTO_POS5(0.2, new Pose2d(3.6, 0.0, AutoConstants.ROTATION_0)),
 
-    KNOCKOUT_AUTO_POS6(0.2, new Pose2d(2.6, -2.2, AutoConstants.ROTATION_270)),
+    KNOCKOUT_AUTO_POS6(0.2, new Pose2d(3.6, -2.7, AutoConstants.ROTATION_270)),
 
     TRIANGLE_AUTO_POS1(0.2, new Pose2d(0.0, 0.0, AutoConstants.ROTATION_0)),
 
     TRIANGLE_AUTO_POS2(0.2, new Pose2d(0.0, 1.5, AutoConstants.ROTATION_0)),
 
     TRIANGLE_AUTO_POS3(0.2, new Pose2d(1.5, 0.75, AutoConstants.ROTATION_0)),
-
-    RECTANGLE_AUTO_POS1(0.2, new Pose2d(0.0, 0.0, AutoConstants.ROTATION_0)),
-
-    RECTANGLE_AUTO_POS2(0.2, new Pose2d(0.0, 1.0, AutoConstants.ROTATION_0)),
-
-    RECTANGLE_AUTO_POS3(0.2, new Pose2d(2.0, 1.0, AutoConstants.ROTATION_180)),
-
-    RECTANGLE_AUTO_POS4(0.2, new Pose2d(2.0, 0.0, AutoConstants.ROTATION_180)),
 
     //// Start of some stuff that Joe wrote
     PRE_TEST(0.05,

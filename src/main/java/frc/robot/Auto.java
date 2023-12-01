@@ -268,15 +268,12 @@ public class Auto {
 
                 AutoPath.KNOCKOUT_AUTO_POS1.getPath(drive),
                 AutoPath.KNOCKOUT_AUTO_POS2.getPath(drive),
-                parallel(AutoPath.KNOCKOUT_AUTO_POS3.getPath(drive),
-                        pickUpCube()),
+                AutoPath.KNOCKOUT_AUTO_POS3.getPath(drive),
                 AutoPath.KNOCKOUT_AUTO_POS4.getPath(drive),
                 AutoPath.KNOCKOUT_AUTO_POS1.getPath(drive),
                 AutoPath.KNOCKOUT_AUTO_POS5.getPath(drive),
                 AutoPath.KNOCKOUT_AUTO_POS6.getPath(drive),
-                scoreCubeLow(),
-                parallel(stowArmCloseIntake(),
-                        AutoPath.KNOCKOUT_AUTO_POS1.getPath(drive))
+                AutoPath.KNOCKOUT_AUTO_POS1.getPath(drive)
 
         // AutoPath.LINE_AUTO_POS1.getPath(drive)
         );
@@ -292,16 +289,6 @@ public class Auto {
                 AutoPath.TRIANGLE_AUTO_POS3.getPath(drive),
                 // waitSeconds(1.5),
                 AutoPath.TRIANGLE_AUTO_POS1.getPath(drive));
-
-    }
-
-    // Testing with a rectangle (Liam)
-    public CommandBase rectangleAutoPathing() {
-        return sequence(
-                AutoPath.RECTANGLE_AUTO_POS1.getPath(drive),
-                AutoPath.RECTANGLE_AUTO_POS2.getPath(drive),
-                AutoPath.RECTANGLE_AUTO_POS3.getPath(drive),
-                AutoPath.RECTANGLE_AUTO_POS4.getPath(drive));
     }
 
     // Square auto using driveRaw Command maybe?
