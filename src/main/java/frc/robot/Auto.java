@@ -275,7 +275,8 @@ public class Auto {
                 AutoPath.KNOCKOUT_AUTO_POS5.getPath(drive),
                 AutoPath.KNOCKOUT_AUTO_POS6.getPath(drive),
                 scoreCubeLow(),
-                AutoPath.KNOCKOUT_AUTO_POS1.getPath(drive)
+                parallel(stowArmCloseIntake(),
+                        AutoPath.KNOCKOUT_AUTO_POS1.getPath(drive))
 
         // AutoPath.LINE_AUTO_POS1.getPath(drive)
         );
