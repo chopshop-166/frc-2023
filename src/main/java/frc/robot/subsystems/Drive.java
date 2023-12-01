@@ -13,7 +13,6 @@ import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.commands.FunctionalWaitCommand;
 import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -312,6 +311,7 @@ public class Drive extends SmartSubsystemBase {
                                         .getTranslation().getDistance(pose.getTranslation())) {
                             closestPose = position.getPose();
                         }
+
                     }
 
                     return driveTo(closestPose, 0.05);
@@ -393,6 +393,12 @@ public class Drive extends SmartSubsystemBase {
 
         }).runsUntil(balancedCheck).onEnd(() -> Logger.getInstance().recordOutput("AutoBalanceState", "ended"));
 
+    }
+
+    public CommandBase moveForDirectional(double xSpeed, double ySpeed, double seconds) {
+        return race(
+                driveRaw(() -> xSpeed, () -> ySpeed, () -> 0),
+                new FunctionalWaitCommand(() -> seconds)).andThen(safeStateCmd());
     }
 
     public CommandBase resetGyroCommand() {

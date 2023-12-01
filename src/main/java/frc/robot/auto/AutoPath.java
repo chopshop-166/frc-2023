@@ -171,6 +171,14 @@ public enum AutoPath {
 
     TRIANGLE_AUTO_POS3(0.2, new Pose2d(1.5, 0.75, AutoConstants.ROTATION_0)),
 
+    RECTANGLE_AUTO_POS1(0.2, new Pose2d(0.0, 0.0, AutoConstants.ROTATION_0)),
+
+    RECTANGLE_AUTO_POS2(0.2, new Pose2d(0.0, 1.0, AutoConstants.ROTATION_0)),
+
+    RECTANGLE_AUTO_POS3(0.2, new Pose2d(2.0, 1.0, AutoConstants.ROTATION_180)),
+
+    RECTANGLE_AUTO_POS4(0.2, new Pose2d(2.0, 0.0, AutoConstants.ROTATION_180)),
+
     //// Start of some stuff that Joe wrote
     PRE_TEST(0.05,
             new Pose2d(14.165401626124469, 2.879876924969839, Rotation2d.fromRadians(-0.22656457143950046)));

@@ -295,6 +295,15 @@ public class Auto {
 
     }
 
+    // Testing with a rectangle (Liam)
+    public CommandBase rectangleAutoPathing() {
+        return sequence(
+                AutoPath.RECTANGLE_AUTO_POS1.getPath(drive),
+                AutoPath.RECTANGLE_AUTO_POS2.getPath(drive),
+                AutoPath.RECTANGLE_AUTO_POS3.getPath(drive),
+                AutoPath.RECTANGLE_AUTO_POS4.getPath(drive));
+    }
+
     // Square auto using driveRaw Command maybe?
     public CommandBase squareAutoMoveTurn() {
         return sequence(
