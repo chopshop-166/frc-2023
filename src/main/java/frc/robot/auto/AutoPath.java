@@ -155,13 +155,13 @@ public enum AutoPath {
 
     KNOCKOUT_AUTO_POS2(0.2, new Pose2d(4.3, 0.0, AutoConstants.ROTATION_270)),
 
-    KNOCKOUT_AUTO_POS3(0.2, new Pose2d(4.3, -2.2, AutoConstants.ROTATION_270)),
+    KNOCKOUT_AUTO_POS3(0.2, new Pose2d(4.3, -2.7, AutoConstants.ROTATION_270)),
 
-    KNOCKOUT_AUTO_POS4(0.2, new Pose2d(4.3, -1.6, AutoConstants.ROTATION_270)),
+    KNOCKOUT_AUTO_POS4(0.2, new Pose2d(4.3, -2.0, AutoConstants.ROTATION_270)),
 
-    KNOCKOUT_AUTO_POS5(0.2, new Pose2d(2.6, 0.0, AutoConstants.ROTATION_0)),
+    KNOCKOUT_AUTO_POS5(0.2, new Pose2d(3.6, 0.0, AutoConstants.ROTATION_0)),
 
-    KNOCKOUT_AUTO_POS6(0.2, new Pose2d(2.6, -2.2, AutoConstants.ROTATION_270)),
+    KNOCKOUT_AUTO_POS6(0.2, new Pose2d(3.6, -2.7, AutoConstants.ROTATION_270)),
 
     TRIANGLE_AUTO_POS1(0.2, new Pose2d(0.0, 0.0, AutoConstants.ROTATION_0)),
 
