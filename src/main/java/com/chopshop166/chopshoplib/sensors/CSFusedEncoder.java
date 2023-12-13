@@ -1,8 +1,9 @@
 package com.chopshop166.chopshoplib.sensors;
 
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 
-public class CSFusedEncoder implements IEncoder {
+public class CSFusedEncoder implements IEncoder, Sendable {
 
     private final double ENCODER_THRESHOLD_DEGREES = 2;
     IEncoder relativeEncoder;

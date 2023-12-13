@@ -22,12 +22,12 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.auto.ConeStation;
 import frc.robot.auto.CubePickupLocation;
+import frc.robot.maps.FrostBiteMap;
 import frc.robot.maps.RobotMap;
 import frc.robot.subsystems.ArmExtend;
 import frc.robot.subsystems.ArmRotate;
@@ -43,7 +43,7 @@ public class Robot extends CommandRobot {
     SendableChooser<CubePickupLocation> cubePosChooser = new SendableChooser<>();
     SendableChooser<Integer> cubeScorePosChooser = new SendableChooser<>();
 
-    private RobotMap map = getMapForName("FrostBite", RobotMap.class, "frc.robot.maps");
+    private RobotMap map = new FrostBiteMap();
     private ButtonXboxController driveController = new ButtonXboxController(0);
     private ButtonXboxController copilotController = new ButtonXboxController(1);
 
@@ -67,40 +67,36 @@ public class Robot extends CommandRobot {
     private Compressor compressor = new Compressor(PneumaticsModuleType.REVPH);
 
     @Autonomous(name = "No Auto")
-    public CommandBase noAuto = runOnce(() -> {
-    });
-
+    public Command noAuto = Commands.none();
     @Autonomous(name = "Score then balance")
-    public CommandBase scoreBalance = auto.scoreConeBalance();
-
+    public Command scoreBalance = auto.scoreConeBalance();
     @Autonomous(name = "Just Score")
-    public CommandBase scorewhile = auto.scoreConeWhile(runOnce(() -> {
-    }));
+    public Command scorewhile = auto.scoreConeWhile(Commands.none());
     @Autonomous(name = "Score and pick up")
-    public CommandBase scoreAndPickUp = auto.leaveCommunityAndPickUP();
+    public Command scoreAndPickUp = auto.leaveCommunityAndPickUP();
 
     // @Autonomous
-    // public CommandBase scoreLeaveBalance = auto.scoreConeLeaveAndBalance();
+    // public Command scoreLeaveBalance = auto.scoreConeLeaveAndBalance();
 
     @Autonomous(defaultAuto = true, name = "(MAIN) Score leave")
-    public CommandBase scoreThenLeave = auto.leaveCommunity();
+    public Command scoreThenLeave = auto.leaveCommunity();
 
     // @Autonomous(name = "Piecemeal Auto")
-    // public CommandBase buildCommand = new ProxyCommand(() -> {
+    // public Command buildCommand = new ProxyCommand(() -> {
     // ConeStation conePos = conePosChooser.getSelected();
     // CubePickupLocation cubePos = cubePosChooser.getSelected();
     // int cubeScorePos = cubeScorePosChooser.getSelected();
     // return auto.combinedAuto(conePos, cubePos, cubeScorePos);
     // });
 
-    public CommandBase driveScoreMidNode = sequence(
+    public Command driveScoreMidNode = sequence(
             armRotate.moveTo(ArmPresets.MEDIUM_SCORE),
             drive.driveToNearest(),
             armExtend.moveTo(ArmPresets.MEDIUM_SCORE),
             armRotate.moveTo(ArmPresets.MEDIUM_SCORE_DOWN),
             armExtend.moveTo(ArmPresets.ARM_STOWED));
 
-    public CommandBase scoreMidNode = sequence(
+    public Command scoreMidNode = sequence(
             armRotate.moveTo(ArmPresets.MEDIUM_SCORE, new Constraints(150,
                     1000)),
             armExtend.moveTo(ArmPresets.MEDIUM_SCORE),
@@ -108,7 +104,7 @@ public class Robot extends CommandRobot {
                     100)),
             armExtend.moveTo(ArmPresets.ARM_STOWED));
 
-    public CommandBase scoreHighNode = sequence(
+    public Command scoreHighNode = sequence(
             armRotate.moveTo(ArmPresets.HIGH_SCORE, new Constraints(150,
                     1000)),
             armExtend.moveTo(ArmPresets.HIGH_SCORE),
@@ -116,42 +112,42 @@ public class Robot extends CommandRobot {
                     100)),
             armExtend.moveTo(ArmPresets.ARM_STOWED));
 
-    public CommandBase grabCube() {
+    public Command grabCube() {
         return sequence(runOnce(() -> {
             gamePiece.set("Cube");
         }), led.setPurple());
     }
 
-    public CommandBase grabCone() {
+    public Command grabCone() {
         return sequence(runOnce(() -> {
             gamePiece.set("Cone");
         }), led.setYellow());
     }
 
-    public CommandBase rumbleOn() {
+    public Command rumbleOn() {
         return runOnce(() -> {
             copilotController.getHID().setRumble(RumbleType.kBothRumble, 1);
         });
     }
 
-    public CommandBase rumbleOff() {
+    public Command rumbleOff() {
         return runOnce(() -> {
             copilotController.getHID().setRumble(RumbleType.kBothRumble, 0);
         });
     }
 
-    public CommandBase rumbleAndIntakeSpinningOff() {
+    public Command rumbleAndIntakeSpinningOff() {
         return rumbleOff().andThen(led.colorAlliance());
     }
 
-    public CommandBase stowArm = sequence(
+    public Command stowArm = sequence(
             led.setOrange(),
             intake.coneGrab(),
             armExtend.retract(0.4),
             armRotate.moveTo(ArmPresets.ARM_STOWED),
             led.colorAlliance());
 
-    public CommandBase pickUpGamePiece = sequence(
+    public Command pickUpGamePiece = sequence(
             new ConditionalCommand(
                     sequence(
                             armRotate.moveTo(ArmPresets.CONE_PICKUP), armExtend.moveTo(ArmPresets.CONE_PICKUP),
@@ -188,25 +184,25 @@ public class Robot extends CommandRobot {
         cubeScorePosChooser.addOption("Score Cube 13", 13);
         SmartDashboard.putData(cubeScorePosChooser);
 
-        Logger.getInstance().recordMetadata("ProjectName", "FRC-2023"); // Set a metadata value
+        Logger.recordMetadata("ProjectName", "FRC-2023"); // Set a metadata value
         map.setupLogging();
         if (!isReal()) {
             setUseTiming(false); // Run as fast as possible
         }
         // Start logging! No more data receivers, replay sources, or metadata values may
         // be added.
-        Logger.getInstance().start();
+        Logger.start();
     }
 
     @Override
     public void robotPeriodic() {
         super.robotPeriodic();
-        Logger.getInstance().recordOutput("Compressor/Pressure", compressor.getPressure());
-        Logger.getInstance().recordOutput("Compressor/PressureSwitch", compressor.getPressureSwitchValue());
-        Logger.getInstance().recordOutput("Compressor/Current", compressor.getCurrent());
+        Logger.recordOutput("Compressor/Pressure", compressor.getPressure());
+        Logger.recordOutput("Compressor/PressureSwitch", compressor.getPressureSwitchValue());
+        Logger.recordOutput("Compressor/Current", compressor.getCurrent());
     }
 
-    public CommandBase intakeGamePiece() {
+    public Command intakeGamePiece() {
         return rumbleOn().andThen(led.intakeSpinning(), intake.grab(), rumbleOff(),
                 led.grabbedPiece()).finallyDo(intake::holdGamePiece);
     }
@@ -231,7 +227,7 @@ public class Robot extends CommandRobot {
         driveController.povUp().onTrue(drive.moveForDirectional(0, -1, 5));
         driveController.povLeft().onTrue(drive.moveForDirectional(-1, 0, 5));
         /*
-         * public CommandBase testDriveDriver() {
+         * public Command testDriveDriver() {
          * return sequence(
          * moveForDirectional(0, 1, 5),
          * moveForDirectional(1, 0, 5),

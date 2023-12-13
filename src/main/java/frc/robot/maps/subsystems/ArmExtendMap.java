@@ -5,7 +5,6 @@ import org.littletonrobotics.junction.inputs.LoggableInputs;
 
 import com.chopshop166.chopshoplib.motors.SmartMotorController;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 
@@ -68,11 +67,11 @@ public class ArmExtendMap {
         // Retrieves the values of the variables
         @Override
         public void fromLog(LogTable table) {
-            setPoint = table.getDouble("MotorSetpoint", setPoint);
-            distanceInches = table.getDouble("MotorDistanceInches", distanceInches);
-            velocityInchesPerSec = table.getDouble("MotorVelocityInchesPerSec", velocityInchesPerSec);
-            currentAmps = table.getDoubleArray("MotorCurrentAmps", currentAmps);
-            tempCelcius = table.getDoubleArray("MotorTempCelcius", tempCelcius);
+            setPoint = table.get("MotorSetpoint", setPoint);
+            distanceInches = table.get("MotorDistanceInches", distanceInches);
+            velocityInchesPerSec = table.get("MotorVelocityInchesPerSec", velocityInchesPerSec);
+            currentAmps = table.get("MotorCurrentAmps", currentAmps);
+            tempCelcius = table.get("MotorTempCelcius", tempCelcius);
         }
     }
 

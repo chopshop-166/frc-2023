@@ -10,7 +10,6 @@ import com.chopshop166.chopshoplib.sensors.MockEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
@@ -48,9 +47,9 @@ public class Valkyrie extends RobotMap {
 
     @Override
     public void setupLogging() {
-        Logger.getInstance().addDataReceiver(new WPILOGWriter("/media/sda1/")); // Log to a USB stick
-        Logger.getInstance().addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-        Logger.getInstance().recordMetadata("RobotMap", this.getClass().getSimpleName());
+        Logger.addDataReceiver(new WPILOGWriter("/media/sda1/")); // Log to a USB stick
+        Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+        Logger.recordMetadata("RobotMap", this.getClass().getSimpleName());
         new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
     }
 }

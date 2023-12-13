@@ -13,7 +13,6 @@ import com.chopshop166.chopshoplib.pneumatics.RevDSolenoid;
 import com.chopshop166.chopshoplib.sensors.CSDutyCycleEncoder;
 import com.chopshop166.chopshoplib.sensors.CSEncoder;
 import com.chopshop166.chopshoplib.sensors.CSFusedEncoder;
-import com.chopshop166.chopshoplib.sensors.MockColorSensor;
 import com.chopshop166.chopshoplib.sensors.gyro.PigeonGyro2;
 import com.chopshop166.chopshoplib.states.PIDValues;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
@@ -22,7 +21,6 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -32,7 +30,6 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import frc.robot.maps.subsystems.ArmExtendMap;
 import frc.robot.maps.subsystems.ArmRotateMap;
 import frc.robot.maps.subsystems.BalanceArmMap;
@@ -153,7 +150,7 @@ public class FrostBiteMap extends RobotMap {
         intakeMotor.getMotorController().configContinuousCurrentLimit(25);
         intakeMotor.getMotorController().configPeakCurrentLimit(25);
 
-        return new IntakeData.Map(intakeMotor, intakeSolenoid, new MockColorSensor());
+        return new IntakeData.Map(intakeMotor, intakeSolenoid);
 
     }
 
@@ -218,9 +215,9 @@ public class FrostBiteMap extends RobotMap {
 
     @Override
     public void setupLogging() {
-        Logger.getInstance().addDataReceiver(new WPILOGWriter("/media/sda1/")); // Log to a USB stick
-        Logger.getInstance().addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-        Logger.getInstance().recordMetadata("RobotMap", this.getClass().getSimpleName());
+        Logger.addDataReceiver(new WPILOGWriter("/media/sda1/")); // Log to a USB stick
+        Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+        Logger.recordMetadata("RobotMap", this.getClass().getSimpleName());
         new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
     }
 }

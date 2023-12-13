@@ -11,7 +11,7 @@ import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.maps.subsystems.ArmExtendMap;
 import frc.robot.maps.subsystems.ArmExtendMap.Data;
 import frc.robot.ArmPresets;
@@ -34,10 +34,10 @@ public class ArmExtend extends SmartSubsystemBase {
         this.extendMap = extendMap;
     }
 
-    public CommandBase resetZero(DoubleSupplier speed) {
-        return cmd().onExecute(() -> {
+    public Command resetZero(DoubleSupplier speed) {
+        return run(() -> {
             data.setPoint = speed.getAsDouble() * SPEED;
-        }).onEnd(() -> {
+        }).finallyDo(() -> {
             extendMap.extendMotor.getEncoder().reset();
         });
     }
@@ -47,7 +47,7 @@ public class ArmExtend extends SmartSubsystemBase {
                 * (data.distanceInches + 42.3);
     }
 
-    public CommandBase retract(double speed) {
+    public Command retract(double speed) {
         return cmd().onInitialize(() -> {
             data.setPoint = -speed;
         }).runsUntil(() -> data.distanceInches < 2.0).onEnd(() -> {
@@ -56,14 +56,14 @@ public class ArmExtend extends SmartSubsystemBase {
     }
 
     // Manually sets the arm extension
-    public CommandBase manual(DoubleSupplier motorSpeed) {
+    public Command manual(DoubleSupplier motorSpeed) {
         return run(() -> {
             data.setPoint = limit(motorSpeed.getAsDouble() * SPEED);
         });
     }
 
     // Uses PID to change extension of arm to set distance
-    public CommandBase moveToDistancePID(double distance) {
+    public Command moveToDistancePID(double distance) {
         return cmd("Move Distance").onInitialize(() -> {
             extendMap.pid.reset(data.distanceInches);
         }).onExecute(() -> {
@@ -81,13 +81,13 @@ public class ArmExtend extends SmartSubsystemBase {
         });
     }
 
-    public CommandBase moveTo(ArmPresets level) {
+    public Command moveTo(ArmPresets level) {
         return moveToDistancePID(level.getLength());
     }
 
     // This ensures that the arm is fully retracted (likely for the start or end of
     // a match)
-    public CommandBase zeroVelocityCheck() {
+    public Command zeroVelocityCheck() {
         PersistenceCheck velocityPersistenceCheck = new PersistenceCheck(5,
                 () -> Math.abs(data.velocityInchesPerSec) < 0.5);
         return cmd("Check Velocity").onInitialize(() -> {
@@ -116,7 +116,7 @@ public class ArmExtend extends SmartSubsystemBase {
         // This method will be called once per scheduler run
         // Use this for any background processing
         this.extendMap.updateData(data);
-        Logger.getInstance().processInputs(getName(), data);
+        Logger.processInputs(getName(), data);
         lengthPub.set(data.distanceInches);
         armAngle = angleSub.get();
         intakeBelowGroundPublish.set(intakeBelowGround());

@@ -15,7 +15,7 @@ import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.ArmPresets;
 import frc.robot.maps.subsystems.ArmRotateMap;
@@ -52,7 +52,7 @@ public class ArmRotate extends SmartSubsystemBase {
         return useAbsolute ? (data.rotatingRelativeAngleDegrees) : (data.degrees);
     }
 
-    public CommandBase move(DoubleSupplier rotationSpeed) {
+    public Command move(DoubleSupplier rotationSpeed) {
         return run(() -> {
             double speedCoef = RAISE_SPEED;
             if (rotationSpeed.getAsDouble() < 0) {
@@ -69,7 +69,7 @@ public class ArmRotate extends SmartSubsystemBase {
 
     }
 
-    public CommandBase moveToAngle(double angle, Constraints rotateConstraints) {
+    public Command moveToAngle(double angle, Constraints rotateConstraints) {
         // When executed the arm will move. The encoder will update until the desired
         // value is reached, then the command will end.
         PersistenceCheck setPointPersistenceCheck = new PersistenceCheck(20, pid::atGoal);
@@ -84,7 +84,7 @@ public class ArmRotate extends SmartSubsystemBase {
         });
     }
 
-    public CommandBase zeroVelocityCheck() {
+    public Command zeroVelocityCheck() {
         PersistenceCheck velocityPersistenceCheck = new PersistenceCheck(1,
                 () -> data.acceleration > 2);
         return cmd("Check Velocity").onInitialize(() -> {
@@ -96,13 +96,13 @@ public class ArmRotate extends SmartSubsystemBase {
         });
     }
 
-    public CommandBase toggleAbsolute() {
+    public Command toggleAbsolute() {
         return runOnce(() -> {
             useAbsolute = !useAbsolute;
         });
     }
 
-    public CommandBase resetZero() {
+    public Command resetZero() {
         return runEnd(() -> {
             data.setPoint = DESCEND_SPEED;
         }, () -> {
@@ -111,15 +111,15 @@ public class ArmRotate extends SmartSubsystemBase {
         });
     }
 
-    public CommandBase moveTo(ArmPresets level, Constraints rotateConstraints) {
+    public Command moveTo(ArmPresets level, Constraints rotateConstraints) {
         return moveToAngle(level.getAngle(useAbsolute), rotateConstraints);
     }
 
-    public CommandBase moveTo(ArmPresets level) {
+    public Command moveTo(ArmPresets level) {
         return moveToAngle(level.getAngle(useAbsolute), new Constraints(150, 200));
     }
 
-    public CommandBase resetAngle() {
+    public Command resetAngle() {
         return cmd().onInitialize(() -> {
             reset();
         }).runsUntil(() -> {
@@ -127,13 +127,13 @@ public class ArmRotate extends SmartSubsystemBase {
         }).runsWhenDisabled(true);
     }
 
-    public CommandBase brakeMode() {
+    public Command brakeMode() {
         return new InstantCommand(() -> {
             map.setBrake();
         }).ignoringDisable(true);
     }
 
-    public CommandBase coastMode() {
+    public Command coastMode() {
         return new InstantCommand(() -> {
             map.setCoast();
         }).ignoringDisable(true);
@@ -156,14 +156,14 @@ public class ArmRotate extends SmartSubsystemBase {
         // This method will be called once per scheduler run
         // Use this for any background processing
         this.map.updateData(data);
-        Logger.getInstance().processInputs(getName(), data);
+        Logger.processInputs(getName(), data);
         anglePub.set(getArmAngle());
         armLength = lengthSub.get();
         SmartDashboard.putBoolean("Using Absolute", useAbsolute);
     }
 
     private double limits(double speed) {
-        Logger.getInstance().recordOutput("speed", speed);
+        Logger.recordOutput("speed", speed);
         if (speed < 0 && intakeBelowGround()) {
             return NO_FALL;
         }

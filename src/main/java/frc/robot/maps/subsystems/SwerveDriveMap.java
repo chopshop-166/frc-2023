@@ -5,7 +5,6 @@ import org.littletonrobotics.junction.inputs.LoggableInputs;
 
 import com.chopshop166.chopshoplib.drive.MockSwerveModule;
 import com.chopshop166.chopshoplib.drive.SwerveModule;
-
 import com.chopshop166.chopshoplib.sensors.gyro.MockGyro;
 import com.chopshop166.chopshoplib.sensors.gyro.SmartGyro;
 
@@ -101,22 +100,21 @@ public record SwerveDriveMap(SwerveModule frontLeft, SwerveModule frontRight, Sw
             public void fromLog(LogTable table) {
                 LogTable subTable = table.getSubtable(this.name);
                 // Desired state (velocity/angle)
-                this.desiredState.speedMetersPerSecond = subTable.getDouble("DesiredVelocityMetresPerSec",
+                this.desiredState.speedMetersPerSecond = subTable.get("DesiredVelocityMetresPerSec",
                         this.desiredState.speedMetersPerSecond);
-                this.desiredState.angle = Rotation2d.fromDegrees(subTable.getDouble("DesiredAngleDegrees",
+                this.desiredState.angle = Rotation2d.fromDegrees(subTable.get("DesiredAngleDegrees",
                         this.desiredState.angle.getDegrees()));
                 // actual state (Position/velocity/angle)
-                this.drivePositionMeters = subTable.getDouble("DrivePositionMeters",
+                this.drivePositionMeters = subTable.get("DrivePositionMeters",
                         this.drivePositionMeters);
 
-                this.velocityMetersPerSec = subTable.getDouble(
-                        "DriveVelocityMetersPerSec", this.velocityMetersPerSec);
-                this.podAngle = subTable.getDouble("DriveAngleDegrees", this.podAngle);
-                this.driveCurrentAmps = subTable.getDoubleArray("DriveCurrentAmps", this.driveCurrentAmps);
-                this.driveTempC = subTable.getDoubleArray("DriveTempCelsius", this.driveTempC);
-                this.steeringCurrentAmps = subTable.getDoubleArray("SteeringCurrentAmps", this.steeringCurrentAmps);
-                this.steeringTempC = subTable.getDoubleArray("SteeringTempCelsius", this.steeringTempC);
-                this.steeringSetpoint = subTable.getDouble("SteeringSetpoint", this.steeringSetpoint);
+                this.velocityMetersPerSec = subTable.get("DriveVelocityMetersPerSec", this.velocityMetersPerSec);
+                this.podAngle = subTable.get("DriveAngleDegrees", this.podAngle);
+                this.driveCurrentAmps = subTable.get("DriveCurrentAmps", this.driveCurrentAmps);
+                this.driveTempC = subTable.get("DriveTempCelsius", this.driveTempC);
+                this.steeringCurrentAmps = subTable.get("SteeringCurrentAmps", this.steeringCurrentAmps);
+                this.steeringTempC = subTable.get("SteeringTempCelsius", this.steeringTempC);
+                this.steeringSetpoint = subTable.get("SteeringSetpoint", this.steeringSetpoint);
             }
 
             public void update(SwerveModule module) {
@@ -156,7 +154,7 @@ public record SwerveDriveMap(SwerveModule frontLeft, SwerveModule frontRight, Sw
             rearLeft.fromLog(table);
             rearRight.fromLog(table);
 
-            this.gyroYawPositionDegrees = table.getDouble("GyroYawPositionDegrees", this.gyroYawPositionDegrees);
+            this.gyroYawPositionDegrees = table.get("GyroYawPositionDegrees", this.gyroYawPositionDegrees);
         }
     }
 }

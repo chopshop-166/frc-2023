@@ -10,7 +10,7 @@ import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.maps.subsystems.IntakeData;
 
 public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
@@ -38,21 +38,21 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
     }
 
     // Grabs game piece Cone
-    public CommandBase coneGrab() {
+    public Command coneGrab() {
         return runOnce(() -> {
             getData().solenoidSetPoint = Value.kForward;
         });
     }
 
     // Releases game piece Cone
-    public CommandBase coneRelease() {
+    public Command coneRelease() {
         return runOnce(() -> {
             getData().solenoidSetPoint = Value.kReverse;
         });
     }
 
     // Releases game piece Cone
-    public CommandBase toggle() {
+    public Command toggle() {
         return runOnce(() -> {
             if (getData().solenoidSetPoint == Value.kForward) {
                 if (armAngle > 13) {
@@ -64,7 +64,7 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
         });
     }
 
-    public CommandBase spinIn() {
+    public Command spinIn() {
         PersistenceCheck currentPersistenceCheck = new PersistenceCheck(5,
                 () -> Math.abs(getData().currentAmps[0]) > 20);
         return cmd().onInitialize(
@@ -78,12 +78,12 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
         getData().motorSetPoint = 0.05;
     }
 
-    public CommandBase grab() {
+    public Command grab() {
         return spinIn().andThen(new FunctionalWaitCommand(() -> 0.75).finallyDo(this::holdGamePiece));
     }
 
     // Releases game piece Cube
-    public CommandBase cubeRelease() {
+    public Command cubeRelease() {
         return runEnd(() -> {
             getData().motorSetPoint = RELEASE_SPEED;
         }, () -> {
@@ -92,7 +92,7 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
     }
 
     // Closes intake based on game piece detected
-    public CommandBase sensorControl() {
+    public Command sensorControl() {
 
         return cmd().onExecute(() -> {
             if (getData().gamePieceDistance <= getData().maxGamePieceDistance &&

@@ -27,6 +27,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import frc.robot.Field;
@@ -120,7 +121,7 @@ public class Drive extends SmartSubsystemBase {
         rotationPID = drivePID.copyRotationPidController();
     }
 
-    public CommandBase rotateToAngle(Rotation2d angle, DoubleSupplier translateX, DoubleSupplier translateY) {
+    public Command rotateToAngle(Rotation2d angle, DoubleSupplier translateX, DoubleSupplier translateY) {
         return cmd().onExecute(() -> {
             double fb = rotationPID.calculate(pose.getRotation().getDegrees(), angle.getDegrees());
             Logger.getInstance().recordOutput("Rotaion PId", fb);
@@ -130,17 +131,16 @@ public class Drive extends SmartSubsystemBase {
 
     }
 
-    public CommandBase setSpeedCoef(double fac, double rotationfac) {
+    public Command setSpeedCoef(double fac, double rotationfac) {
         return runOnce(() -> {
             speedCoef = fac;
             rotationCoef = rotationfac;
-
         });
     }
 
     Pose2d initialPose;
 
-    public CommandBase driveDistance(double distance, double speed, Rotation2d angle) {
+    public Command driveDistance(double distance, double speed, Rotation2d angle) {
         return cmd().onInitialize(() -> {
             initialPose = pose;
         }).onExecute(
@@ -155,14 +155,14 @@ public class Drive extends SmartSubsystemBase {
 
     double startAxis = 0;
 
-    public CommandBase driveAxis(double distance) {
+    public Command driveAxis(double distance) {
         return cmd().onInitialize(() -> {
             startAxis = pose.getX();
         }).onExecute(() -> {
             Transform2d fb = drivePID.calculate(pose,
                     new Pose2d(startAxis + distance, 0, rotation0));
             move(fb.getX(), fb.getY(), 0 * fb.getRotation().getDegrees());
-            Logger.getInstance().recordOutput("Drive Ended", false);
+            Logger.recordOutput("Drive Ended", false);
         }).runsUntil(() -> Math.abs(pose.getX() - (startAxis + distance)) < 0.05).onEnd(() -> {
             move(0, 0, 0);
             System.out.println("Drive Command Stopped");
@@ -171,7 +171,7 @@ public class Drive extends SmartSubsystemBase {
 
     private Pose2d relativeTarget = new Pose2d();
 
-    public CommandBase driveRelative(Translation2d translation, Rotation2d rotation2d, double timeoutSeconds) {
+    public Command driveRelative(Translation2d translation, Rotation2d rotation2d, double timeoutSeconds) {
         return sequence(
                 runOnce(() -> {
                     relativeTarget = new Pose2d(
@@ -184,7 +184,7 @@ public class Drive extends SmartSubsystemBase {
                         driveTo(() -> relativeTarget, 0.01)));
     }
 
-    public CommandBase driveRelative(Translation2d translation, double angleDegrees, double timeoutSeconds) {
+    public Command driveRelative(Translation2d translation, double angleDegrees, double timeoutSeconds) {
         return driveRelative(translation, Rotation2d.fromDegrees(angleDegrees), timeoutSeconds);
     }
 
@@ -203,13 +203,13 @@ public class Drive extends SmartSubsystemBase {
                 && !(Math.abs(xInput) < 0.1 && Math.abs(yInput) < 0.1)) {
             rotationInput = correctionPID.calculate(map.gyro().getAngle(), latestAngle);
             rotationInput = (Math.abs(rotationInput) > 0.02) ? rotationInput : 0;
-            Logger.getInstance().recordOutput("pidOutput", rotationInput);
-            Logger.getInstance().recordOutput("pidError", correctionPID.getError());
+            Logger.recordOutput("pidOutput", rotationInput);
+            Logger.recordOutput("pidError", correctionPID.getError());
         } else {
             latestAngle = map.gyro().getAngle();
         }
-        Logger.getInstance().recordOutput("latestAngle", latestAngle);
-        Logger.getInstance().recordOutput("robotAngle", map.gyro().getAngle());
+        Logger.recordOutput("latestAngle", latestAngle);
+        Logger.recordOutput("robotAngle", map.gyro().getAngle());
 
         final double translateXSpeed = xInput
                 * maxDriveSpeedMetersPerSecond * speedCoef;
@@ -254,38 +254,38 @@ public class Drive extends SmartSubsystemBase {
         io.rearRight.desiredState = moduleStates[3];
     }
 
-    public CommandBase driveRaw(DoubleSupplier xSpeed, DoubleSupplier ySpeed, DoubleSupplier rotation) {
+    public Command driveRaw(DoubleSupplier xSpeed, DoubleSupplier ySpeed, DoubleSupplier rotation) {
         return run(() -> move(xSpeed.getAsDouble(), ySpeed.getAsDouble(), rotation.getAsDouble()));
     }
 
-    public CommandBase drive(DoubleSupplier xSpeed, DoubleSupplier ySpeed, DoubleSupplier rotation) {
+    public Command drive(DoubleSupplier xSpeed, DoubleSupplier ySpeed, DoubleSupplier rotation) {
         return run(() -> deadbandMove(xSpeed.getAsDouble(), ySpeed.getAsDouble(), rotation.getAsDouble(), false));
     }
 
-    public CommandBase robotCentricDrive(DoubleSupplier xSpeed, DoubleSupplier ySpeed, DoubleSupplier rotation) {
+    public Command robotCentricDrive(DoubleSupplier xSpeed, DoubleSupplier ySpeed, DoubleSupplier rotation) {
         return run(() -> deadbandMove(xSpeed.getAsDouble(), ySpeed.getAsDouble(), rotation.getAsDouble(), true))
                 .withName("Robot Centric Drive");
     }
 
-    public CommandBase driveTo(Supplier<Pose2d> targetPose, double tolerance) {
+    public Command driveTo(Supplier<Pose2d> targetPose, double tolerance) {
         return cmd().onExecute(() -> {
             Pose2d flipped = targetPose.get();
             Transform2d fb = drivePID.calculate(pose, flipped);
-            Logger.getInstance().recordOutput("DriveX", fb.getX());
-            Logger.getInstance().recordOutput("DriveY", fb.getY());
+            Logger.recordOutput("DriveX", fb.getX());
+            Logger.recordOutput("DriveY", fb.getY());
             move(fb.getX(), fb.getY(), -fb.getRotation().getDegrees());
 
-            Logger.getInstance().recordOutput("targetPose", flipped);
+            Logger.recordOutput("targetPose", flipped);
         }).runsUntil(() -> drivePID.isFinished(pose, targetPose.get(), tolerance)).onEnd(this::safeState);
 
     }
 
-    public CommandBase driveTo(Pose2d targetPose, double tolerance) {
+    public Command driveTo(Pose2d targetPose, double tolerance) {
         return driveTo(() -> targetPose, tolerance);
     }
 
     // Use DrivePID to drive to a target pose on the field
-    public CommandBase driveTo(Pose2d targetPose) {
+    public Command driveTo(Pose2d targetPose) {
         return driveTo(targetPose, 0.1);
     }
 
@@ -294,12 +294,12 @@ public class Drive extends SmartSubsystemBase {
     }
 
     // Drive to a pre-determined grid position
-    public CommandBase driveTo(GridPosition gridPose) {
+    public Command driveTo(GridPosition gridPose) {
         return driveTo(gridPose.getPose(), 0.05);
     }
 
     // Find the nearest grid position and line up with it
-    public CommandBase driveToNearest() {
+    public Command driveToNearest() {
         return new ProxyCommand(
                 () -> {
                     Pose2d closestPose = GridPosition.values()[0].getPose();
@@ -318,33 +318,33 @@ public class Drive extends SmartSubsystemBase {
 
     }
 
-    public CommandBase driveUntilTipped(boolean forward) {
+    public Command driveUntilTipped(boolean forward) {
         return cmd().onExecute(() -> {
             if (forward) {
-                Logger.getInstance().recordOutput("AutoBalanceState", "tipping forward");
+                Logger.recordOutput("AutoBalanceState", "tipping forward");
                 move(0.0, -UNTIL_TIPPED_SPEED, 0.0);
             } else {
-                Logger.getInstance().recordOutput("AutoBalanceState", "tipping backward");
+                Logger.recordOutput("AutoBalanceState", "tipping backward");
                 move(0.0, UNTIL_TIPPED_SPEED, 0.0);
             }
 
         }).runsUntil(() -> Math.abs(this.getTilt()) > 4).onEnd((() -> {
-            Logger.getInstance().recordOutput("AutoBalanceState", "tipped");
+            Logger.recordOutput("AutoBalanceState", "tipped");
         })).withTimeout(1.5);
     }
 
-    public CommandBase driveUntilNotTipped(boolean forward) {
+    public Command driveUntilNotTipped(boolean forward) {
         return cmd().onExecute(() -> {
             if (forward) {
-                Logger.getInstance().recordOutput("AutoBalanceState", "untipping forward");
+                Logger.recordOutput("AutoBalanceState", "untipping forward");
                 move(0.0, -UNTIL_NOT_TIPPED_SPEED, 0.0);
             } else {
-                Logger.getInstance().recordOutput("AutoBalanceState", "untipping backward");
+                Logger.recordOutput("AutoBalanceState", "untipping backward");
                 move(0.0, UNTIL_NOT_TIPPED_SPEED, 0.0);
             }
 
         }).runsUntil(() -> Math.abs(this.getTilt()) < 6).onEnd((() -> {
-            Logger.getInstance().recordOutput("AutoBalanceState", "not tipped");
+            Logger.recordOutput("AutoBalanceState", "not tipped");
         }));
     }
 
@@ -355,7 +355,7 @@ public class Drive extends SmartSubsystemBase {
                         * Units.radiansToDegrees(this.map.gyro().getRotation3d().getX());
     }
 
-    public CommandBase balance() {
+    public Command balance() {
 
         PersistenceCheck balancedCheck = new PersistenceCheck(50,
                 () -> Math.abs(getTilt()) < 4);
@@ -370,37 +370,37 @@ public class Drive extends SmartSubsystemBase {
                     angleVelocityDegreesPerSec > TILT_VELOCITY_MAX)
                     || (getTilt() > TILT_MAX_STOPPING && angleVelocityDegreesPerSec < -TILT_VELOCITY_MAX);
 
-            Logger.getInstance().recordOutput("Angle Velocity", angleVelocityDegreesPerSec);
-            Logger.getInstance().recordOutput("Pitch", getTilt());
+            Logger.recordOutput("Angle Velocity", angleVelocityDegreesPerSec);
+            Logger.recordOutput("Pitch", getTilt());
             autoBalanceState.accept(shouldStop);
 
             if (shouldStop) {
                 safeState();
-                Logger.getInstance().recordOutput("AutoBalanceState", "stopped");
+                Logger.recordOutput("AutoBalanceState", "stopped");
 
             } else if (getTilt() > TILT_THRESHOLD) {
                 move(0.0, BALANCE_SPEED, 0.0);
 
-                Logger.getInstance().recordOutput("AutoBalanceState", "backward");
+                Logger.recordOutput("AutoBalanceState", "backward");
 
             } else if (getTilt() < -TILT_THRESHOLD) {
                 move(0.0, -BALANCE_SPEED, 0.0);
 
-                Logger.getInstance().recordOutput("AutoBalanceState", "forward");
+                Logger.recordOutput("AutoBalanceState", "forward");
 
             }
 
-        }).runsUntil(balancedCheck).onEnd(() -> Logger.getInstance().recordOutput("AutoBalanceState", "ended"));
+        }).runsUntil(balancedCheck).onEnd(() -> Logger.recordOutput("AutoBalanceState", "ended"));
 
     }
 
-    public CommandBase moveForDirectional(double xSpeed, double ySpeed, double seconds) {
+    public Command moveForDirectional(double xSpeed, double ySpeed, double seconds) {
         return race(
                 driveRaw(() -> xSpeed, () -> ySpeed, () -> 0),
                 new FunctionalWaitCommand(() -> seconds)).andThen(safeStateCmd());
     }
 
-    public CommandBase resetGyroCommand() {
+    public Command resetGyroCommand() {
         return cmd().onInitialize(() -> {
             resetGyro();
             resetTag();
@@ -414,13 +414,13 @@ public class Drive extends SmartSubsystemBase {
         latestAngle = 0;
     }
 
-    public CommandBase setGyro180() {
+    public Command setGyro180() {
         return runOnce(() -> {
             map.gyro().setAngle(180);
         });
     }
 
-    public CommandBase setPose(Pose2d pose) {
+    public Command setPose(Pose2d pose) {
         return runOnce(() -> vision.setPose(pose));
     }
 
@@ -436,14 +436,14 @@ public class Drive extends SmartSubsystemBase {
 
     @Override
     public void periodic() {
-        isBlue = DriverStation.getAlliance() == Alliance.Blue;
+        isBlue = DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Blue;
         // This method will be called once per scheduler run
         // Use this for any background processing
         map.updateInputs(io);
-        Logger.getInstance().processInputs(getName(), io);
+        Logger.processInputs(getName(), io);
         pose = vision.update(isBlue);
-        Logger.getInstance().recordOutput("robotPose", pose);
-        Logger.getInstance().recordOutput("Pitch", getTilt());
+        Logger.recordOutput("robotPose", pose);
+        Logger.recordOutput("Pitch", getTilt());
     }
 
 }

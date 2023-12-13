@@ -106,7 +106,7 @@ public class Vision {
                             setPose(pose);
                         }
 
-                        Logger.getInstance().recordOutput("visionPose", pose);
+                        Logger.recordOutput("visionPose", pose);
                         if (distance < 2 && tagDistance < 1 && poseInField) {
                             estimator.addVisionMeasurement(pose, result.getTimestampSeconds());
                         }
