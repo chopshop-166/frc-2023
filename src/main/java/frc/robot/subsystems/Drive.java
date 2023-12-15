@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import static edu.wpi.first.wpilibj2.command.Commands.race;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 
+import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -20,6 +21,8 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.BooleanPublisher;
@@ -41,7 +44,7 @@ public class Drive extends SmartSubsystemBase {
 
     SwerveDriveMap map;
     Data io;
-    private final SwerveDriveKinematics kinematics;
+    public final SwerveDriveKinematics kinematics;
     double maxDriveSpeedMetersPerSecond;
     double maxRotationRadiansPerSecond;
     double speedCoef = 1;
@@ -93,6 +96,14 @@ public class Drive extends SmartSubsystemBase {
         }
     }
 
+    public Pose2d getPose() {
+        return pose;
+    }
+
+    public void resetPose(Pose2d pose) {
+        this.pose = pose;
+    }
+
     private Vision vision;
     private Pose2d pose = new Pose2d();
     private final DrivePID drivePID;
@@ -117,7 +128,7 @@ public class Drive extends SmartSubsystemBase {
                 map.cameraName(), Field.getApriltagLayout(),
                 map.cameraPosition(),
                 this.map);
-        correctionPID = new RotationPIDController(0.01, 0.00001, 0);
+        correctionPID = new RotationPIDController(0.01, 0.00001, 0.0);
         rotationPID = drivePID.copyRotationPidController();
     }
 
@@ -252,6 +263,17 @@ public class Drive extends SmartSubsystemBase {
 
         // Back right module state
         io.rearRight.desiredState = moduleStates[3];
+
+        // All the states
+
+    }
+
+    public void setModuleStates(SwerveModuleState[] moduleStates) {
+        SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, maxDriveSpeedMetersPerSecond);
+        io.frontLeft.desiredState = moduleStates[0];
+        io.frontRight.desiredState = moduleStates[1];
+        io.rearLeft.desiredState = moduleStates[2];
+        io.rearRight.desiredState = moduleStates[3];
     }
 
     public Command driveRaw(DoubleSupplier xSpeed, DoubleSupplier ySpeed, DoubleSupplier rotation) {
@@ -298,6 +320,17 @@ public class Drive extends SmartSubsystemBase {
         return driveTo(gridPose.getPose(), 0.05);
     }
 
+    // Reset odometry
+    // public void resetOdometry(Pose2d pose) {
+    // odemeter.reset
+        //         frontLeft.SwerveModulePosition(),
+        // frontRight.SwerveModulePosition(),
+        // rearLeft.SwerveModulePosition(),
+        // rearRight.SwerveModulePosition()
+        // , pose);
+        //
+
+    
     // Find the nearest grid position and line up with it
     public Command driveToNearest() {
         return new ProxyCommand(
@@ -311,6 +344,7 @@ public class Drive extends SmartSubsystemBase {
                                         .getTranslation().getDistance(pose.getTranslation())) {
                             closestPose = position.getPose();
                         }
+
                     }
 
                     return driveTo(closestPose, 0.05);
