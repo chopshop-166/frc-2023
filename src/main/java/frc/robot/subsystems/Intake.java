@@ -38,20 +38,20 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
     }
 
     // Releases game piece Cone
-    public CommandBase openIntake() {
+    public Command openIntake() {
         return runOnce(() -> {
             getData().solenoidSetPoint = Value.kReverse;
         });
     }
 
-    public CommandBase closeIntake() {
+    public Command closeIntake() {
         return runOnce(() -> {
             getData().solenoidSetPoint = Value.kForward;
         });
     }
 
     // Opens or closes intake
-    public CommandBase toggle() {
+    public Command toggle() {
         return runOnce(() -> {
             if (getData().solenoidSetPoint == Value.kForward) {
                 if (armAngle > 13) {

@@ -9,33 +9,23 @@ import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 
 import com.chopshop166.chopshoplib.commands.FunctionalWaitCommand;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.auto.PIDConstants;
-import com.pathplanner.lib.auto.SwerveAutoBuilder;
-import com.pathplanner.lib.commands.FollowPathWithEvents;
-import com.pathplanner.lib.commands.PPSwerveControllerCommand;
-import com.pathplanner.lib.PathConstraints;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+// import com.pathplanner.lib.PathPlanner;
+// import com.pathplanner.lib.PathPlannerTrajectory;
+// import com.pathplanner.lib.auto.PIDConstants;
+// import com.pathplanner.lib.auto.SwerveAutoBuilder;
+// import com.pathplanner.lib.commands.FollowPathWithEvents;
+// import com.pathplanner.lib.commands.PPSwerveControllerCommand;
+// import com.pathplanner.lib.PathConstraints;
 
 import org.ejml.equation.Sequence;
 
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.auto.AutoConstants;
 import frc.robot.auto.AutoPath;
 import frc.robot.auto.ConeStation;
@@ -46,7 +36,6 @@ import frc.robot.subsystems.BalanceArm;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Led;
-import frc.robot.Vision;
 
 public class Auto {
     // Declare references to subsystems
@@ -178,7 +167,7 @@ public class Auto {
                 armRotate.moveTo(ArmPresets.ARM_STOWED));
     }
 
-    public CommandBase scoreCubeLow() {
+    public Command scoreCubeLow() {
         return sequence(
                 armRotate.moveTo(ArmPresets.CUBE_PICKUP),
                 parallel(intake.cubeRelease(),
@@ -255,7 +244,7 @@ public class Auto {
 
     // Square auto using the drive relative command
     // Note: Tranlsation 2d x,y represents distance in the x plane, y plane
-    public CommandBase squareAutoDriveRelative() {
+    public Command squareAutoDriveRelative() {
         return sequence(
                 drive.setGyro180(),
                 drive.driveRelative(new Translation2d(0.0, 0.0), 0, 3),
@@ -266,7 +255,7 @@ public class Auto {
     }
 
     // Square auto using pathing
-    public CommandBase squareAutoPathing() {
+    public Command squareAutoPathing() {
         return sequence(
                 AutoPath.SQUARE_AUTO_POS1.getPath(drive),
                 // waitSeconds(1.5),
@@ -280,7 +269,7 @@ public class Auto {
     }
 
     // Line Auto
-    public CommandBase knockoutAutoPathing() {
+    public Command knockoutAutoPathing() {
         return sequence(
                 // Vision.setPose(Pose2d(0.0, 0.0, AutoConstants.ROTATION_0)),
 
@@ -301,7 +290,7 @@ public class Auto {
     }
 
     // Triangle Auto
-    public CommandBase triangleAutoPathing() {
+    public Command triangleAutoPathing() {
         return sequence(
                 AutoPath.TRIANGLE_AUTO_POS1.getPath(drive),
                 // waitSeconds(1.5),
@@ -312,7 +301,7 @@ public class Auto {
                 AutoPath.TRIANGLE_AUTO_POS1.getPath(drive));
     }
 
-    public CommandBase rectangleAutoPathing() {
+    public Command rectangleAutoPathing() {
         return sequence(
                 AutoPath.RECTANGLE_AUTO_POS1.getPath(drive),
                 AutoPath.RECTANGLE_AUTO_POS2.getPath(drive),
@@ -321,7 +310,7 @@ public class Auto {
                 AutoPath.RECTANGLE_AUTO_POS1.getPath(drive));
     }
 
-    public CommandBase barnAutoPathing() {
+    public Command barnAutoPathing() {
         return sequence(
                 AutoPath.BARN_AUTO_BOTTOM_LEFT_CORNER.getPath(drive),
                 AutoPath.BARN_AUTO_TOP_LEFT_CORNER.getPath(drive),
@@ -336,77 +325,93 @@ public class Auto {
     }
 
     // Square auto using driveRaw Command maybe?
-    public CommandBase squareAutoMoveTurn() {
+    public Command squareAutoMoveTurn() {
         return sequence(
 
         );
     }
 
-    public void pathPlannerAuto() {
-        List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("FullAuto", new PathConstraints(4, 3));
-        HashMap<String, Command> eventMap = new HashMap<>();
-        eventMap.put("prepare to score", prepareToScoreCone());
-        eventMap.put("Score gamePiece", scoreHighNode());
-        SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
-                drive::getPose, // Pose2d supplier
-                drive::resetPose, // Pose2d consumer, used to reset odometry at the beginning of auto
-                drive.kinematics, // SwerveDriveKinematics
-                new PIDConstants(5.0, 0.0, 0.0), // PID constants to correct for translation error (used to create the X
-                                                 // and Y PID controllers)
-                new PIDConstants(0.5, 0.0, 0.0), // PID constants to correct for rotation error (used to create the
-                                                 // rotation controller)
-                drive::setModuleStates, // Module states consumer used to output to the drive subsystem
-                eventMap,
-                true, // Should the path be automatically mirrored depending on alliance color.
-                      // Optional, defaults to true
-                drive // The drive subsystem. Used to properly set the requirements of path following
-                      // commands
-        );
+    //// PATHPLANNER 2023 JUNK
 
-        Command fullAuto = autoBuilder.fullAuto(pathGroup);
-        // This will load the file "Example Path.path" and generate it with a max
-        // velocity of 4 m/s and a max acceleration of 3 m/s^2
-        PathPlannerTrajectory twoPiece = PathPlanner.loadPath("2 piece", new PathConstraints(4, 3));
+    // public void pathPlannerAuto() {
+    // List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("FullAuto",
+    // new PathConstraints(4, 3));
+    // HashMap<String, Command> eventMap = new HashMap<>();
+    // eventMap.put("prepare to score", prepareToScoreCone());
+    // eventMap.put("Score gamePiece", scoreHighNode());
+    // SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
+    // drive::getPose, // Pose2d supplier
+    // drive::resetPose, // Pose2d consumer, used to reset odometry at the beginning
+    // of auto
+    // drive.kinematics, // SwerveDriveKinematics
+    // new PIDConstants(5.0, 0.0, 0.0), // PID constants to correct for translation
+    // error (used to create the X
+    // // and Y PID controllers)
+    // new PIDConstants(0.5, 0.0, 0.0), // PID constants to correct for rotation
+    // error (used to create the
+    // // rotation controller)
+    // drive::setModuleStates, // Module states consumer used to output to the drive
+    // subsystem
+    // eventMap,
+    // true, // Should the path be automatically mirrored depending on alliance
+    // color.
+    // // Optional, defaults to true
+    // drive // The drive subsystem. Used to properly set the requirements of path
+    // following
+    // // commands
+    // );
 
-        // This is just an example event map. It would be better to have a constant,
-        // global event map
-        // in your code that will be used by all path following commands.
+    // Command fullAuto = autoBuilder.fullAuto(pathGroup);
+    // // This will load the file "Example Path.path" and generate it with a max
+    // // velocity of 4 m/s and a max acceleration of 3 m/s^2
+    // PathPlannerTrajectory twoPiece = PathPlanner.loadPath("2 piece", new
+    // PathConstraints(4, 3));
 
-        FollowPathWithEvents multiPiece = new FollowPathWithEvents(
-                autoBuilder.fullAuto(twoPiece),
-                twoPiece.getMarkers(),
-                eventMap);
-    }
+    // // This is just an example event map. It would be better to have a constant,
+    // // global event map
+    // // in your code that will be used by all path following commands.
 
-    // Assuming this method is part of a drivetrain subsystem that provides the
-    // necessary methods
-    public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
-        return new SequentialCommandGroup(
-                new InstantCommand(() -> {
-                    // Reset odometry for the first path you run during auto
-                    if (isFirstPath) {
-                        // this.resetOdometry(traj.getInitialHolonomicPose()); <--- Need to put in and
-                        // figure out how to do
-                        vision.setPose(new Pose2d(0, 0, AutoConstants.ROTATION_0));
-                    }
-                }),
-                new PPSwerveControllerCommand(
-                        traj,
-                        drive::getPose, // Pose supplier
-                        drive.kinematics, // SwerveDriveKinematics
-                        new PIDController(0.01, 0.00001, 0.0), // X controller. Tune these values for your robot.
-                                                               // Leaving them 0
-                        // will only use feedforwards.
-                        new PIDController(0.01, 0.00001, 0.0), // Y controller (usually the same values as X controller)
-                        new PIDController(0.01, 0.00001, 0.0), // Rotation controller. Tune these values for your robot.
-                                                               // Leaving
-                        // them 0 will only use feedforwards.
-                        drive::setModuleStates, // Module states consumer
-                        true, // Should the path be automatically mirrored depending on alliance color.
-                              // Optional, defaults to true
-                        drive // Requires this drive subsystem
-                ));
-    }
+    // FollowPathWithEvents multiPiece = new FollowPathWithEvents(
+    // autoBuilder.fullAuto(twoPiece),
+    // twoPiece.getMarkers(),
+    // eventMap);
+    // }
+
+    // // Assuming this method is part of a drivetrain subsystem that provides the
+    // // necessary methods
+    // public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean
+    // isFirstPath) {
+    // return new SequentialCommandGroup(
+    // new InstantCommand(() -> {
+    // // Reset odometry for the first path you run during auto
+    // if (isFirstPath) {
+    // // this.resetOdometry(traj.getInitialHolonomicPose()); <--- Need to put in
+    // and
+    // // figure out how to do
+    // vision.setPose(new Pose2d(0, 0, AutoConstants.ROTATION_0));
+    // }
+    // }),
+    // new PPSwerveControllerCommand(
+    // traj,
+    // drive::getPose, // Pose supplier
+    // drive.kinematics, // SwerveDriveKinematics
+    // new PIDController(0.01, 0.00001, 0.0), // X controller. Tune these values for
+    // your robot.
+    // // Leaving them 0
+    // // will only use feedforwards.
+    // new PIDController(0.01, 0.00001, 0.0), // Y controller (usually the same
+    // values as X controller)
+    // new PIDController(0.01, 0.00001, 0.0), // Rotation controller. Tune these
+    // values for your robot.
+    // // Leaving
+    // // them 0 will only use feedforwards.
+    // drive::setModuleStates, // Module states consumer
+    // true, // Should the path be automatically mirrored depending on alliance
+    // color.
+    // // Optional, defaults to true
+    // drive // Requires this drive subsystem
+    // ));
+    // }
 
     // private void configureAutoCommands() {
 
