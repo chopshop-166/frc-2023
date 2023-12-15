@@ -88,6 +88,9 @@ public class Robot extends CommandRobot {
     // @Autonomous(name = "pathplanner path 1")
     // public CommandBase pathOne = auto.fullAuto();
 
+    // @Autonomous(name = "pathplanner path 1")
+    // public CommandBase pathOne = auto.fullAuto();
+
     // @Autonomous(name = "Piecemeal Auto")
     // public Command buildCommand = new ProxyCommand(() -> {
     // ConeStation conePos = conePosChooser.getSelected();
