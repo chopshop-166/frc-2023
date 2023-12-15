@@ -37,21 +37,20 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
         clawPub.set(getData().solenoidSetPoint == Value.kForward);
     }
 
-    // Grabs game piece Cone
-    public CommandBase coneGrab() {
-        return runOnce(() -> {
-            getData().solenoidSetPoint = Value.kForward;
-        });
-    }
-
     // Releases game piece Cone
-    public CommandBase coneRelease() {
+    public CommandBase openIntake() {
         return runOnce(() -> {
             getData().solenoidSetPoint = Value.kReverse;
         });
     }
 
-    // Releases game piece Cone
+    public CommandBase closeIntake() {
+        return runOnce(() -> {
+            getData().solenoidSetPoint = Value.kForward;
+        });
+    }
+
+    // Opens or closes intake
     public CommandBase toggle() {
         return runOnce(() -> {
             if (getData().solenoidSetPoint == Value.kForward) {

@@ -8,10 +8,15 @@ public class AutoConstants {
 
     // public static final double BLUE_X = 1.8;
     public static final Rotation2d ROTATION_0 = Rotation2d.fromDegrees(0);
+    public static final Rotation2d ROTATION_90 = Rotation2d.fromDegrees(90);
     public static final Rotation2d ROTATION_180 = Rotation2d.fromDegrees(180);
+    public static final Rotation2d ROTATION_270 = Rotation2d.fromDegrees(270);
 
     public static final double UP_TO_CONE_X = 1.78;
     public static final double BACKED_UP_X = 2.25;
     public static final double Y_DIFFERENCE = 0.10;
     public static final double OUT_OF_COMMUNITY_X = 5.50;
+
+    public static final double MAX_VELOCITY_METERS_PER_SECOND = 3.00;
+    public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 4.00;
 }

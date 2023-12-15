@@ -140,6 +140,53 @@ public enum AutoPath {
     OUTER_SIDE_CHARGE_STATION_15(0.2,
             new Pose2d()),
 
+    //// Square Auto Pathing
+    // No clue if this is coordinates or distance or a mix? I'm confused
+    SQUARE_AUTO_POS1(0.2, new Pose2d(0.0, 0.0, AutoConstants.ROTATION_0)),
+    // Go up 2 meters (y axis)
+    SQUARE_AUTO_POS2(0.2, new Pose2d(0.0, 1.0, AutoConstants.ROTATION_0)),
+    // Go left 2 meters (x axis)
+    SQUARE_AUTO_POS3(0.2, new Pose2d(1.0, 1.0, AutoConstants.ROTATION_0)),
+    // Go down 2 meters (y axis)
+    SQUARE_AUTO_POS4(0.2, new Pose2d(1.0, 0.0, AutoConstants.ROTATION_0)),
+    // Go right 2 meters (x axis)
+
+    KNOCKOUT_AUTO_POS1(0.2, new Pose2d(0.0, 0.0, AutoConstants.ROTATION_0)),
+
+    KNOCKOUT_AUTO_POS2(0.2, new Pose2d(4.3, 0.0, AutoConstants.ROTATION_270)),
+
+    KNOCKOUT_AUTO_POS3(0.2, new Pose2d(4.3, -2.7, AutoConstants.ROTATION_270)),
+
+    KNOCKOUT_AUTO_POS4(0.2, new Pose2d(4.3, -2.0, AutoConstants.ROTATION_270)),
+
+    KNOCKOUT_AUTO_POS5(0.2, new Pose2d(3.6, 0.0, AutoConstants.ROTATION_0)),
+
+    KNOCKOUT_AUTO_POS6(0.2, new Pose2d(3.6, -2.7, AutoConstants.ROTATION_270)),
+
+    TRIANGLE_AUTO_POS1(0.2, new Pose2d(0.0, 0.0, AutoConstants.ROTATION_0)),
+
+    TRIANGLE_AUTO_POS2(0.2, new Pose2d(0.0, 1.5, AutoConstants.ROTATION_0)),
+
+    TRIANGLE_AUTO_POS3(0.2, new Pose2d(1.5, 0.75, AutoConstants.ROTATION_0)),
+
+    RECTANGLE_AUTO_POS1(0.2, new Pose2d(0.0, 0.0, AutoConstants.ROTATION_0)),
+
+    RECTANGLE_AUTO_POS2(0.2, new Pose2d(0.0, 2.0, AutoConstants.ROTATION_0)),
+
+    RECTANGLE_AUTO_POS3(0.2, new Pose2d(4.0, 2.0, AutoConstants.ROTATION_180)),
+
+    RECTANGLE_AUTO_POS4(0.2, new Pose2d(4.0, 0.0, AutoConstants.ROTATION_180)),
+
+    BARN_AUTO_BOTTOM_LEFT_CORNER(0.2, new Pose2d(0.0, 0.0, AutoConstants.ROTATION_0)),
+
+    BARN_AUTO_TOP_LEFT_CORNER(0.2, new Pose2d(2.0, 0.0, AutoConstants.ROTATION_0)),
+
+    BARN_AUTO_TIP(0.2, new Pose2d(3.0, -1.0, AutoConstants.ROTATION_0)),
+
+    BARN_AUTO_TOP_RIGHT_CORNER(0.2, new Pose2d(2.0, -2.0, AutoConstants.ROTATION_0)),
+
+    BARN_AUTO_BOTTOM_RIGHT_CORNER(0.2, new Pose2d(0.0, -2.0, AutoConstants.ROTATION_0)),
+
     //// Start of some stuff that Joe wrote
     PRE_TEST(0.05,
             new Pose2d(14.165401626124469, 2.879876924969839, Rotation2d.fromRadians(-0.22656457143950046)));

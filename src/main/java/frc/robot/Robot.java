@@ -10,7 +10,9 @@ import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
@@ -26,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.auto.AutoConstants;
 import frc.robot.auto.ConeStation;
 import frc.robot.auto.CubePickupLocation;
 import frc.robot.maps.RobotMap;
@@ -36,6 +39,7 @@ import frc.robot.subsystems.BalanceArm;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Led;
+import frc.robot.Vision;
 
 public class Robot extends CommandRobot {
 
@@ -84,6 +88,9 @@ public class Robot extends CommandRobot {
 
     @Autonomous(defaultAuto = true, name = "(MAIN) Score leave")
     public CommandBase scoreThenLeave = auto.leaveCommunity();
+
+    // @Autonomous(name = "pathplanner path 1")
+    // public CommandBase pathOne = auto.fullAuto();
 
     // @Autonomous(name = "Piecemeal Auto")
     // public CommandBase buildCommand = new ProxyCommand(() -> {
@@ -146,7 +153,7 @@ public class Robot extends CommandRobot {
 
     public CommandBase stowArm = sequence(
             led.setOrange(),
-            intake.coneGrab(),
+            intake.closeIntake(),
             armExtend.retract(0.4),
             armRotate.moveTo(ArmPresets.ARM_STOWED),
             led.colorAlliance());
@@ -154,12 +161,11 @@ public class Robot extends CommandRobot {
     public CommandBase pickUpGamePiece = sequence(
             new ConditionalCommand(
                     sequence(
-                            armRotate.moveTo(ArmPresets.CONE_PICKUP), armExtend.moveTo(ArmPresets.CONE_PICKUP),
-                            intake.toggle()),
+                            armRotate.moveTo(ArmPresets.CONE_PICKUP), armExtend.moveTo(ArmPresets.CONE_PICKUP)),
                     sequence(
                             armRotate.moveTo(ArmPresets.CUBE_PICKUP), armExtend.moveTo(
                                     ArmPresets.CUBE_PICKUP),
-                            intake.coneRelease(), intake.toggle()),
+                            intake.openIntake()),
                     () -> {
                         return gamePieceSub.get() == "Cone";
                     }));
@@ -222,23 +228,22 @@ public class Robot extends CommandRobot {
         driveController.rightStick().whileTrue(drive.robotCentricDrive(driveController::getLeftX,
                 driveController::getLeftY, driveController::getRightX));
 
-        driveController.y().whileTrue(drive.balance());
-        driveController.x().whileTrue(drive.rotateToAngle(Rotation2d.fromDegrees(180), () -> 0, () -> 0));
-        driveController.a().whileTrue(drive.rotateToAngle(Rotation2d.fromDegrees(0), () -> 0, () -> 0));
+        // driveController.y().whileTrue(drive.balance());
+        // driveController.x().whileTrue(drive.rotateToAngle(Rotation2d.fromDegrees(180),
+        // () -> 0, () -> 0));
+        // driveController.a().whileTrue(drive.rotateToAngle(Rotation2d.fromDegrees(0),
+        // () -> 0, () -> 0));
 
-        driveController.povDown().onTrue(drive.moveForDirectional(0, 1, 5));
-        driveController.povRight().onTrue(drive.moveForDirectional(1, 0, 5));
-        driveController.povUp().onTrue(drive.moveForDirectional(0, -1, 5));
-        driveController.povLeft().onTrue(drive.moveForDirectional(-1, 0, 5));
-        /*
-         * public CommandBase testDriveDriver() {
-         * return sequence(
-         * moveForDirectional(0, 1, 5),
-         * moveForDirectional(1, 0, 5),
-         * moveForDirectional(0, -1, 5),
-         * moveForDirectional(-1, 0, 5));
-         * }
-         */
+        (new Trigger(() -> driveController.getRightTriggerAxis() > 0.5))
+                .onTrue(balanceArm.pushDown()).onFalse(balanceArm.pushUp());
+
+        driveController.a().whileTrue(auto.triangleAutoPathing());
+        driveController.x().whileTrue(auto.barnAutoPathing());
+        driveController.y().whileTrue(auto.knockoutAutoPathing());
+        // driveController.b().onTrue(drive.setPose(new Pose2d(0.0, 0.0,
+        // AutoConstants.ROTATION_0)));
+        // driveController.b().onTrue(Vision.setPose(new Pose2d(0.0, 0.0, 0.0)));
+
         // Arm
 
         // COPILOT CONTROLLER
