@@ -9,10 +9,11 @@ import com.chopshop166.chopshoplib.drive.SDSSwerveModule.Configuration;
 import com.chopshop166.chopshoplib.maps.RobotMapFor;
 import com.chopshop166.chopshoplib.motors.CSSparkMax;
 import com.chopshop166.chopshoplib.sensors.MockEncoder;
-import com.chopshop166.chopshoplib.sensors.gyro.PigeonGyro2;
+import com.chopshop166.chopshoplib.sensors.gyro.PigeonGyro;
 import com.chopshop166.chopshoplib.states.PIDValues;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
@@ -70,8 +71,8 @@ public class Valkyrie extends RobotMap {
     @Override
     public SwerveDriveMap getDriveMap() {
 
-        final double MODULE_OFFSET_XY = Units.inchesToMeters(9.89);
-        final PigeonGyro2 pigeonGyro2 = new PigeonGyro2(1);
+        final double MODULE_OFFSET_XY = Units.inchesToMeters(12.375);
+        final PigeonGyro pigeonGyro = new PigeonGyro(new PigeonIMU(0));
 
         final CSSparkMax frontLeftSteer = new CSSparkMax(4, MotorType.kBrushless);
         final CSSparkMax frontRightSteer = new CSSparkMax(8, MotorType.kBrushless);
@@ -83,13 +84,8 @@ public class Valkyrie extends RobotMap {
         rearLeftSteer.getMotorController().setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
         rearRightSteer.getMotorController().setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
 
-        frontLeftSteer.getMotorController().setInverted(true);
-        frontRightSteer.getMotorController().setInverted(true);
-        rearLeftSteer.getMotorController().setInverted(true);
-        rearRightSteer.getMotorController().setInverted(true);
-
-        // Configuration for MK4i with L2 speeds
-        Configuration MK4i_L2 = new Configuration(SDSSwerveModule.MK4_V2.gearRatio,
+        // Configuration for MK4 with L2 speeds
+        Configuration MK4_V2 = new Configuration(SDSSwerveModule.MK4_V2.gearRatio,
                 SDSSwerveModule.MK4_V2.wheelDiameter, new PIDValues(0.011, 0.00, 0.0002));
 
         // All Distances are in Meters
@@ -99,7 +95,7 @@ public class Valkyrie extends RobotMap {
         encoderFL.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
         final SDSSwerveModule frontLeft = new SDSSwerveModule(new Translation2d(MODULE_OFFSET_XY, MODULE_OFFSET_XY),
                 encoderFL, frontLeftSteer, new CSSparkMax(3, MotorType.kBrushless),
-                MK4i_L2);
+                MK4_V2);
 
         // Front Right Module
         final CANCoder encoderFR = new CANCoder(3);
@@ -108,7 +104,7 @@ public class Valkyrie extends RobotMap {
         final SDSSwerveModule frontRight = new SDSSwerveModule(new Translation2d(MODULE_OFFSET_XY, -MODULE_OFFSET_XY),
                 encoderFR, frontRightSteer, new CSSparkMax(7,
                         MotorType.kBrushless),
-                MK4i_L2);
+                MK4_V2);
 
         // Rear Left Module
         final CANCoder encoderRL = new CANCoder(2);
@@ -117,7 +113,7 @@ public class Valkyrie extends RobotMap {
         final SDSSwerveModule rearLeft = new SDSSwerveModule(new Translation2d(-MODULE_OFFSET_XY, MODULE_OFFSET_XY),
                 encoderRL, rearLeftSteer, new CSSparkMax(1,
                         MotorType.kBrushless),
-                MK4i_L2);
+                MK4_V2);
 
         // Rear Right Module
         final CANCoder encoderRR = new CANCoder(1);
@@ -126,7 +122,7 @@ public class Valkyrie extends RobotMap {
         final SDSSwerveModule rearRight = new SDSSwerveModule(new Translation2d(-MODULE_OFFSET_XY, -MODULE_OFFSET_XY),
                 encoderRR, rearRightSteer, new CSSparkMax(5,
                         MotorType.kBrushless),
-                MK4i_L2);
+                MK4_V2);
 
         final double maxDriveSpeedMetersPerSecond = Units.feetToMeters(12);
 
@@ -150,7 +146,7 @@ public class Valkyrie extends RobotMap {
 
         return new SwerveDriveMap(frontLeft, frontRight, rearLeft, rearRight,
                 maxDriveSpeedMetersPerSecond,
-                maxRotationRadianPerSecond, pigeonGyro2, pid, cameraPosition, "eyes");
+                maxRotationRadianPerSecond, pigeonGyro, pid, cameraPosition, "eyes");
 
     }
 }
