@@ -7,10 +7,12 @@ import com.chopshop166.chopshoplib.drive.MockSwerveModule;
 import com.chopshop166.chopshoplib.drive.SwerveModule;
 import com.chopshop166.chopshoplib.sensors.gyro.MockGyro;
 import com.chopshop166.chopshoplib.sensors.gyro.SmartGyro;
+import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.util.DrivePID;
 
@@ -128,6 +130,10 @@ public record SwerveDriveMap(SwerveModule frontLeft, SwerveModule frontRight, Sw
                 module.setDesiredState(this.desiredState);
                 this.steeringSetpoint = module.getSteeringMotor().get();
             }
+
+            public SwerveModuleState getModuleStates() {
+                return new SwerveModuleState(velocityMetersPerSec, Rotation2d.fromDegrees(podAngle));
+            }
         }
 
         public SwerveModuleData frontLeft = new SwerveModuleData("FrontLeft");
@@ -135,8 +141,14 @@ public record SwerveDriveMap(SwerveModule frontLeft, SwerveModule frontRight, Sw
         public SwerveModuleData rearLeft = new SwerveModuleData("rearLeft");
         public SwerveModuleData rearRight = new SwerveModuleData("rearRight");
 
+        // public ChassisSpeeds chassisSpeeds = new ChassisSpeeds();
+
         public double gyroYawPositionDegrees = 0.0;
 
+        public ChassisSpeeds getSpeeds() {
+            ChassisSpeeds chassisSpeeds = kinematics.toChassisSpeeds(frontLeft.getModuleStates(), frontRight.getModuleStates(), rearLeft.getModuleStates, );
+
+        
         @Override
         public void toLog(LogTable table) {
             frontLeft.toLog(table);

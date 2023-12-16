@@ -13,6 +13,10 @@ import com.chopshop166.chopshoplib.PersistenceCheck;
 import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.commands.FunctionalWaitCommand;
 import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -129,6 +133,23 @@ public class Drive extends SmartSubsystemBase {
                 this.map);
         correctionPID = new RotationPIDController(0.01, 0.00001, 0.0);
         rotationPID = drivePID.copyRotationPidController();
+
+        AutoBuilder.configureHolonomic(
+                this::getPose, // Robot pose supplier
+                this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
+                this::getSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+                this::move, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+                new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your
+                                                 // Constants class
+                        new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+                        new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+                        4.5, // Max module speed, in m/s
+                        0.2512, // Drive base radius in meters. Distance from robot center to furthest module.
+                        new ReplanningConfig() // Default path replanning config. See the API for the options here
+                ),
+                this // Reference to this subsystem to set requirements
+        );
+
     }
 
     public Command rotateToAngle(Rotation2d angle, DoubleSupplier translateX, DoubleSupplier translateY) {
@@ -248,8 +269,16 @@ public class Drive extends SmartSubsystemBase {
                     Rotation2d.fromDegrees(io.gyroYawPositionDegrees));
         }
 
+        move(speeds);
+
+    }
+
+    private void move(final ChassisSpeeds speeds) {
+
         // Now use this in our kinematics
         final SwerveModuleState[] moduleStates = kinematics.toSwerveModuleStates(speeds);
+
+        // io.chassisSpeeds = speeds;
 
         // Front left module state
         io.frontLeft.desiredState = moduleStates[0];
@@ -273,6 +302,17 @@ public class Drive extends SmartSubsystemBase {
         io.frontRight.desiredState = moduleStates[1];
         io.rearLeft.desiredState = moduleStates[2];
         io.rearRight.desiredState = moduleStates[3];
+    }
+
+    // public SwerveDrive getModuleStates() {
+    // ChassisSpeeds chassisSpeeds = kinematics.toChassisSpeeds(
+    // io.frontLeft, io.frontRight, backLeftState, backRightState);
+
+    // }
+
+    public ChassisSpeeds getSpeeds() {
+        return kinematics.toChassisSpeeds(io.frontLeft.getModuleStates(),
+                io.frontRight.getModuleStates(), io.rearLeft.getModuleStates(), io.rearRight.getModuleStates());
     }
 
     public Command driveRaw(DoubleSupplier xSpeed, DoubleSupplier ySpeed, DoubleSupplier rotation) {
