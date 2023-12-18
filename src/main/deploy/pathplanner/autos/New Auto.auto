@@ -12,6 +12,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "armScore"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "New Path"

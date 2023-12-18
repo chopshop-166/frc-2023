@@ -9,6 +9,8 @@ import com.chopshop166.chopshoplib.Autonomous;
 import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -46,6 +48,8 @@ public class Robot extends CommandRobot {
     SendableChooser<ConeStation> conePosChooser = new SendableChooser<>();
     SendableChooser<CubePickupLocation> cubePosChooser = new SendableChooser<>();
     SendableChooser<Integer> cubeScorePosChooser = new SendableChooser<>();
+    private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser(); // Default auto will be
+                                                                                         // `Commands.none()`;
 
     private RobotMap map = new FrostBiteMap();
     private ButtonXboxController driveController = new ButtonXboxController(0);
@@ -193,6 +197,8 @@ public class Robot extends CommandRobot {
         cubeScorePosChooser.addOption("Score Cube 13", 13);
         SmartDashboard.putData(cubeScorePosChooser);
 
+        SmartDashboard.putData("Auto Mode", autoChooser);
+
         Logger.recordMetadata("ProjectName", "FRC-2023"); // Set a metadata value
         map.setupLogging();
         if (!isReal()) {
@@ -281,6 +287,15 @@ public class Robot extends CommandRobot {
 
     @Override
     public void populateDashboard() {
+    }
+
+    /**
+     * Use this to pass the autonomous command to the main {@link Robot} class.
+     *
+     * @return the command to run in autonomous
+     */
+    public Command getAutonomousCommand() {
+        return autoChooser.getSelected();
     }
 
     @Override

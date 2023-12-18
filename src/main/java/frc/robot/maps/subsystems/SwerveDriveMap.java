@@ -141,14 +141,8 @@ public record SwerveDriveMap(SwerveModule frontLeft, SwerveModule frontRight, Sw
         public SwerveModuleData rearLeft = new SwerveModuleData("rearLeft");
         public SwerveModuleData rearRight = new SwerveModuleData("rearRight");
 
-        // public ChassisSpeeds chassisSpeeds = new ChassisSpeeds();
-
         public double gyroYawPositionDegrees = 0.0;
 
-        public ChassisSpeeds getSpeeds() {
-            ChassisSpeeds chassisSpeeds = kinematics.toChassisSpeeds(frontLeft.getModuleStates(), frontRight.getModuleStates(), rearLeft.getModuleStates, );
-
-        
         @Override
         public void toLog(LogTable table) {
             frontLeft.toLog(table);
