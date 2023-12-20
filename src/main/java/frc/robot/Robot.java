@@ -32,7 +32,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.auto.AutoConstants;
 import frc.robot.auto.ConeStation;
 import frc.robot.auto.CubePickupLocation;
-import frc.robot.maps.FrostBiteMap;
+import frc.robot.maps.Valkyrie;
 import frc.robot.maps.RobotMap;
 import frc.robot.subsystems.ArmExtend;
 import frc.robot.subsystems.ArmRotate;
@@ -48,10 +48,11 @@ public class Robot extends CommandRobot {
     SendableChooser<ConeStation> conePosChooser = new SendableChooser<>();
     SendableChooser<CubePickupLocation> cubePosChooser = new SendableChooser<>();
     SendableChooser<Integer> cubeScorePosChooser = new SendableChooser<>();
-    private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser(); // Default auto will be
-                                                                                         // `Commands.none()`;
+    // private final SendableChooser<Command> autoChooser =
+    // AutoBuilder.buildAutoChooser(); // Default auto will be
+    // // `Commands.none()`;
 
-    private RobotMap map = new FrostBiteMap();
+    private RobotMap map = new Valkyrie();
     private ButtonXboxController driveController = new ButtonXboxController(0);
     private ButtonXboxController copilotController = new ButtonXboxController(1);
 
@@ -197,7 +198,7 @@ public class Robot extends CommandRobot {
         cubeScorePosChooser.addOption("Score Cube 13", 13);
         SmartDashboard.putData(cubeScorePosChooser);
 
-        SmartDashboard.putData("Auto Mode", autoChooser);
+        // SmartDashboard.putData("Auto Mode", autoChooser);
 
         Logger.recordMetadata("ProjectName", "FRC-2023"); // Set a metadata value
         map.setupLogging();
@@ -294,9 +295,9 @@ public class Robot extends CommandRobot {
      *
      * @return the command to run in autonomous
      */
-    public Command getAutonomousCommand() {
-        return autoChooser.getSelected();
-    }
+    // public Command getAutonomousCommand() {
+    // return autoChooser.getSelected();
+    // }
 
     @Override
     public void setDefaultCommands() {

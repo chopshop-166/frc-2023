@@ -91,22 +91,23 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
     }
 
     // Closes intake based on game piece detected
-    public Command sensorControl() {
+    // public Command sensorControl() {
 
-        return cmd().onExecute(() -> {
-            if (getData().gamePieceDistance <= getData().maxGamePieceDistance &&
-                    getData().gamePieceDistance >= getData().minGamePieceDistance) {
-                if (ColorMath.equals(getData().sensorColor, Color.kPurple, .2)) {
-                    getData().motorSetPoint = GRAB_SPEED;
-                } else if (ColorMath.equals(getData().sensorColor, Color.kYellow, .2)) {
-                    getData().solenoidSetPoint = Value.kForward;
-                }
-            }
-        }).runsUntil(() -> getData().gamePieceDistance <= getData().minGamePieceDistance).onEnd(() -> {
-            safeState();
-        });
+    // return cmd().onExecute(() -> {
+    // if (getData().gamePieceDistance <= getData().maxGamePieceDistance &&
+    // getData().gamePieceDistance >= getData().minGamePieceDistance) {
+    // if (ColorMath.equals(getData().sensorColor, Color.kPurple, .2)) {
+    // getData().motorSetPoint = GRAB_SPEED;
+    // } else if (ColorMath.equals(getData().sensorColor, Color.kYellow, .2)) {
+    // getData().solenoidSetPoint = Value.kForward;
+    // }
+    // }
+    // }).runsUntil(() -> getData().gamePieceDistance <=
+    // getData().minGamePieceDistance).onEnd(() -> {
+    // safeState();
+    // });
 
-    }
+    // }
 
     @Override
     public void reset() {

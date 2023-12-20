@@ -90,7 +90,7 @@ public class Valkyrie extends RobotMap {
 
         // All Distances are in Meters
         // Front Left Module
-        final CANCoder encoderFL = new CANCoder(4);
+        final CANCoder encoderFL = new CANCoder(2);
         encoderFL.configMagnetOffset(-195.381);
         encoderFL.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
         final SDSSwerveModule frontLeft = new SDSSwerveModule(new Translation2d(MODULE_OFFSET_XY, MODULE_OFFSET_XY),
@@ -98,7 +98,7 @@ public class Valkyrie extends RobotMap {
                 MK4_V2);
 
         // Front Right Module
-        final CANCoder encoderFR = new CANCoder(3);
+        final CANCoder encoderFR = new CANCoder(4);
         encoderFR.configMagnetOffset(-304.189 + 180);
         encoderFR.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
         final SDSSwerveModule frontRight = new SDSSwerveModule(new Translation2d(MODULE_OFFSET_XY, -MODULE_OFFSET_XY),
@@ -107,7 +107,7 @@ public class Valkyrie extends RobotMap {
                 MK4_V2);
 
         // Rear Left Module
-        final CANCoder encoderRL = new CANCoder(2);
+        final CANCoder encoderRL = new CANCoder(1);
         encoderRL.configMagnetOffset(-298.213);
         encoderRL.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
         final SDSSwerveModule rearLeft = new SDSSwerveModule(new Translation2d(-MODULE_OFFSET_XY, MODULE_OFFSET_XY),
@@ -116,7 +116,7 @@ public class Valkyrie extends RobotMap {
                 MK4_V2);
 
         // Rear Right Module
-        final CANCoder encoderRR = new CANCoder(1);
+        final CANCoder encoderRR = new CANCoder(3);
         encoderRR.configMagnetOffset(-168.223 + 180);
         encoderRR.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
         final SDSSwerveModule rearRight = new SDSSwerveModule(new Translation2d(-MODULE_OFFSET_XY, -MODULE_OFFSET_XY),
