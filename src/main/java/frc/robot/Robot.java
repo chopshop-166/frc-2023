@@ -22,6 +22,7 @@ import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -48,9 +49,6 @@ public class Robot extends CommandRobot {
     SendableChooser<ConeStation> conePosChooser = new SendableChooser<>();
     SendableChooser<CubePickupLocation> cubePosChooser = new SendableChooser<>();
     SendableChooser<Integer> cubeScorePosChooser = new SendableChooser<>();
-    // private final SendableChooser<Command> autoChooser =
-    // AutoBuilder.buildAutoChooser(); // Default auto will be
-    // // `Commands.none()`;
 
     private RobotMap map = new Valkyrie();
     private ButtonXboxController driveController = new ButtonXboxController(0);
@@ -74,6 +72,9 @@ public class Robot extends CommandRobot {
 
     private Auto auto = new Auto(drive, armExtend, armRotate, intake, led, balanceArm);
     private Compressor compressor = new Compressor(PneumaticsModuleType.REVPH);
+
+    private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser();
+    // Default auto will be `Commands.none()`;
 
     @Autonomous(name = "No Auto")
     public Command noAuto = Commands.none();
@@ -288,6 +289,8 @@ public class Robot extends CommandRobot {
 
     @Override
     public void populateDashboard() {
+        Shuffleboard.getTab("AutoBuilder");
+        Shuffleboard.getTab("AutoBuilder").add("Auto 1", autoChooser);
     }
 
     /**
@@ -295,9 +298,10 @@ public class Robot extends CommandRobot {
      *
      * @return the command to run in autonomous
      */
-    // public Command getAutonomousCommand() {
-    // return autoChooser.getSelected();
-    // }
+    @Override
+    public Command getAutoCommand() {
+        return autoChooser.getSelected();
+    }
 
     @Override
     public void setDefaultCommands() {
