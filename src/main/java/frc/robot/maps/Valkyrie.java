@@ -91,7 +91,7 @@ public class Valkyrie extends RobotMap {
 
         // Configuration for MK4 with L2 speeds
         Configuration MK4_V2 = new Configuration(SDSSwerveModule.MK4_V2.gearRatio,
-                SDSSwerveModule.MK4_V2.wheelDiameter, new PIDValues(0.011, 0.00, 0.0002));
+                SDSSwerveModule.MK4_V2.wheelDiameter, new PIDValues(0.004, 0.00, 0.0002));
 
         // All Distances are in Meters
         // Front Left Module
