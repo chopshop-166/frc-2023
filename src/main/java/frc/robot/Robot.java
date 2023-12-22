@@ -254,10 +254,15 @@ public class Robot extends CommandRobot {
     @Override
     public void populateDashboard() {
         Shuffleboard.getTab("Pit Test");
-        Shuffleboard.getTab("Pit Test").add("Drive Backward", drive.moveForDirectional(0, 1, 5));
-        Shuffleboard.getTab("Pit Test").add("Drive Left", drive.moveForDirectional(-1, 0, 5));
-        Shuffleboard.getTab("Pit Test").add("Drive Right", drive.moveForDirectional(1, 0, 5));
-        Shuffleboard.getTab("Pit Test").add("Drive Forward", drive.moveForDirectional(0, -1, 5));
+        Shuffleboard.getTab("Pit Test").add("Drive Backward", drive.moveForDirectional(0, 1, 3)).withPosition(1, 2);
+        Shuffleboard.getTab("Pit Test").add("Drive Left", drive.moveForDirectional(-1, 0, 3)).withPosition(0, 1);
+        Shuffleboard.getTab("Pit Test").add("Drive Right", drive.moveForDirectional(1, 0, 3)).withPosition(2, 1);
+        Shuffleboard.getTab("Pit Test").add("Drive Forward", drive.moveForDirectional(0, -1, 3)).withPosition(1, 0);
+        Shuffleboard.getTab("Pit Test").add("Stop", drive.moveForDirectional(0, 0, 0)).withPosition(1, 1);
+        Shuffleboard.getTab("Pit Test").add("Foward Right", drive.moveForDirectional(1, -1, 3)).withPosition(2, 0);
+        Shuffleboard.getTab("Pit Test").add("Foward Left", drive.moveForDirectional(-1, 1, 3)).withPosition(0, 0);
+        Shuffleboard.getTab("Pit Test").add("Back Right", drive.moveForDirectional(1, 1, 3)).withPosition(2, 2);
+        Shuffleboard.getTab("Pit Test").add("Back Left", drive.moveForDirectional(-1, 1, 3)).withPosition(0, 2);
     }
 
     @Override
