@@ -84,6 +84,11 @@ public class Valkyrie extends RobotMap {
         rearLeftSteer.getMotorController().setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
         rearRightSteer.getMotorController().setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
 
+        frontLeftSteer.getMotorController().setInverted(false);
+        frontRightSteer.getMotorController().setInverted(false);
+        rearLeftSteer.getMotorController().setInverted(false);
+        rearRightSteer.getMotorController().setInverted(false);
+
         // Configuration for MK4 with L2 speeds
         Configuration MK4_V2 = new Configuration(SDSSwerveModule.MK4_V2.gearRatio,
                 SDSSwerveModule.MK4_V2.wheelDiameter, new PIDValues(0.011, 0.00, 0.0002));
@@ -91,7 +96,7 @@ public class Valkyrie extends RobotMap {
         // All Distances are in Meters
         // Front Left Module
         final CANCoder encoderFL = new CANCoder(2);
-        encoderFL.configMagnetOffset(-215.771);
+        encoderFL.configMagnetOffset(-35.771);
         encoderFL.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
         final SDSSwerveModule frontLeft = new SDSSwerveModule(new Translation2d(MODULE_OFFSET_XY, MODULE_OFFSET_XY),
                 encoderFL, frontLeftSteer, new CSSparkMax(3, MotorType.kBrushless),
@@ -99,7 +104,7 @@ public class Valkyrie extends RobotMap {
 
         // Front Right Module
         final CANCoder encoderFR = new CANCoder(4);
-        encoderFR.configMagnetOffset(-77.607);
+        encoderFR.configMagnetOffset(103.607);
         encoderFR.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
         final SDSSwerveModule frontRight = new SDSSwerveModule(new Translation2d(MODULE_OFFSET_XY, -MODULE_OFFSET_XY),
                 encoderFR, frontRightSteer, new CSSparkMax(7,
