@@ -290,7 +290,7 @@ public class Robot extends CommandRobot {
     @Override
     public void populateDashboard() {
         Shuffleboard.getTab("AutoBuilder");
-        Shuffleboard.getTab("AutoBuilder").add("Auto 1", autoChooser);
+        Shuffleboard.getTab("AutoBuilder").add("Auto", autoChooser);
     }
 
     /**

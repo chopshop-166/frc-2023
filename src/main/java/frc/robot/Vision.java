@@ -64,7 +64,7 @@ public class Vision {
     }
 
     public void setPose(Pose2d pose) {
-        odometry.resetPosition(Rotation2d.fromDegrees(driveMap.gyro().getAngle() - 180), getModulePositions(), pose);
+        estimator.resetPosition(Rotation2d.fromDegrees(driveMap.gyro().getAngle() - 180), getModulePositions(), pose);
     }
 
     // Estimated pose from a combination of vision and odometry
