@@ -71,6 +71,7 @@ public record SwerveDriveMap(SwerveModule frontLeft, SwerveModule frontRight, Sw
             public double[] steeringTempC;
             public SwerveModuleState desiredState = new SwerveModuleState();
             public double steeringSetpoint;
+            public ChassisSpeeds speeds;
 
             public SwerveModuleData(String name) {
                 this.name = name;
@@ -95,6 +96,8 @@ public record SwerveDriveMap(SwerveModule frontLeft, SwerveModule frontRight, Sw
                 subTable.put("SteeringTempCelsius", this.steeringTempC);
 
                 subTable.put("SteeringSetpoint", this.steeringSetpoint);
+                // subTable.put("ChassisSpeeds", this.speeds);
+
             }
 
             public void fromLog(LogTable table) {
@@ -115,6 +118,7 @@ public record SwerveDriveMap(SwerveModule frontLeft, SwerveModule frontRight, Sw
                 this.steeringCurrentAmps = subTable.get("SteeringCurrentAmps", this.steeringCurrentAmps);
                 this.steeringTempC = subTable.get("SteeringTempCelsius", this.steeringTempC);
                 this.steeringSetpoint = subTable.get("SteeringSetpoint", this.steeringSetpoint);
+                // this.speeds = subTable.get("ChassisSpeeds", this.speeds);
             }
 
             public void update(SwerveModule module) {
@@ -127,6 +131,7 @@ public record SwerveDriveMap(SwerveModule frontLeft, SwerveModule frontRight, Sw
                 this.steeringTempC = module.getSteeringMotor().getTemperatureC();
                 module.setDesiredState(this.desiredState);
                 this.steeringSetpoint = module.getSteeringMotor().get();
+                // this.speeds = module.ChassisSpeeds.get();
             }
 
             public SwerveModuleState getModuleStates() {

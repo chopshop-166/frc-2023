@@ -99,10 +99,6 @@ public class Drive extends SmartSubsystemBase {
         return pose;
     }
 
-    public void resetPose(Pose2d pose) {
-        this.pose = pose;
-    }
-
     private Vision vision;
     private Pose2d pose = new Pose2d();
     private final DrivePID drivePID;
@@ -132,7 +128,7 @@ public class Drive extends SmartSubsystemBase {
 
         AutoBuilder.configureHolonomic(
                 this::getPose, // Robot pose supplier
-                this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
+                vision::setPose, // Method to reset odometry (will be called if your auto has a starting pose)
                 this::getSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
                 this::move, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
                 new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your

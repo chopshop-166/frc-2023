@@ -280,7 +280,7 @@ public class Robot extends CommandRobot {
         Shuffleboard.getTab("Pit Test").add("Foward Left", drive.moveForDirectional(-1, 1, 3)).withPosition(0, 0);
         Shuffleboard.getTab("Pit Test").add("Back Right", drive.moveForDirectional(1, 1, 3)).withPosition(2, 2);
         Shuffleboard.getTab("Pit Test").add("Back Left", drive.moveForDirectional(-1, 1, 3)).withPosition(0, 2);
-        Shuffleboard.getTab("AutoBuilder").add("Auto 1", autoChooser);
+        Shuffleboard.getTab("AutoBuilder").add("Auto", autoChooser);
     }
 
     /**
