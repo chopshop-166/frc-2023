@@ -27,8 +27,8 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.auto.ConeStation;
 import frc.robot.auto.CubePickupLocation;
-import frc.robot.maps.FrostBiteMap;
 import frc.robot.maps.RobotMap;
+import frc.robot.maps.Valkyrie;
 import frc.robot.subsystems.ArmExtend;
 import frc.robot.subsystems.ArmRotate;
 // $Imports$
@@ -43,7 +43,7 @@ public class Robot extends CommandRobot {
     SendableChooser<CubePickupLocation> cubePosChooser = new SendableChooser<>();
     SendableChooser<Integer> cubeScorePosChooser = new SendableChooser<>();
 
-    private RobotMap map = new FrostBiteMap();
+    private RobotMap map = new Valkyrie();
     private ButtonXboxController driveController = new ButtonXboxController(0);
     private ButtonXboxController copilotController = new ButtonXboxController(1);
 
@@ -80,14 +80,6 @@ public class Robot extends CommandRobot {
 
     @Autonomous(defaultAuto = true, name = "(MAIN) Score leave")
     public Command scoreThenLeave = auto.leaveCommunity();
-
-    // @Autonomous(name = "Piecemeal Auto")
-    // public Command buildCommand = new ProxyCommand(() -> {
-    // ConeStation conePos = conePosChooser.getSelected();
-    // CubePickupLocation cubePos = cubePosChooser.getSelected();
-    // int cubeScorePos = cubeScorePosChooser.getSelected();
-    // return auto.combinedAuto(conePos, cubePos, cubeScorePos);
-    // });
 
     public Command driveScoreMidNode = sequence(
             armRotate.moveTo(ArmPresets.MEDIUM_SCORE),
@@ -142,7 +134,7 @@ public class Robot extends CommandRobot {
 
     public Command stowArm = sequence(
             led.setOrange(),
-            intake.coneGrab(),
+            intake.closeIntake(),
             armExtend.retract(0.4),
             armRotate.moveTo(ArmPresets.ARM_STOWED),
             led.colorAlliance());
@@ -150,12 +142,11 @@ public class Robot extends CommandRobot {
     public Command pickUpGamePiece = sequence(
             new ConditionalCommand(
                     sequence(
-                            armRotate.moveTo(ArmPresets.CONE_PICKUP), armExtend.moveTo(ArmPresets.CONE_PICKUP),
-                            intake.toggle()),
+                            armRotate.moveTo(ArmPresets.CONE_PICKUP), armExtend.moveTo(ArmPresets.CONE_PICKUP)),
                     sequence(
                             armRotate.moveTo(ArmPresets.CUBE_PICKUP), armExtend.moveTo(
                                     ArmPresets.CUBE_PICKUP),
-                            intake.coneRelease(), intake.toggle()),
+                            intake.openIntake()),
                     () -> {
                         return gamePieceSub.get() == "Cone";
                     }));
@@ -222,19 +213,6 @@ public class Robot extends CommandRobot {
         driveController.x().whileTrue(drive.rotateToAngle(Rotation2d.fromDegrees(180), () -> 0, () -> 0));
         driveController.a().whileTrue(drive.rotateToAngle(Rotation2d.fromDegrees(0), () -> 0, () -> 0));
 
-        driveController.povDown().onTrue(drive.moveForDirectional(0, 1, 5));
-        driveController.povRight().onTrue(drive.moveForDirectional(1, 0, 5));
-        driveController.povUp().onTrue(drive.moveForDirectional(0, -1, 5));
-        driveController.povLeft().onTrue(drive.moveForDirectional(-1, 0, 5));
-        /*
-         * public Command testDriveDriver() {
-         * return sequence(
-         * moveForDirectional(0, 1, 5),
-         * moveForDirectional(1, 0, 5),
-         * moveForDirectional(0, -1, 5),
-         * moveForDirectional(-1, 0, 5));
-         * }
-         */
         // Arm
 
         // COPILOT CONTROLLER

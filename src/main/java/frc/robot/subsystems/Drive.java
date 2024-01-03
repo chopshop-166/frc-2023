@@ -28,7 +28,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import frc.robot.Field;
 import frc.robot.Vision;
@@ -60,7 +59,6 @@ public class Drive extends SmartSubsystemBase {
 
     private static final double blueX = 1.8;
     private static final Rotation2d rotation0 = Rotation2d.fromDegrees(0);
-    private static final Rotation2d rotation180 = Rotation2d.fromDegrees(180);
 
     public enum GridPosition {
 

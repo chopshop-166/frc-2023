@@ -37,21 +37,20 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
         clawPub.set(getData().solenoidSetPoint == Value.kForward);
     }
 
-    // Grabs game piece Cone
-    public Command coneGrab() {
-        return runOnce(() -> {
-            getData().solenoidSetPoint = Value.kForward;
-        });
-    }
-
     // Releases game piece Cone
-    public Command coneRelease() {
+    public Command openIntake() {
         return runOnce(() -> {
             getData().solenoidSetPoint = Value.kReverse;
         });
     }
 
-    // Releases game piece Cone
+    public Command closeIntake() {
+        return runOnce(() -> {
+            getData().solenoidSetPoint = Value.kForward;
+        });
+    }
+
+    // Opens or closes intake
     public Command toggle() {
         return runOnce(() -> {
             if (getData().solenoidSetPoint == Value.kForward) {
@@ -89,24 +88,6 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
         }, () -> {
             getData().motorSetPoint = 0;
         });
-    }
-
-    // Closes intake based on game piece detected
-    public Command sensorControl() {
-
-        return cmd().onExecute(() -> {
-            if (getData().gamePieceDistance <= getData().maxGamePieceDistance &&
-                    getData().gamePieceDistance >= getData().minGamePieceDistance) {
-                if (ColorMath.equals(getData().sensorColor, Color.kPurple, .2)) {
-                    getData().motorSetPoint = GRAB_SPEED;
-                } else if (ColorMath.equals(getData().sensorColor, Color.kYellow, .2)) {
-                    getData().solenoidSetPoint = Value.kForward;
-                }
-            }
-        }).runsUntil(() -> getData().gamePieceDistance <= getData().minGamePieceDistance).onEnd(() -> {
-            safeState();
-        });
-
     }
 
     @Override

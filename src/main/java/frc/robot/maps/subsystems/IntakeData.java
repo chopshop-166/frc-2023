@@ -15,7 +15,6 @@ public class IntakeData implements LoggableInputs {
 
     public double motorSetPoint;
     public Value solenoidSetPoint = Value.kOff;
-    public Color sensorColor;
     public int gamePieceDistance;
     public int maxGamePieceDistance;
     public int minGamePieceDistance;
@@ -48,8 +47,6 @@ public class IntakeData implements LoggableInputs {
     public void toLog(LogTable table) {
         table.put("MotorSetPoint", motorSetPoint);
         table.put("SolenoidSetPoint", solenoidSetPoint.toString());
-        double[] detectedColor = new double[] { sensorColor.red, sensorColor.green, sensorColor.blue };
-        table.put("DetetectedColor", detectedColor);
         table.put("GamePieceDistance", gamePieceDistance);
         table.put("MotorCurrentAmps", currentAmps);
 
@@ -62,8 +59,6 @@ public class IntakeData implements LoggableInputs {
 
         motorSetPoint = table.get("MotorSetPoint", motorSetPoint);
         solenoidSetPoint = Value.valueOf(table.get("SolenoidSetPoint", solenoidSetPoint.toString()));
-        double[] detectedColor = table.get("DetectedColor", colorDoubleArray);
-        sensorColor = new Color(detectedColor[0], detectedColor[1], detectedColor[2]);
         gamePieceDistance = table.get("GamePieceDistance", gamePieceDistance);
         this.currentAmps = table.get("MotorCurrentAmps", currentAmps);
     }

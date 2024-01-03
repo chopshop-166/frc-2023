@@ -138,7 +138,7 @@ public class Auto {
     public Command stowArmCloseIntake() {
         return sequence(
                 armExtend.moveTo(ArmPresets.ARM_STOWED),
-                intake.coneGrab(),
+                intake.closeIntake(),
                 armRotate.moveTo(ArmPresets.ARM_STOWED));
     }
 
