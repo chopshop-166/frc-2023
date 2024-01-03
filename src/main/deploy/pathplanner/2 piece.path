@@ -1,0 +1,96 @@
+{
+  "waypoints": [
+    {
+      "anchorPoint": {
+        "x": 1.8042179595809578,
+        "y": 4.926019928375735
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 0.11121732167128522,
+        "y": 4.966815124469944
+      },
+      "holonomicAngle": 0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 7.119643278432466,
+        "y": 5.049385472436425
+      },
+      "prevControl": {
+        "x": 7.119643278432466,
+        "y": 5.090180668530634
+      },
+      "nextControl": {
+        "x": 7.119643278432466,
+        "y": 4.6822287075885445
+      },
+      "holonomicAngle": 0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": true,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 1.8552119546987187,
+        "y": 4.334489585009705
+      },
+      "prevControl": {
+        "x": 3.8337789652678547,
+        "y": 4.344688384033257
+      },
+      "nextControl": null,
+      "holonomicAngle": 0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    }
+  ],
+  "maxVelocity": 4.0,
+  "maxAcceleration": 3.0,
+  "isReversed": null,
+  "markers": [
+    {
+      "position": 1.0,
+      "names": [
+        "pickup game piece"
+      ]
+    },
+    {
+      "position": 2.0,
+      "names": [
+        "score second game piece"
+      ]
+    },
+    {
+      "position": 0.0,
+      "names": [
+        "score first game piece"
+      ]
+    }
+  ]
+}

@@ -128,6 +128,10 @@ public record SwerveDriveMap(SwerveModule frontLeft, SwerveModule frontRight, Sw
                 module.setDesiredState(this.desiredState);
                 this.steeringSetpoint = module.getSteeringMotor().get();
             }
+
+            public SwerveModuleState getModuleStates() {
+                return new SwerveModuleState(velocityMetersPerSec, Rotation2d.fromDegrees(podAngle));
+            }
         }
 
         public SwerveModuleData frontLeft = new SwerveModuleData("FrontLeft");

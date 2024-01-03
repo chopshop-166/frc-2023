@@ -68,6 +68,9 @@ public class Robot extends CommandRobot {
     private Auto auto = new Auto(drive, armExtend, armRotate, intake, led, balanceArm);
     private Compressor compressor = new Compressor(PneumaticsModuleType.REVPH);
 
+    // private final SendableChooser<Command> autoChooser =
+    // AutoBuilder.buildAutoChooser();
+
     @Autonomous(name = "No Auto")
     public Command noAuto = Commands.none();
     @Autonomous(name = "Score then balance")
@@ -177,6 +180,8 @@ public class Robot extends CommandRobot {
         cubeScorePosChooser.addOption("Score Cube 13", 13);
         SmartDashboard.putData(cubeScorePosChooser);
 
+        // SmartDashboard.putData("Auto Mode", autoChooser);
+
         Logger.recordMetadata("ProjectName", "FRC-2023"); // Set a metadata value
         map.setupLogging();
         if (!isReal()) {
@@ -276,6 +281,15 @@ public class Robot extends CommandRobot {
         Shuffleboard.getTab("Pit Test").add("Back Right", drive.moveForDirectional(1, 1, 3)).withPosition(2, 2);
         Shuffleboard.getTab("Pit Test").add("Back Left", drive.moveForDirectional(-1, 1, 3)).withPosition(0, 2);
     }
+
+    /**
+     * Use this to pass the autonomous command to the main {@link Robot} class.
+     *
+     * @return the command to run in autonomous
+     */
+    // public Command getAutonomousCommand() {
+    // return autoChooser.getSelected();
+    // }
 
     @Override
     public void setDefaultCommands() {
