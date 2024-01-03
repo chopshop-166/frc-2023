@@ -9,6 +9,7 @@ import com.chopshop166.chopshoplib.Autonomous;
 import com.chopshop166.chopshoplib.RobotUtils;
 import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
+import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
@@ -68,8 +69,7 @@ public class Robot extends CommandRobot {
     private Auto auto = new Auto(drive, armExtend, armRotate, intake, led, balanceArm);
     private Compressor compressor = new Compressor(PneumaticsModuleType.REVPH);
 
-    // private final SendableChooser<Command> autoChooser =
-    // AutoBuilder.buildAutoChooser();
+    private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser();
 
     @Autonomous(name = "No Auto")
     public Command noAuto = Commands.none();
@@ -280,6 +280,7 @@ public class Robot extends CommandRobot {
         Shuffleboard.getTab("Pit Test").add("Foward Left", drive.moveForDirectional(-1, 1, 3)).withPosition(0, 0);
         Shuffleboard.getTab("Pit Test").add("Back Right", drive.moveForDirectional(1, 1, 3)).withPosition(2, 2);
         Shuffleboard.getTab("Pit Test").add("Back Left", drive.moveForDirectional(-1, 1, 3)).withPosition(0, 2);
+        Shuffleboard.getTab("AutoBuilder").add("Auto 1", autoChooser);
     }
 
     /**
@@ -287,9 +288,10 @@ public class Robot extends CommandRobot {
      *
      * @return the command to run in autonomous
      */
-    // public Command getAutonomousCommand() {
-    // return autoChooser.getSelected();
-    // }
+    @Override
+    public Command getAutoCommand() {
+        return autoChooser.getSelected();
+    }
 
     @Override
     public void setDefaultCommands() {
