@@ -71,20 +71,20 @@ public class Robot extends CommandRobot {
 
     private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser();
 
-    @Autonomous(name = "No Auto")
-    public Command noAuto = Commands.none();
-    @Autonomous(name = "Score then balance")
-    public Command scoreBalance = auto.scoreConeBalance();
-    @Autonomous(name = "Just Score")
-    public Command scorewhile = auto.scoreConeWhile(Commands.none());
-    @Autonomous(name = "Score and pick up")
-    public Command scoreAndPickUp = auto.leaveCommunityAndPickUP();
+    // @Autonomous(name = "No Auto")
+    // public Command noAuto = Commands.none();
+    // @Autonomous(name = "Score then balance")
+    // public Command scoreBalance = auto.scoreConeBalance();
+    // @Autonomous(name = "Just Score")
+    // public Command scorewhile = auto.scoreConeWhile(Commands.none());
+    // @Autonomous(name = "Score and pick up")
+    // public Command scoreAndPickUp = auto.leaveCommunityAndPickUP();
 
     // @Autonomous
     // public Command scoreLeaveBalance = auto.scoreConeLeaveAndBalance();
 
-    @Autonomous(defaultAuto = true, name = "(MAIN) Score leave")
-    public Command scoreThenLeave = auto.leaveCommunity();
+    // @Autonomous(defaultAuto = true, name = "(MAIN) Score leave")
+    // public Command scoreThenLeave = auto.leaveCommunity();
 
     public Command driveScoreMidNode = sequence(
             armRotate.moveTo(ArmPresets.MEDIUM_SCORE),
@@ -225,7 +225,7 @@ public class Robot extends CommandRobot {
         (new Trigger(() -> driveController.getRightTriggerAxis() > 0.5))
                 .onTrue(balanceArm.pushDown()).onFalse(balanceArm.pushUp());
 
-        driveController.a().whileTrue(auto.triangleAutoPathing());
+        driveController.a().whileTrue(auto.rectangleAutoPathing());
         driveController.x().whileTrue(auto.barnAutoPathing());
         driveController.y().whileTrue(auto.knockoutAutoPathing());
         // driveController.b().onTrue(drive.setPose(new Pose2d(0.0, 0.0,
