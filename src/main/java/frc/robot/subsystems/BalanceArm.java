@@ -6,7 +6,7 @@ import com.chopshop166.chopshoplib.commands.SmartSubsystemBase;
 import com.chopshop166.chopshoplib.pneumatics.IDSolenoid;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.maps.subsystems.BalanceArmMap;
 import frc.robot.maps.subsystems.BalanceArmMap.Data;
 
@@ -19,15 +19,15 @@ public class BalanceArm extends SmartSubsystemBase {
         this.map = map;
     }
 
-    public CommandBase pushDown() {
+    public Command pushDown() {
         return pushStation(Value.kForward);
     }
 
-    public CommandBase pushUp() {
+    public Command pushUp() {
         return pushStation(Value.kReverse);
     }
 
-    private CommandBase pushStation(Value val) {
+    private Command pushStation(Value val) {
         return runOnce(() -> {
             data.solenoidSetPoint = val;
         });

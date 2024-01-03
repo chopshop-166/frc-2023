@@ -6,8 +6,7 @@ import java.util.Arrays;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Drive;
 
 public enum AutoPath {
@@ -153,9 +152,9 @@ public enum AutoPath {
     }
 
     // Create a sequence command to drive to each pose
-    public CommandBase getPath(Drive drive) {
+    public Command getPath(Drive drive) {
         return sequence(
-                Arrays.stream(poses).map(pos -> drive.driveTo(pos, this.tolerance)).toArray(CommandBase[]::new))
+                Arrays.stream(poses).map(pos -> drive.driveTo(pos, this.tolerance)).toArray(Command[]::new))
                 .withName(this.name()).andThen(drive.safeStateCmd());
     }
 }

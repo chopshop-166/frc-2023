@@ -92,16 +92,15 @@ public class ArmRotateMap {
 
         @Override
         public void fromLog(LogTable table) {
-            this.setPoint = table.getDouble("MotorSetpoint", setPoint);
-            this.degrees = table.getDouble("RotationDegrees", degrees);
-            this.velocityDegreesPerSecond = table.getDouble("MotorVelocityMetersPerSeconds", velocityDegreesPerSecond);
-            this.currentAmps = table.getDoubleArray("MotorCurrentAmps", currentAmps);
-            this.tempCelcius = table.getDoubleArray("MotorTempCelcius", tempCelcius);
-            this.acceleration = table.getDouble("MotorAcceleration", acceleration);
-            this.rotatingAbsAngleDegrees = table.getDouble("rotatingAbsAngleDegrees", rotatingAbsAngleDegrees);
-            this.rotatingRelativeAngleDegrees = table.getDouble("rotatingRelativeAngleDegrees",
-                    rotatingRelativeAngleDegrees);
-            this.rotatingAngleVelocity = table.getDouble("rotatingAngleVelocity", rotatingAngleVelocity);
+            this.setPoint = table.get("MotorSetpoint", setPoint);
+            this.degrees = table.get("RotationDegrees", degrees);
+            this.velocityDegreesPerSecond = table.get("MotorVelocityMetersPerSeconds", velocityDegreesPerSecond);
+            this.currentAmps = table.get("MotorCurrentAmps", currentAmps);
+            this.tempCelcius = table.get("MotorTempCelcius", tempCelcius);
+            this.acceleration = table.get("MotorAcceleration", acceleration);
+            this.rotatingAbsAngleDegrees = table.get("rotatingAbsAngleDegrees", rotatingAbsAngleDegrees);
+            this.rotatingRelativeAngleDegrees = table.get("rotatingRelativeAngleDegrees", rotatingRelativeAngleDegrees);
+            this.rotatingAngleVelocity = table.get("rotatingAngleVelocity", rotatingAngleVelocity);
 
         }
     }

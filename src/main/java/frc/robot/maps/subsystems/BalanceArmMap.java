@@ -39,7 +39,7 @@ public class BalanceArmMap {
 
         @Override
         public void fromLog(LogTable table) {
-            solenoidSetPoint = Value.valueOf(table.getString("SolenoidSetPoint", solenoidSetPoint.toString()));
+            solenoidSetPoint = Value.valueOf(table.get("SolenoidSetPoint", solenoidSetPoint.toString()));
         }
     }
 }

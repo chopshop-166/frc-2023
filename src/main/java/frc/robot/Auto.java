@@ -9,12 +9,11 @@ import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 
 import com.chopshop166.chopshoplib.commands.FunctionalWaitCommand;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringSubscriber;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import frc.robot.auto.AutoPath;
 import frc.robot.auto.ConeStation;
@@ -47,18 +46,18 @@ public class Auto {
         this.balanceArm = balanceArm;
     }
 
-    private CommandBase moveFor(double speed, double seconds) {
+    private Command moveFor(double speed, double seconds) {
         return race(
                 drive.driveRaw(() -> 0, () -> -speed, () -> 0),
                 new FunctionalWaitCommand(() -> seconds)).andThen(drive.safeStateCmd());
     }
 
-    public CommandBase leaveCommunity() {
+    public Command leaveCommunity() {
         return (scoreConeWhile(
                 drive.driveRelative(new Translation2d(4, 0), 180, 6)));
     }
 
-    public CommandBase leaveCommunityAndPickUP() {
+    public Command leaveCommunityAndPickUP() {
         return scoreConeWhile(
                 drive.driveRelative(new Translation2d(2, 0), 180, 3)).andThen(
                         drive.driveRelative(new Translation2d(3.25, 0.75), 270,
@@ -66,7 +65,7 @@ public class Auto {
                 .andThen(pickUpCube());
     }
 
-    private CommandBase armScore(ArmPresets aboveLevel, ArmPresets scoreLevel) {
+    private Command armScore(ArmPresets aboveLevel, ArmPresets scoreLevel) {
         return sequence(
                 armRotate.moveTo(aboveLevel).withTimeout(2), armExtend.moveTo(aboveLevel).withTimeout(
                         2),
@@ -74,7 +73,7 @@ public class Auto {
     }
 
     // THE ONE THAT ACTUALLY WORKS
-    public CommandBase scoreConeWhile(CommandBase commandWhileStow) {
+    public Command scoreConeWhile(Command commandWhileStow) {
         return sequence(
                 drive.setGyro180(),
                 armExtend.zeroVelocityCheck(),
@@ -90,7 +89,7 @@ public class Auto {
     }
 
     // Score cone and back up onto charge station (from pos 1) and then balance
-    public CommandBase scoreConeBalance() {
+    public Command scoreConeBalance() {
         return sequence(
                 // armRotate.zeroVelocityCheck(),
                 scoreConeWhile(drive.driveUntilTipped(true).withTimeout(2)),
@@ -103,7 +102,7 @@ public class Auto {
                 .withName("Score Cone Balance");
     }
 
-    public CommandBase scoreConeLeaveAndBalance() {
+    public Command scoreConeLeaveAndBalance() {
         return sequence(
                 // armRotate.zeroVelocityCheck(),
                 scoreConeWhile(drive.driveUntilTipped(true)),
@@ -120,7 +119,7 @@ public class Auto {
                 .withName("Score Cone, Leave, and Balance");
     }
 
-    public CommandBase prepareToScoreCone() {
+    public Command prepareToScoreCone() {
         return sequence(
                 // armRotate.zeroVelocityCheck(),
                 armExtend.zeroVelocityCheck(),
@@ -128,7 +127,7 @@ public class Auto {
                 armRotate.moveTo(ArmPresets.HIGH_SCORE));
     }
 
-    public CommandBase testDriveDriver() {
+    public Command testDriveDriver() {
         return sequence(
                 drive.moveForDirectional(0, 1, 5),
                 drive.moveForDirectional(1, 0, 5),
@@ -136,14 +135,14 @@ public class Auto {
                 drive.moveForDirectional(-1, 0, 5));
     }
 
-    public CommandBase stowArmCloseIntake() {
+    public Command stowArmCloseIntake() {
         return sequence(
                 armExtend.moveTo(ArmPresets.ARM_STOWED),
-                intake.coneGrab(),
+                intake.closeIntake(),
                 armRotate.moveTo(ArmPresets.ARM_STOWED));
     }
 
-    public CommandBase pickUpCube() {
+    public Command pickUpCube() {
         return sequence(
                 armRotate.moveTo(ArmPresets.CUBE_PICKUP),
                 armExtend.moveTo(ArmPresets.CUBE_PICKUP),
@@ -152,7 +151,7 @@ public class Auto {
                 armRotate.moveTo(ArmPresets.ARM_STOWED));
     }
 
-    public CommandBase pickUpCone() {
+    public Command pickUpCone() {
         return sequence(
                 armRotate.moveTo(ArmPresets.CONE_PICKUP),
                 armExtend.moveTo(ArmPresets.CONE_PICKUP),
@@ -161,7 +160,7 @@ public class Auto {
                 armRotate.moveTo(ArmPresets.ARM_STOWED));
     }
 
-    public CommandBase scoreCube() {
+    public Command scoreCube() {
         return sequence(
                 armRotate.moveTo(ArmPresets.HIGH_SCORE),
                 timingWait(),
@@ -169,7 +168,7 @@ public class Auto {
                 timingWait());
     }
 
-    public CommandBase scoreHighNode() {
+    public Command scoreHighNode() {
         return sequence(
                 armRotate.moveTo(ArmPresets.HIGH_SCORE),
                 new ConditionalCommand(
@@ -181,7 +180,7 @@ public class Auto {
                         }));
     }
 
-    private CommandBase startGridScoreCone(AutoPath upToStation, AutoPath backedUp) {
+    private Command startGridScoreCone(AutoPath upToStation, AutoPath backedUp) {
         return sequence(
                 prepareToScoreCone(),
                 upToStation.getPath(drive),
@@ -190,14 +189,14 @@ public class Auto {
                 stowArmCloseIntake());
     }
 
-    private CommandBase pickupCubeN(AutoPath readyForPickup, AutoPath goToPickup) {
+    private Command pickupCubeN(AutoPath readyForPickup, AutoPath goToPickup) {
         return sequence(
                 readyForPickup.getPath(drive),
                 pickUpCube(),
                 goToPickup.getPath(drive));
     }
 
-    public CommandBase scoreCubePos(int cubeScorePos) {
+    public Command scoreCubePos(int cubeScorePos) {
         switch (cubeScorePos) {
             case 11:
                 return AutoPath.CUBE_SCORE_11.getPath(drive).withName("Score Cube (Pos 11)");
@@ -210,12 +209,12 @@ public class Auto {
         }
     }
 
-    public CommandBase combinedAuto(ConeStation conePos, CubePickupLocation cubePos, int cubeScorePos) {
-        CommandBase coneScoreCmd = startGridScoreCone(conePos.upToStation, conePos.backedUp)
+    public Command combinedAuto(ConeStation conePos, CubePickupLocation cubePos, int cubeScorePos) {
+        Command coneScoreCmd = startGridScoreCone(conePos.upToStation, conePos.backedUp)
                 .withName("Score Cone (Pos " + conePos.number + ")");
-        CommandBase pickupCubeCmd = pickupCubeN(cubePos.readyForPickup, cubePos.goToPickup)
+        Command pickupCubeCmd = pickupCubeN(cubePos.readyForPickup, cubePos.goToPickup)
                 .withName("Pickup (Pos " + cubePos.number + ")");
-        CommandBase scoreCubeCmd = scoreCubePos(cubeScorePos);
+        Command scoreCubeCmd = scoreCubePos(cubeScorePos);
 
         return sequence(
                 coneScoreCmd,
@@ -231,7 +230,7 @@ public class Auto {
         ).withName(coneScoreCmd.getName() + " " + pickupCubeCmd.getName() + " " + scoreCubeCmd.getName());
     }
 
-    private CommandBase timingWait() {
+    private Command timingWait() {
         return new FunctionalWaitCommand(() -> 0.25);
     }
 
