@@ -33,6 +33,7 @@ public class Auto {
     Intake intake;
     BalanceArm balanceArm;
     Led led;
+    Vision vision;
     NetworkTableInstance ntinst = NetworkTableInstance.getDefault();
     StringSubscriber gamePieceSub = ntinst.getStringTopic("Game Piece").subscribe("Cone");
 
@@ -127,14 +128,6 @@ public class Auto {
                 armRotate.moveTo(ArmPresets.HIGH_SCORE));
     }
 
-    public Command testDriveDriver() {
-        return sequence(
-                drive.moveForDirectional(0, 1, 5),
-                drive.moveForDirectional(1, 0, 5),
-                drive.moveForDirectional(0, -1, 5),
-                drive.moveForDirectional(-1, 0, 5));
-    }
-
     public Command stowArmCloseIntake() {
         return sequence(
                 armExtend.moveTo(ArmPresets.ARM_STOWED),
@@ -145,19 +138,12 @@ public class Auto {
     public Command pickUpCube() {
         return sequence(
                 armRotate.moveTo(ArmPresets.CUBE_PICKUP),
-                armExtend.moveTo(ArmPresets.CUBE_PICKUP),
-                intake.grab(),
-                armExtend.retract(0.4),
-                armRotate.moveTo(ArmPresets.ARM_STOWED));
-    }
+                // armExtend.moveTo(ArmPresets.CUBE_PICKUP),
+                intake.openIntake(),
+                intake.grab()
 
-    public Command pickUpCone() {
-        return sequence(
-                armRotate.moveTo(ArmPresets.CONE_PICKUP),
-                armExtend.moveTo(ArmPresets.CONE_PICKUP),
-                intake.grab().raceWith(drive.driveRelative(new Translation2d(0, -0.5), 270, 2)),
-                armExtend.retract(0.4),
-                armRotate.moveTo(ArmPresets.ARM_STOWED));
+        // armExtend.retract(0.4),
+        );
     }
 
     public Command scoreCube() {
@@ -165,7 +151,16 @@ public class Auto {
                 armRotate.moveTo(ArmPresets.HIGH_SCORE),
                 timingWait(),
                 intake.cubeRelease(),
-                timingWait());
+                timingWait(),
+                armRotate.moveTo(ArmPresets.ARM_STOWED));
+    }
+
+    public Command scoreCubeLow() {
+        return sequence(
+                armRotate.moveTo(ArmPresets.CUBE_PICKUP),
+                parallel(intake.cubeRelease(),
+                        intake.closeIntake()),
+                armRotate.moveTo(ArmPresets.ARM_STOWED));
     }
 
     public Command scoreHighNode() {
@@ -223,7 +218,8 @@ public class Auto {
                 conePos.communityPosition.inCommunity.getPath(drive),
                 scoreCubeCmd,
                 scoreCube()
-        // position to be in front of drive station in community? I'll add that
+        // position to be in front of drive station in community? I'll add that <- ha
+        // you thought, no because this auto is useless
         // , drive.driveUntilTipped()
         // , drive.balance()
 
@@ -234,4 +230,92 @@ public class Auto {
         return new FunctionalWaitCommand(() -> 0.25);
     }
 
+    // Square auto using the drive relative command
+    // Note: Tranlsation 2d x,y represents distance in the x plane, y plane
+    public Command squareAutoDriveRelative() {
+        return sequence(
+                drive.setGyro180(),
+                drive.driveRelative(new Translation2d(0.0, 0.0), 0, 3),
+                drive.driveRelative(new Translation2d(0.0, 2.0), 0, 3),
+                drive.driveRelative(new Translation2d(-2.0, 2.0), 0, 3),
+                drive.driveRelative(new Translation2d(-2.0, 0), 0, 3),
+                drive.driveRelative(new Translation2d(0, 0), 0, 3)).withName("Square: ");
+    }
+
+    // Square auto using pathing
+    public Command squareAutoPathing() {
+        return sequence(
+                AutoPath.SQUARE_AUTO_POS1.getPath(drive),
+                // waitSeconds(1.5),
+                AutoPath.SQUARE_AUTO_POS2.getPath(drive),
+                // waitSeconds(1.5),
+                AutoPath.SQUARE_AUTO_POS3.getPath(drive),
+                // waitSeconds(1.5),
+                AutoPath.SQUARE_AUTO_POS4.getPath(drive),
+                // waitSeconds(1.5),
+                AutoPath.SQUARE_AUTO_POS1.getPath(drive)).withName("Square: (Pathing)");
+    }
+
+    // Line Auto
+    public Command knockoutAutoPathing() {
+        return sequence(
+                // Vision.setPose(Pose2d(0.0, 0.0, AutoConstants.ROTATION_0)),
+
+                // drive.setPose(new Pose2d(0.0, 0.0,
+                // AutoConstants.ROTATION_0)),
+
+                AutoPath.KNOCKOUT_AUTO_POS1.getPath(drive),
+                AutoPath.KNOCKOUT_AUTO_POS2.getPath(drive),
+                AutoPath.KNOCKOUT_AUTO_POS3.getPath(drive),
+                AutoPath.KNOCKOUT_AUTO_POS4.getPath(drive),
+                AutoPath.KNOCKOUT_AUTO_POS1.getPath(drive),
+                AutoPath.KNOCKOUT_AUTO_POS5.getPath(drive),
+                AutoPath.KNOCKOUT_AUTO_POS6.getPath(drive),
+                AutoPath.KNOCKOUT_AUTO_POS1.getPath(drive)
+
+        // AutoPath.LINE_AUTO_POS1.getPath(drive)
+        );
+    }
+
+    // Triangle Auto
+    public Command triangleAutoPathing() {
+        return sequence(
+                AutoPath.TRIANGLE_AUTO_POS1.getPath(drive),
+                // waitSeconds(1.5),
+                AutoPath.TRIANGLE_AUTO_POS2.getPath(drive),
+                // waitSeconds(1.5),
+                AutoPath.TRIANGLE_AUTO_POS3.getPath(drive),
+                // waitSeconds(1.5),
+                AutoPath.TRIANGLE_AUTO_POS1.getPath(drive));
+    }
+
+    public Command rectangleAutoPathing() {
+        return sequence(
+                AutoPath.RECTANGLE_AUTO_POS1.getPath(drive),
+                AutoPath.RECTANGLE_AUTO_POS2.getPath(drive),
+                AutoPath.RECTANGLE_AUTO_POS3.getPath(drive),
+                AutoPath.RECTANGLE_AUTO_POS4.getPath(drive),
+                AutoPath.RECTANGLE_AUTO_POS1.getPath(drive));
+    }
+
+    public Command barnAutoPathing() {
+        return sequence(
+                AutoPath.BARN_AUTO_BOTTOM_LEFT_CORNER.getPath(drive),
+                AutoPath.BARN_AUTO_TOP_LEFT_CORNER.getPath(drive),
+                AutoPath.BARN_AUTO_TIP.getPath(drive),
+                AutoPath.BARN_AUTO_TOP_RIGHT_CORNER.getPath(drive),
+                AutoPath.BARN_AUTO_TOP_LEFT_CORNER.getPath(drive),
+                AutoPath.BARN_AUTO_BOTTOM_RIGHT_CORNER.getPath(drive),
+                AutoPath.BARN_AUTO_TOP_RIGHT_CORNER.getPath(drive),
+                AutoPath.BARN_AUTO_BOTTOM_LEFT_CORNER.getPath(drive),
+                AutoPath.BARN_AUTO_BOTTOM_RIGHT_CORNER.getPath(drive),
+                AutoPath.BARN_AUTO_BOTTOM_LEFT_CORNER.getPath(drive));
+    }
+
+    // Square auto using driveRaw Command maybe?
+    public Command squareAutoMoveTurn() {
+        return sequence(
+
+        );
+    }
 }

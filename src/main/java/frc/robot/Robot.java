@@ -211,9 +211,21 @@ public class Robot extends CommandRobot {
         driveController.rightStick().whileTrue(drive.robotCentricDrive(driveController::getLeftX,
                 driveController::getLeftY, driveController::getRightX));
 
-        driveController.y().whileTrue(drive.balance());
-        driveController.x().whileTrue(drive.rotateToAngle(Rotation2d.fromDegrees(180), () -> 0, () -> 0));
-        driveController.a().whileTrue(drive.rotateToAngle(Rotation2d.fromDegrees(0), () -> 0, () -> 0));
+        // driveController.y().whileTrue(drive.balance());
+        // driveController.x().whileTrue(drive.rotateToAngle(Rotation2d.fromDegrees(180),
+        // () -> 0, () -> 0));
+        // driveController.a().whileTrue(drive.rotateToAngle(Rotation2d.fromDegrees(0),
+        // () -> 0, () -> 0));
+
+        (new Trigger(() -> driveController.getRightTriggerAxis() > 0.5))
+                .onTrue(balanceArm.pushDown()).onFalse(balanceArm.pushUp());
+
+        driveController.a().whileTrue(auto.triangleAutoPathing());
+        driveController.x().whileTrue(auto.barnAutoPathing());
+        driveController.y().whileTrue(auto.knockoutAutoPathing());
+        // driveController.b().onTrue(drive.setPose(new Pose2d(0.0, 0.0,
+        // AutoConstants.ROTATION_0)));
+        // driveController.b().onTrue(Vision.setPose(new Pose2d(0.0, 0.0, 0.0)));
 
         // Arm
 
