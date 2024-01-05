@@ -6,6 +6,8 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import com.chopshop166.chopshoplib.drive.SDSSwerveModule;
 import com.chopshop166.chopshoplib.drive.SDSSwerveModule.Configuration;
+import com.chopshop166.chopshoplib.leds.LedMap;
+import com.chopshop166.chopshoplib.leds.SegmentConfig;
 import com.chopshop166.chopshoplib.maps.RobotMapFor;
 import com.chopshop166.chopshoplib.motors.CSSparkMax;
 import com.chopshop166.chopshoplib.motors.CSTalonSRX;
@@ -34,7 +36,6 @@ import frc.robot.maps.subsystems.ArmExtendMap;
 import frc.robot.maps.subsystems.ArmRotateMap;
 import frc.robot.maps.subsystems.BalanceArmMap;
 import frc.robot.maps.subsystems.IntakeData;
-import frc.robot.maps.subsystems.LedMap;
 import frc.robot.maps.subsystems.SwerveDriveMap;
 import frc.robot.util.DrivePID;
 
@@ -210,7 +211,25 @@ public class FrostBiteMap extends RobotMap {
     @Override
     public LedMap getLedMap() {
         // length is 27 * 2; there are two strips of LEDs
-        return new LedMap(0, 54);
+        var result = new LedMap(0, 54);
+        var leds = result.ledBuffer;
+
+        // Segment factory takes length
+        // Tags allow operating on multiple segments at once
+        SegmentConfig leftArm = leds.segment(1).tags("Sees Tag", "Fire", "Rainbow", "Bottom");
+        SegmentConfig leftBalance = leds.segment(13).tags("Balance Status", "Intake", "Fire", "Rainbow", "Alliance",
+                "Bottom");
+        SegmentConfig leftSignal = leds.segment(13).tags("Arm Status", "HP Signal", "Fire", "Rainbow");
+        // mirrorSegment takes a group of segment configs and has a length equal to
+        // their total length
+        // When those segments are changed, they change the mirror segment as well
+        // reversed(true) tells it to do the lights in reverse (like on Frostbite)
+        // Since they're still segments, if you specify tags for them then they'll be
+        // treated as individual segments for those tags
+        leds.mirrorSegment(leftSignal).reversed(true);
+        leds.mirrorSegment(leftBalance).reversed(true);
+        leds.mirrorSegment(leftArm).reversed(true);
+        return result;
     }
 
     @Override

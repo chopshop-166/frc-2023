@@ -36,7 +36,6 @@ public class CSFusedEncoder implements IEncoder, Sendable {
     @Override
     public void reset() {
         // This sets the relative encoder to the current absolute position
-        System.out.println("Reseting Fused Encoder");
         relativeEncoderOffset = this.absolutePos.getAbsolutePosition();
         this.relativeEncoder.reset();
     }

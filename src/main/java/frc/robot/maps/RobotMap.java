@@ -5,6 +5,7 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
+import com.chopshop166.chopshoplib.leds.LedMap;
 import com.chopshop166.chopshoplib.maps.RobotMapFor;
 
 // $Imports$
@@ -12,7 +13,6 @@ import frc.robot.maps.subsystems.ArmExtendMap;
 import frc.robot.maps.subsystems.ArmRotateMap;
 import frc.robot.maps.subsystems.BalanceArmMap;
 import frc.robot.maps.subsystems.IntakeData;
-import frc.robot.maps.subsystems.LedMap;
 import frc.robot.maps.subsystems.SwerveDriveMap;
 
 @RobotMapFor("Default")
