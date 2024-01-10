@@ -45,9 +45,15 @@ import frc.robot.util.RotationPIDController;
 
 public class Drive extends SmartSubsystemBase {
 
+    // Keep: lines 53 (map and io will be included), 109-116, 120, 124-125, 136-153,
+    // 222-297, 307-310, 316-325, reset and periodic should come in, add safestate
+    //
     SwerveDriveMap map;
     Data io;
     public final SwerveDriveKinematics kinematics;
+
+    NetworkTableInstance inst = NetworkTableInstance.getDefault();
+    boolean isBlue = false;
     double maxDriveSpeedMetersPerSecond;
     double maxRotationRadiansPerSecond;
     double speedCoef = 1;
@@ -59,9 +65,6 @@ public class Drive extends SmartSubsystemBase {
     private final double UNTIL_TIPPED_SPEED = 2;
     private final double UNTIL_NOT_TIPPED_SPEED = 0.5;
     private final double BALANCE_SPEED = 0.25;
-
-    boolean isBlue = false;
-    NetworkTableInstance inst = NetworkTableInstance.getDefault();
     BooleanPublisher autoBalanceState = inst.getBooleanTopic("Auto/Balance").publish();
 
     private static final double blueX = 1.8;
@@ -216,6 +219,7 @@ public class Drive extends SmartSubsystemBase {
         return driveRelative(translation, Rotation2d.fromDegrees(angleDegrees), timeoutSeconds);
     }
 
+    // Yes! But rename (part of manual driving)
     private void deadbandMove(final double xSpeed, final double ySpeed,
             final double rotation, boolean isRobotCentric) {
 
@@ -274,8 +278,8 @@ public class Drive extends SmartSubsystemBase {
 
         // Now use this in our kinematics
         final SwerveModuleState[] moduleStates = kinematics.toSwerveModuleStates(speeds);
-
-        // io.chassisSpeeds = speeds;
+        SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, maxDriveSpeedMetersPerSecond);
+        //
 
         // Front left module state
         io.frontLeft.desiredState = moduleStates[0];
@@ -300,12 +304,6 @@ public class Drive extends SmartSubsystemBase {
         io.rearRight.desiredState = moduleStates[3];
     }
 
-    // public SwerveDrive getModuleStates() {
-    // ChassisSpeeds chassisSpeeds = kinematics.toChassisSpeeds(
-    // io.frontLeft, io.frontRight, backLeftState, backRightState);
-
-    // }
-
     public ChassisSpeeds getSpeeds() {
         return kinematics.toChassisSpeeds(io.frontLeft.getModuleStates(),
                 io.frontRight.getModuleStates(), io.rearLeft.getModuleStates(), io.rearRight.getModuleStates());
@@ -315,10 +313,12 @@ public class Drive extends SmartSubsystemBase {
         return run(() -> move(xSpeed.getAsDouble(), ySpeed.getAsDouble(), rotation.getAsDouble()));
     }
 
+    // Yes! Actual manual drive
     public Command drive(DoubleSupplier xSpeed, DoubleSupplier ySpeed, DoubleSupplier rotation) {
         return run(() -> deadbandMove(xSpeed.getAsDouble(), ySpeed.getAsDouble(), rotation.getAsDouble(), false));
     }
 
+    // Yes! Remap?
     public Command robotCentricDrive(DoubleSupplier xSpeed, DoubleSupplier ySpeed, DoubleSupplier rotation) {
         return run(() -> deadbandMove(xSpeed.getAsDouble(), ySpeed.getAsDouble(), rotation.getAsDouble(), true))
                 .withName("Robot Centric Drive");
@@ -354,23 +354,6 @@ public class Drive extends SmartSubsystemBase {
     public Command driveTo(GridPosition gridPose) {
         return driveTo(gridPose.getPose(), 0.05);
     }
-
-    // Reset odometry
-    // public void resetOdometry(Pose2d pose) {
-    // odemeter.reset
-    // frontLeft.SwerveModulePosition(),
-    // frontRight.SwerveModulePosition(),
-    // rearLeft.SwerveModulePosition(),
-    // rearRight.SwerveModulePosition()
-    // , pose);
-    //
-
-    // public void resetOdometry(Pose2d pose) {
-    // map.gyro.setAngle(pose.getRotation().getDegrees());
-    // odometry.resetPosition(pose, map.gyro.getRotation2d());
-    // startingRotation = (pose.getRotation().getDegrees() - 90) % 180;
-
-    // }
 
     // Find the nearest grid position and line up with it
     public Command driveToNearest() {

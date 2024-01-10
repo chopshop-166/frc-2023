@@ -72,8 +72,8 @@ public record SwerveDriveMap(SwerveModule frontLeft, SwerveModule frontRight, Sw
             public double[] steeringCurrentAmps;
             public double[] steeringTempC;
             public SwerveModuleState desiredState = new SwerveModuleState();
-            public double steeringSetpoint;
-            public ChassisSpeeds speeds;
+            public double steeringSetpoint; // Added during season
+            public ChassisSpeeds speeds; // Added during season
 
             public SwerveModuleData(String name) {
                 this.name = name;
@@ -88,7 +88,8 @@ public record SwerveDriveMap(SwerveModule frontLeft, SwerveModule frontRight, Sw
                 // actual state (Position/velocity/angle)
                 subTable.put("DrivePositionMeters", this.drivePositionMeters);
                 subTable.put("DriveVelocityMetersPerSec", this.velocityMetersPerSec);
-                subTable.put("ABSDriveVelocityMetersPerSec", Math.abs(this.velocityMetersPerSec));
+                subTable.put("ABSDriveVelocityMetersPerSec", Math.abs(this.velocityMetersPerSec)); // Added during
+                                                                                                   // season
                 subTable.put("DriveAngleDegrees", this.podAngle);
                 // Drive Motor params
                 subTable.put("DriveCurrentAmps", this.driveCurrentAmps);
@@ -97,8 +98,8 @@ public record SwerveDriveMap(SwerveModule frontLeft, SwerveModule frontRight, Sw
                 subTable.put("SteeringCurrentAmps", this.steeringCurrentAmps);
                 subTable.put("SteeringTempCelsius", this.steeringTempC);
 
-                subTable.put("SteeringSetpoint", this.steeringSetpoint);
-                // subTable.put("ChassisSpeeds", this.speeds);
+                subTable.put("SteeringSetpoint", this.steeringSetpoint); // Added during season
+                // subTable.put("ChassisSpeeds", this.speeds); (probably remove)
 
             }
 
@@ -119,8 +120,8 @@ public record SwerveDriveMap(SwerveModule frontLeft, SwerveModule frontRight, Sw
                 this.driveTempC = subTable.get("DriveTempCelsius", this.driveTempC);
                 this.steeringCurrentAmps = subTable.get("SteeringCurrentAmps", this.steeringCurrentAmps);
                 this.steeringTempC = subTable.get("SteeringTempCelsius", this.steeringTempC);
-                this.steeringSetpoint = subTable.get("SteeringSetpoint", this.steeringSetpoint);
-                // this.speeds = subTable.get("ChassisSpeeds", this.speeds);
+                this.steeringSetpoint = subTable.get("SteeringSetpoint", this.steeringSetpoint); // Added during season
+                // this.speeds = subTable.get("ChassisSpeeds", this.speeds); (probably remove)
             }
 
             public void update(SwerveModule module) {
@@ -132,13 +133,13 @@ public record SwerveDriveMap(SwerveModule frontLeft, SwerveModule frontRight, Sw
                 this.steeringCurrentAmps = module.getSteeringMotor().getCurrentAmps();
                 this.steeringTempC = module.getSteeringMotor().getTemperatureC();
                 module.setDesiredState(this.desiredState);
-                this.steeringSetpoint = module.getSteeringMotor().get();
-                // this.speeds = module.ChassisSpeeds.get();
+                this.steeringSetpoint = module.getSteeringMotor().get(); // Added during season
+                // this.speeds = module.ChassisSpeeds.get(); (probably remove)
             }
 
             public SwerveModuleState getModuleStates() {
                 return new SwerveModuleState(velocityMetersPerSec, Rotation2d.fromDegrees(podAngle));
-            }
+            } // Added during season ^
         }
 
         public SwerveModuleData frontLeft = new SwerveModuleData("FrontLeft");
