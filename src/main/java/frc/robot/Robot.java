@@ -296,7 +296,8 @@ public class Robot extends CommandRobot {
     @Override
     public void setDefaultCommands() {
         drive.setDefaultCommand(
-                drive.drive(driveController::getLeftX, driveController::getLeftY, driveController::getRightX));
+                drive.drive(() -> -driveController.getLeftX(), () -> -driveController.getLeftY(),
+                        driveController::getRightX));
 
         // led.setDefaultCommand(led.colorAlliance());
         armExtend.setDefaultCommand(armExtend.manual(copilotController::getTriggers));

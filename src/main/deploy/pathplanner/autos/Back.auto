@@ -3,9 +3,9 @@
   "startingPose": {
     "position": {
       "x": 1.5,
-      "y": 0.5
+      "y": 3.5
     },
-    "rotation": 0.0
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
@@ -14,11 +14,12 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Valk Testing Path"
+            "pathName": "Back"
           }
         }
       ]
     }
   },
-  "folder": null
+  "folder": null,
+  "choreoAuto": false
 }

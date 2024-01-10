@@ -96,7 +96,7 @@ public class Valkyrie extends RobotMap {
         // All Distances are in Meters
         // Front Left Module
         final CANCoder encoderFL = new CANCoder(2);
-        encoderFL.configMagnetOffset(-35.771);
+        encoderFL.configMagnetOffset(144.229);
         encoderFL.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
         final SDSSwerveModule frontLeft = new SDSSwerveModule(new Translation2d(MODULE_OFFSET_XY, MODULE_OFFSET_XY),
                 encoderFL, frontLeftSteer, new CSSparkMax(3, MotorType.kBrushless),
@@ -104,7 +104,7 @@ public class Valkyrie extends RobotMap {
 
         // Front Right Module
         final CANCoder encoderFR = new CANCoder(4);
-        encoderFR.configMagnetOffset(103.607);
+        encoderFR.configMagnetOffset(283.607);
         encoderFR.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
         final SDSSwerveModule frontRight = new SDSSwerveModule(new Translation2d(MODULE_OFFSET_XY, -MODULE_OFFSET_XY),
                 encoderFR, frontRightSteer, new CSSparkMax(7,
@@ -113,7 +113,7 @@ public class Valkyrie extends RobotMap {
 
         // Rear Left Module
         final CANCoder encoderRL = new CANCoder(1);
-        encoderRL.configMagnetOffset(-110.566);
+        encoderRL.configMagnetOffset(70.566);
         encoderRL.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
         final SDSSwerveModule rearLeft = new SDSSwerveModule(new Translation2d(-MODULE_OFFSET_XY, MODULE_OFFSET_XY),
                 encoderRL, rearLeftSteer, new CSSparkMax(1,
@@ -122,7 +122,7 @@ public class Valkyrie extends RobotMap {
 
         // Rear Right Module
         final CANCoder encoderRR = new CANCoder(3);
-        encoderRR.configMagnetOffset(-209.707);
+        encoderRR.configMagnetOffset(-29.707);
         encoderRR.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
         final SDSSwerveModule rearRight = new SDSSwerveModule(new Translation2d(-MODULE_OFFSET_XY, -MODULE_OFFSET_XY),
                 encoderRR, rearRightSteer, new CSSparkMax(5,
