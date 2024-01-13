@@ -22,21 +22,19 @@ public class IntakeData implements LoggableInputs {
 
     public static class Map implements LoggableMap<IntakeData> {
         public SmartMotorController motor;
-        public IDSolenoid solenoid;
 
         public Map() {
-            this(new SmartMotorController(), new MockDSolenoid());
+            this(new SmartMotorController());
         }
 
-        public Map(SmartMotorController motor, IDSolenoid solenoid) {
+        public Map(SmartMotorController motor) {
             this.motor = motor;
-            this.solenoid = solenoid;
+
         }
 
         @Override
         public void updateData(IntakeData data) {
             motor.set(data.motorSetPoint);
-            solenoid.set(data.solenoidSetPoint);
             data.currentAmps = motor.getCurrentAmps();
         }
 

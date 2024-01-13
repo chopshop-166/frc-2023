@@ -64,13 +64,12 @@ public class Intake extends LoggedSubsystem<IntakeData, IntakeData.Map> {
     }
 
     public Command spinIn() {
-        PersistenceCheck currentPersistenceCheck = new PersistenceCheck(5,
-                () -> Math.abs(getData().currentAmps[0]) > 20);
-        return cmd().onInitialize(
+        return runEnd(
                 () -> {
-                    currentPersistenceCheck.reset();
                     getData().motorSetPoint = GRAB_SPEED;
-                }).runsUntil(currentPersistenceCheck);
+                }, () -> {
+                    getData().motorSetPoint = 0;
+                });
     }
 
     public void holdGamePiece(boolean interrupted) {

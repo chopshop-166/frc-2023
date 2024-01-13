@@ -48,7 +48,7 @@ public class Robot extends CommandRobot {
     SendableChooser<CubePickupLocation> cubePosChooser = new SendableChooser<>();
     SendableChooser<Integer> cubeScorePosChooser = new SendableChooser<>();
 
-    private RobotMap map = new FrostBiteMap();
+    private RobotMap map = new Valkyrie();
     private ButtonXboxController driveController = new ButtonXboxController(0);
     private ButtonXboxController copilotController = new ButtonXboxController(1);
 
@@ -69,7 +69,7 @@ public class Robot extends CommandRobot {
     private ArmRotate armRotate = new ArmRotate(map.getArmRotateMap());
 
     private Auto auto = new Auto(drive, armExtend, armRotate, intake, led, balanceArm);
-    private Compressor compressor = new Compressor(PneumaticsModuleType.REVPH);
+    // private Compressor compressor = new Compressor(PneumaticsModuleType.REVPH);
 
     private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser();
 
@@ -197,9 +197,10 @@ public class Robot extends CommandRobot {
     @Override
     public void robotPeriodic() {
         super.robotPeriodic();
-        Logger.recordOutput("Compressor/Pressure", compressor.getPressure());
-        Logger.recordOutput("Compressor/PressureSwitch", compressor.getPressureSwitchValue());
-        Logger.recordOutput("Compressor/Current", compressor.getCurrent());
+        // Logger.recordOutput("Compressor/Pressure", compressor.getPressure());
+        // Logger.recordOutput("Compressor/PressureSwitch",
+        // compressor.getPressureSwitchValue());
+        // Logger.recordOutput("Compressor/Current", compressor.getCurrent());
     }
 
     public Command intakeGamePiece() {
@@ -241,7 +242,9 @@ public class Robot extends CommandRobot {
         // Intake
         copilotController.a()
                 .onTrue(intakeGamePiece());
-        copilotController.b().onTrue(intake.toggle().andThen(rumbleAndIntakeSpinningOff()));
+        // copilotController.b().onTrue(intake.toggle().andThen(rumbleAndIntakeSpinningOff()));
+        copilotController.b().whileTrue(intake.spinIn());
+
         copilotController.x().onTrue(rumbleAndIntakeSpinningOff()).whileTrue(intake.cubeRelease());
 
         // Arm

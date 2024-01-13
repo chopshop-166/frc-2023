@@ -8,6 +8,7 @@ import com.chopshop166.chopshoplib.drive.SDSSwerveModule;
 import com.chopshop166.chopshoplib.drive.SDSSwerveModule.Configuration;
 import com.chopshop166.chopshoplib.maps.RobotMapFor;
 import com.chopshop166.chopshoplib.motors.CSSparkMax;
+import com.chopshop166.chopshoplib.motors.CSTalonSRX;
 import com.chopshop166.chopshoplib.sensors.MockEncoder;
 import com.chopshop166.chopshoplib.sensors.gyro.PigeonGyro;
 import com.chopshop166.chopshoplib.states.PIDValues;
@@ -30,6 +31,7 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import frc.robot.maps.subsystems.ArmExtendMap;
 import frc.robot.maps.subsystems.ArmRotateMap;
+import frc.robot.maps.subsystems.IntakeData;
 import frc.robot.maps.subsystems.LedMap;
 import frc.robot.maps.subsystems.SwerveDriveMap;
 import frc.robot.util.DrivePID;
@@ -43,21 +45,11 @@ public class Valkyrie extends RobotMap {
     }
 
     @Override
-    public ArmRotateMap getArmRotateMap() {
-        CSSparkMax motor = new CSSparkMax(18, MotorType.kBrushless);
-        ProfiledPIDController pid = new ProfiledPIDController(0.01, 0, 0, new Constraints(60, 10));
-        DutyCycleEncoder mockArmEncoder = new DutyCycleEncoder(18);
-        pid.setTolerance(1);
-        return new ArmRotateMap(motor, 1, 10, 1, 10, 0, pid, new MockEncoder(), 0, 0);
-    }
-
-    @Override
-    public ArmExtendMap getArmMap() {
-        CSSparkMax motor = new CSSparkMax(9, MotorType.kBrushless);
-        motor.getMotorController().setIdleMode(IdleMode.kBrake);
-        ProfiledPIDController pidController = new ProfiledPIDController(0, 0, 0, new Constraints(0, 0));
-        pidController.setTolerance(4);
-        return new ArmExtendMap(motor, 400, 20, 400, 20, pidController, 46.654, 42.3);
+    public IntakeData.Map getIntakeMap() {
+        CSSparkMax topRoller = new CSSparkMax(11, MotorType.kBrushless);
+        CSSparkMax bottomRoller = new CSSparkMax(9, MotorType.kBrushless);
+        bottomRoller.getMotorController().follow(topRoller.getMotorController(), true);
+        return new IntakeData.Map(topRoller);
     }
 
     @Override
