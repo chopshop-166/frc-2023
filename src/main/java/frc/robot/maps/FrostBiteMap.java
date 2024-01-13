@@ -44,20 +44,20 @@ public class FrostBiteMap extends RobotMap {
     @Override
     public SwerveDriveMap getDriveMap() {
 
-        final double FLOFFSET = -227.373046875;
-        final double FROFFSET = -198.017578125;
-        final double RLOFFSET = 180.0 - 188.78904649615288;
-        final double RROFFSET = 180.0 - 323.61328125;
+        final double FLOFFSET = 80.7;
+        final double FROFFSET = -136.9;
+        final double RLOFFSET = -52.8;
+        final double RROFFSET = -107;
         // Value taken from CAD as offset from center of module base pulley to center
         // of the robot
 
         final double MODULE_OFFSET_XY = Units.inchesToMeters(9.89);
         final PigeonGyro2 pigeonGyro2 = new PigeonGyro2(1);
 
-        final CSSparkMax frontLeftSteer = new CSSparkMax(8, MotorType.kBrushless);
-        final CSSparkMax frontRightSteer = new CSSparkMax(6, MotorType.kBrushless);
-        final CSSparkMax rearLeftSteer = new CSSparkMax(4, MotorType.kBrushless);
-        final CSSparkMax rearRightSteer = new CSSparkMax(2, MotorType.kBrushless);
+        final CSSparkMax frontLeftSteer = new CSSparkMax(4, MotorType.kBrushless);
+        final CSSparkMax frontRightSteer = new CSSparkMax(8, MotorType.kBrushless);
+        final CSSparkMax rearLeftSteer = new CSSparkMax(2, MotorType.kBrushless);
+        final CSSparkMax rearRightSteer = new CSSparkMax(6, MotorType.kBrushless);
 
         frontLeftSteer.getMotorController().setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
         frontRightSteer.getMotorController().setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
@@ -75,37 +75,37 @@ public class FrostBiteMap extends RobotMap {
 
         // All Distances are in Meters
         // Front Left Module
-        final CANCoder encoderFL = new CANCoder(4);
+        final CANCoder encoderFL = new CANCoder(2);
         encoderFL.configMagnetOffset(FLOFFSET);
         encoderFL.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
         final SDSSwerveModule frontLeft = new SDSSwerveModule(new Translation2d(MODULE_OFFSET_XY, MODULE_OFFSET_XY),
-                encoderFL, frontLeftSteer, new CSSparkMax(7, MotorType.kBrushless),
+                encoderFL, frontLeftSteer, new CSSparkMax(3, MotorType.kBrushless),
                 MK4i_L2);
 
         // Front Right Module
-        final CANCoder encoderFR = new CANCoder(3);
+        final CANCoder encoderFR = new CANCoder(4);
         encoderFR.configMagnetOffset(FROFFSET);
         encoderFR.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
         final SDSSwerveModule frontRight = new SDSSwerveModule(new Translation2d(MODULE_OFFSET_XY, -MODULE_OFFSET_XY),
-                encoderFR, frontRightSteer, new CSSparkMax(5,
+                encoderFR, frontRightSteer, new CSSparkMax(7,
                         MotorType.kBrushless),
                 MK4i_L2);
 
         // Rear Left Module
-        final CANCoder encoderRL = new CANCoder(2);
+        final CANCoder encoderRL = new CANCoder(1);
         encoderRL.configMagnetOffset(RLOFFSET);
         encoderRL.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
         final SDSSwerveModule rearLeft = new SDSSwerveModule(new Translation2d(-MODULE_OFFSET_XY, MODULE_OFFSET_XY),
-                encoderRL, rearLeftSteer, new CSSparkMax(3,
+                encoderRL, rearLeftSteer, new CSSparkMax(1,
                         MotorType.kBrushless),
                 MK4i_L2);
 
         // Rear Right Module
-        final CANCoder encoderRR = new CANCoder(1);
+        final CANCoder encoderRR = new CANCoder(3);
         encoderRR.configMagnetOffset(RROFFSET);
         encoderRR.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
         final SDSSwerveModule rearRight = new SDSSwerveModule(new Translation2d(-MODULE_OFFSET_XY, -MODULE_OFFSET_XY),
-                encoderRR, rearRightSteer, new CSSparkMax(1,
+                encoderRR, rearRightSteer, new CSSparkMax(5,
                         MotorType.kBrushless),
                 MK4i_L2);
 
@@ -133,78 +133,6 @@ public class FrostBiteMap extends RobotMap {
                 maxDriveSpeedMetersPerSecond,
                 maxRotationRadianPerSecond, pigeonGyro2, pid, cameraPosition, "eyes");
 
-    }
-
-    @Override
-    public BalanceArmMap getBalanceArmMap() {
-        RevDSolenoid solenoid = new RevDSolenoid(1, 6);
-        // return new BalanceArmMap(solenoid);
-        return new BalanceArmMap();
-    }
-
-    @Override
-    public IntakeData.Map getIntakeMap() {
-        CSTalonSRX intakeMotor = new CSTalonSRX(9);
-        intakeMotor.setInverted(true);
-        RevDSolenoid intakeSolenoid = new RevDSolenoid(7, 0);
-        intakeMotor.getMotorController().configContinuousCurrentLimit(25);
-        intakeMotor.getMotorController().configPeakCurrentLimit(25);
-
-        return new IntakeData.Map(intakeMotor, intakeSolenoid);
-
-    }
-
-    @Override
-    public ArmRotateMap getArmRotateMap() {
-        CSSparkMax csmotor = new CSSparkMax(10, MotorType.kBrushless);
-        csmotor.getMotorController().setInverted(false);
-        csmotor.getMotorController().setIdleMode(IdleMode.kBrake);
-        csmotor.getMotorController().setSmartCurrentLimit(40);
-        csmotor.getMotorController().burnFlash();
-        csmotor.getMotorController().setIdleMode(IdleMode.kCoast);
-        csmotor.getEncoder().setPositionScaleFactor(1.125);
-        csmotor.getEncoder().setVelocityScaleFactor(1.125 / 60);
-        ProfiledPIDController pid = new ProfiledPIDController(0.045, 0.001, 0.0, new Constraints(150, 200));
-        pid.setTolerance(2);
-
-        CSEncoder encoder = new CSEncoder(2, 3, true);
-        encoder.setDistancePerPulse(360.0 / 2048.0);
-        CSDutyCycleEncoder absEncoder = new CSDutyCycleEncoder(4);
-        // rohdfshkfjhsdkjhfdskjhfdsjkf
-        absEncoder.setDutyCycleRange(1.0 / 1025.0, 1024.0 / 1025.0);
-        absEncoder.setDistancePerRotation(-360);
-        // Adjust this to move the encoder zero point to the retracted position
-        absEncoder.setPositionOffset(54.8);
-
-        CSFusedEncoder fusedEncoder = new CSFusedEncoder(encoder, absEncoder);
-
-        return new ArmRotateMap(csmotor, 95, 10, 98, 0, 18, pid, fusedEncoder, 46.654, 42.3) {
-            @Override
-            public void setBrake() {
-                csmotor.getMotorController().setIdleMode(IdleMode.kBrake);
-                System.out.println("Setting brake mode");
-            }
-
-            @Override
-            public void setCoast() {
-                csmotor.getMotorController().setIdleMode(IdleMode.kCoast);
-            }
-        };
-
-    }
-
-    @Override
-    public ArmExtendMap getArmMap() {
-        CSSparkMax motor = new CSSparkMax(11, MotorType.kBrushless);
-        motor.getMotorController().setInverted(true);
-        motor.getMotorController().setIdleMode(IdleMode.kBrake);
-        motor.getMotorController().setSmartCurrentLimit(30);
-        motor.getMotorController().burnFlash();
-        motor.getEncoder().setPositionScaleFactor((1.273 * Math.PI) / 10);
-        motor.getEncoder().setVelocityScaleFactor(((1.273 * Math.PI) / 10) / 60);
-        ProfiledPIDController pid = new ProfiledPIDController(0.08, 0.05, 0.0, new Constraints(30, 100));
-        pid.setTolerance(0.5);
-        return new ArmExtendMap(motor, 18.5, 3, 19, 0.3, pid, 46.654, 42.3);
     }
 
     @Override

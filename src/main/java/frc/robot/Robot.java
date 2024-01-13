@@ -11,6 +11,7 @@ import com.chopshop166.chopshoplib.commands.CommandRobot;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 import com.pathplanner.lib.auto.AutoBuilder;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -30,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.auto.ConeStation;
 import frc.robot.auto.CubePickupLocation;
+import frc.robot.maps.FrostBiteMap;
 import frc.robot.maps.RobotMap;
 import frc.robot.maps.Valkyrie;
 import frc.robot.subsystems.ArmExtend;
@@ -46,7 +48,7 @@ public class Robot extends CommandRobot {
     SendableChooser<CubePickupLocation> cubePosChooser = new SendableChooser<>();
     SendableChooser<Integer> cubeScorePosChooser = new SendableChooser<>();
 
-    private RobotMap map = new Valkyrie();
+    private RobotMap map = new FrostBiteMap();
     private ButtonXboxController driveController = new ButtonXboxController(0);
     private ButtonXboxController copilotController = new ButtonXboxController(1);
 
@@ -213,6 +215,7 @@ public class Robot extends CommandRobot {
         driveController.rightBumper().onTrue(drive.setSpeedCoef(0.25, 0.35)).onFalse(drive.setSpeedCoef(1, 1));
         driveController.leftBumper().onTrue(drive.setSpeedCoef(0.4000000001, 0.5)).onFalse(drive.setSpeedCoef(1, 1));
         driveController.back().onTrue(drive.resetGyroCommand());
+        driveController.start().onTrue(drive.setPose(new Pose2d(1.5, 3.5, Rotation2d.fromDegrees(0))));
         driveController.rightStick().whileTrue(drive.robotCentricDrive(driveController::getLeftX,
                 driveController::getLeftY, driveController::getRightX));
 
@@ -297,7 +300,7 @@ public class Robot extends CommandRobot {
     public void setDefaultCommands() {
         drive.setDefaultCommand(
                 drive.drive(() -> -driveController.getLeftX(), () -> -driveController.getLeftY(),
-                        driveController::getRightX));
+                        () -> -driveController.getRightX()));
 
         // led.setDefaultCommand(led.colorAlliance());
         armExtend.setDefaultCommand(armExtend.manual(copilotController::getTriggers));

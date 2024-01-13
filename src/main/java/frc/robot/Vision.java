@@ -64,7 +64,7 @@ public class Vision {
     }
 
     public void setPose(Pose2d pose) {
-        estimator.resetPosition(Rotation2d.fromDegrees(driveMap.gyro().getAngle() - 180), getModulePositions(), pose);
+        estimator.resetPosition(Rotation2d.fromDegrees(driveMap.gyro().getAngle()), getModulePositions(), pose);
     }
 
     // Estimated pose from a combination of vision and odometry
@@ -127,18 +127,16 @@ public class Vision {
         estimator.update(Rotation2d.fromDegrees(driveMap.gyro().getAngle()),
 
                 getModulePositions());
-        Logger.getInstance().recordOutput("estimatedPose", estimator.getEstimatedPosition());
-        Logger.getInstance().recordOutput("odometryPose", odometry.getPoseMeters());
         return prevPose;
     }
 
     // Get every swerve module state
     private SwerveModulePosition[] getModulePositions() {
         return new SwerveModulePosition[] {
-                new SwerveModulePosition(-driveMap.frontLeft().getDistance(), driveMap.frontLeft().getAngle()),
-                new SwerveModulePosition(-driveMap.frontRight().getDistance(), driveMap.frontRight().getAngle()),
-                new SwerveModulePosition(-driveMap.rearLeft().getDistance(), driveMap.rearLeft().getAngle()),
-                new SwerveModulePosition(-driveMap.rearRight().getDistance(), driveMap.rearRight().getAngle()),
+                new SwerveModulePosition(driveMap.frontLeft().getDistance(), driveMap.frontLeft().getAngle()),
+                new SwerveModulePosition(driveMap.frontRight().getDistance(), driveMap.frontRight().getAngle()),
+                new SwerveModulePosition(driveMap.rearLeft().getDistance(), driveMap.rearLeft().getAngle()),
+                new SwerveModulePosition(driveMap.rearRight().getDistance(), driveMap.rearRight().getAngle()),
         };
     }
 }

@@ -123,7 +123,7 @@ public class Drive extends SmartSubsystemBase {
                 map.cameraName(), Field.getApriltagLayout(),
                 map.cameraPosition(),
                 this.map);
-        correctionPID = new RotationPIDController(0.01, 0.00001, 0.0);
+        correctionPID = new RotationPIDController(0.01, 0.0000, 0.0);
         rotationPID = drivePID.copyRotationPidController();
 
         AutoBuilder.configureHolonomic(
