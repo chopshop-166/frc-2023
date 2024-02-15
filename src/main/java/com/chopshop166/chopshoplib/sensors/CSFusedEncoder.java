@@ -8,12 +8,14 @@ public class CSFusedEncoder implements IEncoder, Sendable {
     private final double ENCODER_THRESHOLD_DEGREES = 2;
     IEncoder relativeEncoder;
     IAbsolutePosition absolutePos;
+    IEncoder motorEncoder;
 
     double relativeEncoderOffset;
 
-    public CSFusedEncoder(IEncoder relativeEncoder, IAbsolutePosition absPosition) {
+    public CSFusedEncoder(IEncoder relativeEncoder, IAbsolutePosition absPosition, IEncoder motorEncoder) {
         this.relativeEncoder = relativeEncoder;
         this.absolutePos = absPosition;
+        this.motorEncoder = motorEncoder;
         this.relativeEncoderOffset = this.absolutePos.getAbsolutePosition();
     }
 
@@ -39,13 +41,18 @@ public class CSFusedEncoder implements IEncoder, Sendable {
         System.out.println("Reseting Fused Encoder");
         relativeEncoderOffset = this.absolutePos.getAbsolutePosition();
         this.relativeEncoder.reset();
+        this.motorEncoder.reset();
     }
 
     @Override
     public double getDistance() {
 
         double distance = this.relativeEncoder.getDistance() + relativeEncoderOffset;
+        double motorDistance = this.motorEncoder.getDistance() + relativeEncoderOffset;
         // Keep trying to set the offset until we get a valid reading back
+        if (distanceExceedsThreshold(distance, motorDistance)) {
+            return motorDistance;
+        }
         if (relativeEncoderOffset == 0 || distanceExceedsThreshold(distance, this.absolutePos.getAbsolutePosition())) {
             reset();
             distance = this.relativeEncoder.getDistance() + relativeEncoderOffset;
@@ -55,6 +62,13 @@ public class CSFusedEncoder implements IEncoder, Sendable {
 
     @Override
     public double getRate() {
+
+        double rate = this.relativeEncoder.getRate();
+        double motorRate = this.motorEncoder.getRate();
+
+        if (distanceExceedsThreshold(rate, motorRate)) {
+            return rate;
+        }
         return this.relativeEncoder.getRate();
     }
 
